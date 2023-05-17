@@ -25,15 +25,18 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
     />
-    <!-- Links from PoC -->
+    <!-- START POC LINKS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=Open+Sans:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="sb-style.css">
+    <!-- END POC LINKS -->
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <!-- START POC -->
     <div id='poc-body'>
       <p class='text'>A music player for Google Drive</p>      
       <p id='banner'>SerialBox</p>
@@ -89,6 +92,9 @@
         <button class="button-op" id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
       </div>
     </div>
+    <!-- END POC -->
+
+    <!-- START REACT REPLACEMENT -->
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -100,8 +106,12 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <!-- END REACT REPLACEMENT -->
+
+    <!-- START POC SCRIPTS -->
     <script src="./main.js"></script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
     <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    <!-- END POC SCRIPTS -->
   </body>
 </html>
