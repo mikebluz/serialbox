@@ -1,0 +1,297 @@
+#poc-body {
+  background-color: black;
+  color: white;
+  padding: 10px 50px 100px 50px;
+  height: 200vh;
+  font-family: 'Lato', sans-serif;
+  font-family: 'Open Sans', sans-serif;
+ 
+  /* Smoothly transition the background color */
+  transition: background-color .5s;
+}
+
+.text {
+  text-align: center;
+  margin: auto;
+  padding: auto;
+  width: 100%;
+  color: yellow;
+  font-size: 1rem;
+}
+
+#inputs {
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: 2rem;
+  width: 100%;
+}
+
+.input-label {
+  background-color: black;
+  color: white;
+  padding: 10px;
+  margin: 5px;
+  text-align: center;
+  vertical-align: middle;
+  height: 50%;
+  border-radius: 10px;
+}
+
+.input {
+  width: 50%;
+  height: 5vh;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 10px;
+  font-size: 30pt;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#banner {
+  font-size: 4rem;
+  background-color: white;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin: 5px 5px 5px 5px;
+  border-radius: 10px;
+}
+
+.button-op {
+  width: 99%;
+  height: 100%;
+  padding: auto;
+  margin: 5px;
+  font-size: 5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-op:hover {
+  background-color: yellow;
+  color: black; 
+}
+
+.button-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  height: 12vh;
+}
+
+#shuffle-btn {
+  margin-top: 15px;
+}
+
+#reset {
+  display: flex;
+  flex-direction: row;
+}
+
+#track-info {
+  font-size: 3rem;
+  width: 90%;
+  border: 3px solid white;
+  background-color: black;
+  color: yellow;
+  padding: 5px;
+  border-radius: 8px;
+  margin: 0px auto 10px auto;
+  text-align: center;
+}
+
+.playlist {
+/*  border: 10px solid white;*/
+  display: flex;
+  flex-direction: column;
+  font-size: 2rem;
+  padding: 10px;
+  border-radius: 20px;
+}
+ 
+/* Using flex with the column direction to
+   align items in a vertical direction */
+.player {
+/*  height: 50vh;*/
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+/*  justify-content: center;*/
+/*  border: 5px solid black;*/
+  margin: 10px;
+}
+ 
+.details {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 25px;
+}
+ 
+/* Changing the font sizes to suitable ones */
+.now-playing {
+  font-size: 2rem;
+}
+ 
+.track-name {
+  font-size: 4rem;
+}
+ 
+.track-artist {
+  font-size: 2rem;
+}
+ 
+/* Using flex with the row direction to
+   align items in a horizontal direction */
+.ctrl-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 3rem;
+}
+
+.playpause-track {
+  margin: 10px 5px 10px 5px;
+  height: 250px;
+  width: 250px;
+  background-image: URL(
+     "http://mercywizard.com/sugarchex.webp");
+  background-size: cover;
+  background-position: center;
+  border-radius: 15%;
+}
+ 
+.playpause-track,
+.prev-track,
+.next-track {
+  padding: 25px;
+  opacity: 0.8;
+ 
+  /* Smoothly transition the opacity */
+  transition: opacity .2s;
+}
+ 
+/* Change the opacity when mouse is hovered */
+.playpause-track:hover,
+.prev-track:hover,
+.next-track:hover {
+  opacity: 1.0;
+}
+
+.playpause-track:hover {
+  cursor: pointer;
+}
+ 
+/* Define the slider width so that it scales properly */
+.slider_container {
+  width: 75%;
+  background-color: lightgrey;
+  color: black;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  font-size: 3rem;
+  border-radius: 20px;
+  border: 10px solid white;
+  margin-top: 10px;
+}
+ 
+/* Modify the appearance of the slider */
+.seek_slider, .volume_slider {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  height: 10px;
+  background: black;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  font-size: 3rem;
+  color: red;
+  margin: 10px;
+}
+ 
+/* Modify the appearance of the slider thumb */
+.seek_slider::-webkit-slider-thumb,
+.volume_slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  cursor: pointer;
+}
+ 
+/* Change the opacity when mouse is hovered */
+.seek_slider:hover,
+.volume_slider:hover {
+  opacity: 1.0;
+}
+ 
+.seek_slider {
+  width: 60%;
+}
+ 
+.volume_slider {
+  width: 30%;
+}
+ 
+.current-time,
+.total-duration {
+  padding: 10px;
+}
+ 
+i.fa-volume-down,
+i.fa-volume-up {
+  padding: 10px;
+}
+
+button {
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+/*  margin: 5px;*/
+  border: 10px solid white;
+  border-radius: 20px;
+}
+
+.playlist-track:hover {
+  background-color: yellow;
+  color: black;
+}
+
+.playlist-track {
+  padding: 10px;
+  cursor: pointer;
+  border: 5px solid white;
+  border-radius: 10px;
+  margin: 5px;
+  background-color: white;
+  color: black;
+}
+ 
+/* Change the mouse cursor to a pointer
+   when hovered over */
+i.fa-play-circle,
+i.fa-pause-circle,
+i.fa-step-forward,
+i.fa-step-backward {
+  cursor: pointer;
+}
