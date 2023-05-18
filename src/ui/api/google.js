@@ -9,12 +9,9 @@ export default class GoogleAPI {
     this.Drive = undefined;
 
     this.loadTokenClient = this.loadTokenClient.bind(this);
-    this.loadGapi = this.loadGapi.bind(this);
+    this.loadGapiClient = this.loadGapiClient.bind(this);
     this.loadClients = this.loadClients.bind(this);
     this.handleAuthClick = this.handleAuthClick.bind(this);
-
-    this.loadGapi();
-    this.loadTokenClient();
   }
 
   loadTokenClient() {
@@ -37,23 +34,30 @@ export default class GoogleAPI {
     });
   }
 
-  loadClients() {
-    console.log('loading clients')
-    window.gapi.client.setApiKey(this.API_KEY);
-    if (localStorage.getItem('access_token')) {
-      // ToDo: switch to use Refresh Tokens for longer sessions
-      console.log("using local access token");
-      window.gapi.client.setToken(localStorage.getItem('access_token'));
+  loadClients(resolve) {
+    return () => {
+      console.log('loading clients')
+      window.gapi.client.setApiKey(this.API_KEY);
+      if (localStorage.getItem('access_token')) {
+        // ToDo: switch to use Refresh Tokens for longer sessions
+        console.log("using local access token");
+        window.gapi.client.setToken(localStorage.getItem('access_token'));
+      }
+      window.gapi.client.load('drive', 'v3', () => {
+        this.Drive = new Drive(window.gapi.client.drive);
+        console.log('Drive loaded')
+        // ToDo: have separate Promises for each client API
+        // Since we're only using Drive for now can just resolve here
+        resolve();
+      });
     }
-    window.gapi.client.load('drive', 'v3', () => {
-      this.Drive = new Drive(window.gapi.client.drive);
-      console.log('Drive loaded')
-    });
   }
 
-  loadGapi() {
+  async loadGapiClient() {
     console.log('loading gapi')
-    window.gapi.load('client', this.loadClients);
+    return new Promise((resolve, reject) => {
+      window.gapi.load('client', this.loadClients(resolve));
+    });
   }
 
   handleAuthClick() {
