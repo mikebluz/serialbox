@@ -47,19 +47,20 @@ export default class App extends React.Component {
     /** 
      * ToDos
      * 
-     * 1. Move below call to initGapiTokenClient to onClick of Load component, which should be an input accepting folder names (array) as data
+     * 1. Loads
      * 2. Pass those names to the Load component
      * 
      * Load Component: 
-     * 3. Use the folder names to fetch the files for each folder.
+     * 1. Acept folder names (array) as data input (form input)
+     * 2. Use the folder names to fetch the files for each folder.
      *    - concat into array OR keep separate like Map<folderName, files[]>
-     * 4. Save playlist (many songs, many users), folders (many songs, many users), and songs (many folders, many playlists) in db
+     * 3. Save playlist (many songs, many users), folders (many songs, many users), and songs (many folders, many playlists) in db
      *    - We many have to start small here and start with one user per playlist,
      *      but it would be cool eventually to have many users, so have the ability to share a playlist with another user, form
      *      that would accept a gmail (the person you want to share with) and then automatically give that gmail access to the files
      *      and add the new User to Playlist relation in the db.
-     * 5. Render Playlist component and display Songs for this playlist.
-     * 6. Allow user to play, etc.
+     * 4. Render Playlist component and display Songs for this playlist.
+     * 5. Allow user to play, etc.
      * 
      * 
      * App (this) component:
