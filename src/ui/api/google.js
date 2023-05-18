@@ -1,6 +1,6 @@
 export default class GoogleAPI {
   constructor() {
-    this.CLIENT_ID = process.env.REACT_APP_GAPI_CLIENT_ID + ".apps.googleusercontent.com";
+    this.CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
     this.API_KEY = process.env.REACT_APP_GAPI_API_KEY;
     this.SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.readonly';
 
@@ -28,7 +28,6 @@ export default class GoogleAPI {
           // Debug example using the Drive fetch -- should not actually happen here
           const files = await this.Drive.fetchDriveFolderContents('some-folder');
           console.log(files);
-
         }
       },
     });
@@ -43,6 +42,9 @@ export default class GoogleAPI {
         console.log("using local access token");
         window.gapi.client.setToken(localStorage.getItem('access_token'));
       }
+
+
+
       window.gapi.client.load('drive', 'v3', () => {
         this.Drive = new Drive(window.gapi.client.drive);
         console.log('Drive loaded')
@@ -132,5 +134,11 @@ class Drive {
 
   handleDriveAPIError(ctx, err) {
     console.error(`${ctx}: ${err.message}`);
+  }
+}
+
+export class GoogleAPI2 {
+  constructor(client) {
+    this.handleInitResponse = this.handleInitResponse.bind(this)
   }
 }
