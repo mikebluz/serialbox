@@ -1,4 +1,3 @@
-/* global gapi */
 import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -7,6 +6,10 @@ import Link from '@mui/material/Link';
 import axios from 'axios';
 import { parseJwt } from './helpers.js';
 import { initGapi, initGapiTokenClient } from './api/gapi.js';
+import Load from './components/load.js';
+import Playlists from './components/playlists.js';
+import Shuffle from './components/shuffle.js';
+import {buttonStyle} from './styles/styles.js';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
@@ -21,6 +24,16 @@ function Copyright() {
       {'.'}
     </Typography>
   );
+}
+
+function Options() {
+  return (
+    <div>
+      <Load />
+      <Playlists />
+      <Shuffle />
+    </div>
+  )
 }
 
 export default class App extends React.Component {
@@ -62,7 +75,6 @@ export default class App extends React.Component {
      * 1. Button that modifies state property "playlist", which has all the currently loaded songs.
      * 2. On press: stop playing if playing, do quick random sort on the playlist, queue up first track.
      * **/
-    initGapiTokenClient();
   }
 
   greeting(user) {
@@ -84,6 +96,7 @@ export default class App extends React.Component {
       <Container maxWidth="sm">
         <Box sx={{ my: 4 }}>
           {this.greeting(this.user)}
+          <Options />
           <Typography variant="h4" component="h1" gutterBottom>
             SerialBox is a music player for unpublished work.
           </Typography>
