@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import axios from 'axios';
-import GoogleAPI from './api/google.js';
 import { parseJwt } from './helpers.js';
 import { initGapi, initGapiTokenClient } from './api/gapi.js';
 
