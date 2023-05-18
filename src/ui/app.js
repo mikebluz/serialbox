@@ -7,6 +7,11 @@ import Link from '@mui/material/Link';
 import axios from 'axios';
 import GoogleAPI from './api/google.js';
 
+// components
+import AllSongs from './components/allsongs.js';
+import Playlists from './components/playlists.js';
+import Player from './components/player.js';
+
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
@@ -71,6 +76,9 @@ export default class App extends React.Component {
           <Typography variant="h4" component="h1" gutterBottom>
             SerialBox is a music player for unpublished work.
           </Typography>
+          <Playlists />
+          <AllSongs />
+          <Player />
           <Copyright />
         </Box>
       </Container>
