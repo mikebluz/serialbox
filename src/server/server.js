@@ -31,11 +31,13 @@ app.get('/users', async (req, res) => {
 })
 
 app.post('/users', async (req, res) => {
-  const jane = await User.create({
-    username: 'janedoe',
-    birthday: new Date(1980, 6, 20),
-  });
-  await User.sync();
+  console.log(req.body);
+  // const jane = await User.create({
+  //   username: 'janedoe',
+  //   birthday: new Date(1980, 6, 20),
+  // });
+  // await User.sync();
+  res.send(200);
 });
 
 app.post('/save', (req, res) => {

@@ -5,6 +5,7 @@ export default class GoogleAPI {
     this.SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.readonly';
 
     this.tokenClient = undefined;
+    this.token = undefined;
     this.Drive = undefined;
 
     this.loadTokenClient = this.loadTokenClient.bind(this);
@@ -12,8 +13,8 @@ export default class GoogleAPI {
     this.loadClients = this.loadClients.bind(this);
     this.handleAuthClick = this.handleAuthClick.bind(this);
 
-    this.loadTokenClient();
     this.loadGapi();
+    this.loadTokenClient();
   }
 
   loadTokenClient() {
@@ -22,6 +23,8 @@ export default class GoogleAPI {
       scope: this.SCOPES,
       callback: async (tokenResponse) => {
         if (tokenResponse && tokenResponse.access_token) {
+          this.token = tokenResponse;
+          localStorage.setItem('access_token', tokenResponse.access_token);
 
           // ToDo: advance page to "Logged In" view
 
@@ -37,6 +40,11 @@ export default class GoogleAPI {
   loadClients() {
     console.log('loading clients')
     window.gapi.client.setApiKey(this.API_KEY);
+    if (localStorage.getItem('access_token')) {
+      // ToDo: switch to use Refresh Tokens for longer sessions
+      console.log("using local access token");
+      window.gapi.client.setToken(localStorage.getItem('access_token'));
+    }
     window.gapi.client.load('drive', 'v3', () => {
       this.Drive = new Drive(window.gapi.client.drive);
       console.log('Drive loaded')
@@ -60,8 +68,8 @@ export default class GoogleAPI {
   }
 
   async handleSignoutClick() {
-    const token = window.gapi.client.getToken();
-    if (token !== null) {
+    this.token = window.gapi.client.getToken();
+    if (this.token !== null) {
       window.google.accounts.oauth2.revoke(token.access_token);
       window.gapi.client.setToken('');
     }
@@ -119,7 +127,6 @@ class Drive {
   }
 
   handleDriveAPIError(ctx, err) {
-    // ToDo: display on page
     console.error(`${ctx}: ${err.message}`);
   }
 }
