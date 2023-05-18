@@ -119,6 +119,7 @@ class Drive {
   }
 
   handleDriveAPIError(ctx, err) {
+    // ToDo: display on page
     console.error(`${ctx}: ${err.message}`);
   }
 }

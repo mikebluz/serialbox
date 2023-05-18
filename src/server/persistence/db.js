@@ -1,7 +1,7 @@
 const { Sequelize, Model, DataTypes } = require('sequelize');
 
 // ToDo: Make env variable
-const pg = new Sequelize('postgres://postgres:Ax0T$ke@localhost:5432/mikeluz');
+const pg = new Sequelize(`postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:5432/${process.env.DB_NAME}`);
 
 const testDbConnection = async () => {
   try {
