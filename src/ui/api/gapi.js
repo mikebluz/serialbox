@@ -19,8 +19,7 @@ export async function initGapi(resolve) {
  * 
  * */
 // ToDo: use Refresh Tokens instead of Access Tokens
-async function saveToken(response) {
-	console.log("saving access token", token);
+async function saveToken(token) {
 	localStorage.setItem('access_token', token);
 	return;
 }
@@ -65,12 +64,12 @@ export async function getAccessToken(callback) {
  * */
 export async function fetchDriveFolders(name, accessToken) {
 	const q = `name contains '${name}'`;
-	const folderRes = await axios.get(`${GAPI_HOST}/drive/v3/files?pageSize=10&fields=files(id,name)&q=${q}`, {
+	const folderRes = await axios.get(`${GAPI_HOST}/drive/v3/files?pageSize=10&fields=files(id,name,mimeType)&q=${q}`, {
 		headers: {
 			"Authorization": `Bearer ${accessToken}`
 		}
 	});
-	return folderRes.data.files;
+	return folderRes.data.files.filter((folder) => folder.mimeType === 'application/vnd.google-apps.folder');
 }
 
 export async function fetchDriveFolderContents(folders, accessToken) {
