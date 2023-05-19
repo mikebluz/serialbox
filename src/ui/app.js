@@ -6,12 +6,18 @@ import Link from '@mui/material/Link';
 import axios from 'axios';
 import { parseJwt } from './helpers.js';
 import { initGapi, initGapiTokenClient } from './api/gapi.js';
-import Load from './components/load.js';
-import Playlists from './components/playlists.js';
-import Shuffle from './components/shuffle.js';
 import {buttonStyle} from './styles/styles.js';
 
+// components
+import AllSongs from './components/allsongs.js';
+import Playlists from './components/playlists.js';
+import Player from './components/player.js';
+import Load from './components/load.js';
+import Shuffle from './components/shuffle.js';
+
+
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
+
 
 function Copyright() {
   return (
@@ -101,6 +107,9 @@ export default class App extends React.Component {
           <Typography variant="h4" component="h1" gutterBottom>
             SerialBox is a music player for unpublished work.
           </Typography>
+          <Playlists />
+          <AllSongs />
+          <Player />
           <Copyright />
         </Box>
       </Container>
