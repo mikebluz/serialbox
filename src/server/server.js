@@ -29,7 +29,6 @@ app.use(express.static('public'));
 app.post('/login', async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
   if (!user) {
-    console.log('creating user', req.body)
     const user = await User.create({
       email: req.body.email,
     });
@@ -71,7 +70,7 @@ app.post('/playlist', async (req, res) => {
         err.errors.forEach((e) => {
           // if there is a non-"must be unique" errors, log it
           if (!e.message.includes('must be unique')) {
-            console.error("There has been some mistake", e);
+            console.error("There has been some kind of mistake", e);
           }
         })
       }
