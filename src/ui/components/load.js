@@ -1,12 +1,21 @@
 import { useState } from 'react';
-import { initGapiTokenClient } from '../api/gapi.js';
+import { 
+	getAccessToken, 
+	fetchDriveFolders, 
+	fetchDriveFolderContents 
+} from '../api/gapi.js';
 import {buttonStyle} from '../styles/styles.js';
 
 const Load = () => {
 	const [isHovering, setIsHovering] = useState(false);
 	
 	const handleClick = () => {
-		initGapiTokenClient();
+		getAccessToken(async (token) => {
+			const folders = await fetchDriveFolders('demos', token);
+			console.log('folders', folders);
+			const files = await fetchDriveFolderContents(folders, token);
+			console.log(files);
+		});
 	}
 
 	const handleMouseEnter = () => {

@@ -6,7 +6,7 @@ const Playlists = () => {
 	const [isHovering, setIsHovering] = useState(false);
 	
 	const handleClick = () => {
-		console.log('Plyalists clicked')
+		console.log('Playlists clicked')
 	}
 
 	const handleMouseEnter = () => {

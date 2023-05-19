@@ -4,7 +4,7 @@ const { pg } = require('./db.js');
 const User = pg.define('User', {
   id: {
     type: DataTypes.UUID,
-    defaultValue: Sequelize.UUID,
+    defaultValue: DataTypes.UUID,
     allowNull: false,
     primaryKey: true
   },
@@ -16,7 +16,7 @@ const User = pg.define('User', {
 const Song = pg.define('Song', {
   id: {
     type: DataTypes.UUID,
-    defaultValue: Sequelize.UUID,
+    defaultValue: DataTypes.UUID,
     allowNull: false,
     primaryKey: true
   },
@@ -27,7 +27,7 @@ const Song = pg.define('Song', {
 
 const LoadedSongs = pg.define('LoadedSongs', {
   songs: { 
-    type: DataTypes.ARRAY,
+    type: DataTypes.ARRAY(DataTypes.STRING),
     references: {
     model: {tableName: Song},
     key: 'id'
@@ -37,13 +37,13 @@ const LoadedSongs = pg.define('LoadedSongs', {
 const Playlist = pg.define('Playlist', {
   id: {
     type: DataTypes.UUID,
-    defaultValue: Sequelize.UUID,
+    defaultValue: DataTypes.UUID,
     allowNull: false,
     primaryKey: true
   },
   name: DataTypes.STRING,
   songs: { 
-    type: DataTypes.ARRAY,
+    type: DataTypes.ARRAY(DataTypes.STRING),
     references: {
     model: {tableName: Song},
     key: 'id'

@@ -53,11 +53,8 @@ export default class App extends React.Component {
     /** 
      * ToDos
      * 
-     * 1. Loads
-     * 2. Pass those names to the Load component
-     * 
      * Load Component: 
-     * 1. Acept folder names (array) as data input (form input)
+     * 1. Accept folder names (array) as data input (form input)
      * 2. Use the folder names to fetch the files for each folder.
      *    - concat into array OR keep separate like Map<folderName, files[]>
      * 3. Save playlist (many songs, many users), folders (many songs, many users), and songs (many folders, many playlists) in db
@@ -67,7 +64,6 @@ export default class App extends React.Component {
      *      and add the new User to Playlist relation in the db.
      * 4. Render Playlist component and display Songs for this playlist.
      * 5. Allow user to play, etc.
-     * 
      * 
      * App (this) component:
      * 1. After Login, first present options list: Load, View (Playlists or Songs), Shuffle (create randomized playlist of all songs the app knows about for this user)
@@ -81,7 +77,11 @@ export default class App extends React.Component {
      * Shuffle component:
      * 1. Button that modifies state property "playlist", which has all the currently loaded songs.
      * 2. On press: stop playing if playing, do quick random sort on the playlist, queue up first track.
-     * **/
+     * 
+     * Messaging subsystem:
+     * 1. Notifications (someone has shared a playlist with you)
+     * 2. Direct/Group messaging
+     **/
   }
 
   greeting(user) {
@@ -107,7 +107,6 @@ export default class App extends React.Component {
           <Typography variant="h4" component="h1" gutterBottom>
             SerialBox is a music player for unpublished work.
           </Typography>
-          <Playlists />
           <AllSongs />
           <Player />
           <Copyright />
