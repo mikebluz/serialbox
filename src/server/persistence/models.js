@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const { pg } = require('./db.js');
 
 const User = pg.define('User', {
-  id: DataTypes.INTEGER,
+  id: DataTypes.UUID,
   username: DataTypes.STRING,
   password: DataTypes.STRING,
   birthday: DataTypes.DATE,
