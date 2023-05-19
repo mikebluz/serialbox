@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from '@mui/material/Button';
 import { initGapiTokenClient } from '../api/gapi.js';
 import {buttonStyle} from '../styles/styles.js';
 
@@ -18,12 +19,12 @@ const Playlists = () => {
 	};
 
 	return (
-		<button 
+		<Button 
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
 			onClick={handleClick} 
 			style={buttonStyle(isHovering)}
-		>Playlists</button>
+		>Playlists</Button>
 	)
 }
 

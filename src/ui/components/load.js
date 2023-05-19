@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import { 
 	getAccessToken, 
 	fetchDriveFolders, 
@@ -7,13 +7,12 @@ import {
 } from '../api/gapi.js';
 import {buttonStyle} from '../styles/styles.js';
 
-const Load = () => {
+const Load = (props) => {
 	const [isHovering, setIsHovering] = useState(false);
-	const [folderName, setFolderName] = useState('');
 
 	const handleClick = () => {
 		getAccessToken(async (token) => {
-			const folders = await fetchDriveFolders(folderName, token);
+			const folders = await fetchDriveFolders(props.folderName, token);
 			console.log('folders', folders);
 			const files = await fetchDriveFolderContents(folders, token);
 			console.log(files);
@@ -29,15 +28,12 @@ const Load = () => {
 	};
 
 	return (
-		<div>
-			<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} />
-			<button 
-		        onMouseEnter={handleMouseEnter}
-		        onMouseLeave={handleMouseLeave}
-				onClick={handleClick} 
-				style={buttonStyle(isHovering)}
-			>Load</button>
-		</div>
+		<Button 
+	        onMouseEnter={handleMouseEnter}
+	        onMouseLeave={handleMouseLeave}
+			onClick={handleClick} 
+			style={buttonStyle(isHovering)}
+		>Load</Button>
 	)
 }
 

@@ -5,7 +5,6 @@ const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleuserconten
 const GAPI_HOST = 'https://www.googleapis.com'
 
 export async function initGapi(resolve) {
-	console.log("initializing google authentication")
 	window.google.accounts.id.initialize({
 		client_id: CLIENT_ID,
 		callback: (res) => resolve(parseJwt(res.credential)) // We get the googleUser from the JWT
@@ -38,7 +37,6 @@ export async function getAccessToken(callback) {
 	// ToDo: tokenIsValid throws if invalid, add better exception handling
 	const valid = await tokenIsValid();
 	if (!getToken() || !valid) {
-		console.log("no token or token is expired, getting new token")
 		const client = window.google.accounts.oauth2.initTokenClient({
 			client_id: CLIENT_ID,
 			scope: 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.readonly',
@@ -49,10 +47,8 @@ export async function getAccessToken(callback) {
 				callback(token);
 			},
 		});
-		console.log("requesting access token")
 		client.requestAccessToken({prompt: 'consent'});
 	} else {
-		console.log("using existing token")
 		callback(getToken());
 	}
 }
@@ -62,6 +58,13 @@ export async function getAccessToken(callback) {
  * DRIVE API CALLS
  * 
  * */
+// ToDo: determine what mimeTypes we want to allow (are lossless files too big?)
+const audioFileMimeTypes = [
+	'audio/mpeg', 
+	'audio/mp4', 
+	'audio/x-m4a', 
+	'audio/m4a'
+];
 export async function fetchDriveFolders(name, accessToken) {
 	const q = `name contains '${name}'`;
 	const folderRes = await axios.get(`${GAPI_HOST}/drive/v3/files?pageSize=10&fields=files(id,name,mimeType)&q=${q}`, {
@@ -73,6 +76,7 @@ export async function fetchDriveFolders(name, accessToken) {
 }
 
 export async function fetchDriveFolderContents(folders, accessToken) {
+	// ToDo: change to Map<folderName, files[]>() ?
 	const files = [];
   	for (let i = 0; i < folders.length; i++) {
   		const q = `'${folders[i].id}' in parents`;
@@ -81,7 +85,7 @@ export async function fetchDriveFolderContents(folders, accessToken) {
 				"Authorization": `Bearer ${accessToken}`
 			}
 		});
-		files.push(...f.data.files);
+		files.push(...f.data.files.filter((file) => audioFileMimeTypes.includes(file.mimeType)));
   	}
   	return files;
 }

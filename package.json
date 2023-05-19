@@ -12,6 +12,7 @@
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@google-cloud/local-auth": "^2.1.0",
+    "@mui/icons-material": "^5.11.16",
     "@mui/material": "latest",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
