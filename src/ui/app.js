@@ -36,14 +36,13 @@ function Copyright() {
   );
 }
 
-function Options() {
+function Options(props) {
   const [folderName, setFolderName] = useState(''); 
-
   return (
     <div>
       <TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} />
       <ButtonGroup variant="outlined" aria-label="outlined button group">
-        <Load folderName={folderName}/>
+        <Load folderName={folderName} user={props.user}/>
         <Playlists />
         <Shuffle />
       </ButtonGroup>
@@ -58,10 +57,10 @@ export default class App extends React.Component {
     this.login = this.login.bind(this);
   }
 
-  greeting(user) {
-    const parsedUser = JSON.parse(user);
+  greeting() {
+    // const parsedUser = JSON.parse(user);
     return (
-      <h1>Welome, {parsedUser.given_name}!</h1>
+      <h1>Welcome, {this.user.given_name}!</h1>
     )
   }
 
@@ -78,10 +77,10 @@ export default class App extends React.Component {
         <Box sx={{ my: 4 }}>
           <Grid container spacing={2}>
             <Grid item xs={8}>
-              {this.greeting(this.user)}
+              {this.greeting}
             </Grid>
             <Grid item xs={8}>
-              <Options />
+              <Options user={this.user}/>
             </Grid>
             <Grid item xs={8}>
               <Typography variant="h4" component="h1" gutterBottom>

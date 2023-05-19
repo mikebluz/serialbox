@@ -1,8 +1,11 @@
     /** 
      * ToDos
      * 
-     * Load Component: 
-     * 3. Save playlist (many songs, many users), folders (many songs, many users), and songs (many folders, many playlists) in db
+
+     Backend API needs auth
+
+     * Load (Data Query bootstrap) Component: 
+     * 3. Save playlist and songs in db
      *    - We many have to start small here and start with one user per playlist,
      *      but it would be cool eventually to have many users, so have the ability to share a playlist with another user, form
      *      that would accept a gmail (the person you want to share with) and then automatically give that gmail access to the files

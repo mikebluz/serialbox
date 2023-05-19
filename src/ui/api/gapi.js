@@ -76,16 +76,19 @@ export async function fetchDriveFolders(name, accessToken) {
 }
 
 export async function fetchDriveFolderContents(folders, accessToken) {
-	// ToDo: change to Map<folderName, files[]>() ?
-	const files = [];
+	const files = {};
   	for (let i = 0; i < folders.length; i++) {
-  		const q = `'${folders[i].id}' in parents`;
+  		let dir = folders[i];
+  		const q = `'${dir.id}' in parents`;
 		const f = await axios.get(`${GAPI_HOST}/drive/v3/files?pageSize=100&fields=files(id,name,mimeType)&q=${q}`, {
 			headers: {
 				"Authorization": `Bearer ${accessToken}`
 			}
 		});
-		files.push(...f.data.files.filter((file) => audioFileMimeTypes.includes(file.mimeType)));
+		if (!files[dir.name]) {
+			files[dir.name] = [];
+		};
+		files[dir.name].push(...f.data.files.filter((file) => audioFileMimeTypes.includes(file.mimeType)));
   	}
   	return files;
 }
