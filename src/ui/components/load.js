@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { initGapiTokenClient } from '../api/gapi.js';
 import {buttonStyle} from '../styles/styles.js';
 
-const Playlists = () => {
+const Load = () => {
 	const [isHovering, setIsHovering] = useState(false);
 	
 	const handleClick = () => {
-		console.log('Plyalists clicked')
+		initGapiTokenClient();
 	}
 
 	const handleMouseEnter = () => {
@@ -23,8 +23,8 @@ const Playlists = () => {
             onMouseLeave={handleMouseLeave}
 			onClick={handleClick} 
 			style={buttonStyle(isHovering)}
-		>Playlists</button>
+		>Load</button>
 	)
 }
 
-export default Playlists
+export default Load
