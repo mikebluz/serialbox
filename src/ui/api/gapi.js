@@ -28,13 +28,17 @@ function getToken() {
 }
 
 async function tokenIsValid() {
-	const res = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${getToken()}`)
-	const json = await res.json();
-	return json['expires_in'] > 0;
+	try {
+		const res = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${getToken()}`)	
+		const json = await res.json();
+		return json['expires_in'] > 0;	
+	} catch (err) {
+		// Token is not valid
+		return false;
+	}
 }
 
 export async function getAccessToken(callback) {
-	// ToDo: tokenIsValid throws if invalid, add better exception handling
 	const valid = await tokenIsValid();
 	if (!getToken() || !valid) {
 		const client = window.google.accounts.oauth2.initTokenClient({
