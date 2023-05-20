@@ -23,7 +23,7 @@ import Shuffle from './components/shuffle.js';
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
 
-function Copyright() {
+const Copyright = () => {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
       {'Copyright © '}
@@ -36,7 +36,7 @@ function Copyright() {
   );
 }
 
-function Options(props) {
+const Options = (props) => {
   const [folderName, setFolderName] = useState(''); 
   return (
     <div>
@@ -50,52 +50,47 @@ function Options(props) {
   )
 }
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props)
-    this.user = props.user;
-    this.login = this.login.bind(this);
-  }
+const App = (props) => {
 
-  greeting() {
+  const greeting = () => {
     // const parsedUser = JSON.parse(user);
     return (
-      <h1>Welcome, {this.user.given_name}!</h1>
+      <h1>Welcome, {props.user.given_name}!</h1>
     )
   }
 
-  async login() {
+  const login = async () => {
     // ToDo: inject env var for domain URI
     const result = await axios.post('http://localhost:3005/login', {
       user: 'test',
     });
   }
-  
-  render() {
-    return (
-      <Container maxWidth="sm">
-        <Box sx={{ my: 4 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              {this.greeting}
-            </Grid>
-            <Grid item xs={8}>
-              <Options user={this.user}/>
-            </Grid>
-            <Grid item xs={8}>
-              <Typography variant="h4" component="h1" gutterBottom>
-                SerialBox is a music player for unpublished work.
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <Player />
-            </Grid>
-            <Grid item xs={8}>
-              <Copyright />
-            </Grid>
+
+  return (
+    <Container maxWidth="sm">
+      <Box sx={{ my: 4 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={8}>
+            {greeting()}
           </Grid>
-        </Box>
-      </Container>
-    )
-  };
+          <Grid item xs={8}>
+            <Options user={props.user} />
+          </Grid>
+          <Grid item xs={8}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              SerialBox is a music player for unpublished work.
+            </Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <Player />
+          </Grid>
+          <Grid item xs={8}>
+            <Copyright />
+          </Grid>
+        </Grid>
+      </Box>
+    </Container>
+  )
 }
+
+export default App;
