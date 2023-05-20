@@ -1,9 +1,13 @@
+import {useState} from 'react';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import PauseOutlinedIcon from '@mui/icons-material/PauseOutlined';
 import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 
 const Player = () => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [track, setTrack] = useState(undefined);
+
     return (
         <div>
             <div id='track-details' className="details">

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState } from 'react';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Container from '@mui/material/Container';
@@ -52,15 +51,13 @@ const App = (props) => {
   }
 
   const Greeting = () => {
-    // const parsedUser = JSON.parse(user);
     return (
       <h1>Welcome, {props.user.given_name}!</h1>
     )
   }
 
   const Login = async () => {
-    // ToDo: inject env var for domain URI
-    const result = await axios.post('http://localhost:3005/login', {
+    const result = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/login`, {
       user: 'test',
     });
   }
@@ -69,21 +66,21 @@ const App = (props) => {
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item xs={16}>
             <Greeting />
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={16}>
             <Options />
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={16}>
             <Typography variant="h4" component="h1" gutterBottom>
               SerialBox is a music player for unpublished work.
             </Typography>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={16}>
             <Player />
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={16}>
             <Copyright />
           </Grid>
         </Grid>

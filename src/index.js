@@ -1,4 +1,3 @@
-import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -16,7 +15,7 @@ new Promise((res, rej) => {
 
   // ToDo: right now `login` just creates the user if it doesn't exist, we need to implement API tokens
   // Possibly utilize Google Auth on backend as well
-  const loginRes = await axios.post('http://localhost:3005/login', {
+  const loginRes = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/login`, {
     email: googleUser.email
   });
 
