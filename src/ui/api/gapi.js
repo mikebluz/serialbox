@@ -1,4 +1,3 @@
-import { parseJwt } from '../helpers.js';
 import axios from 'axios';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
@@ -105,4 +104,14 @@ export async function fetchDriveFile(metadata) {
 	});
 	const dataArr = Uint8Array.from(fileRes.body.split('').map((chr) => chr.charCodeAt(0)));
 	return new File([dataArr], metadata.name, { type: metadata.mimeType });
+}
+
+export function parseJwt (token) {
+	var base64Url = token.split('.')[1];
+	var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+	    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	}).join(''));
+
+	return JSON.parse(jsonPayload);
 }

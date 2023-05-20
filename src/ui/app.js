@@ -1,14 +1,17 @@
+import axios from 'axios';
 import { useState } from 'react';
+
+// mui
+import Box from '@mui/material/Box';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import axios from 'axios';
-import { parseJwt } from './helpers.js';
-import { initGapi, initGapiTokenClient } from './api/gapi.js';
+
+// repo
+import { initGapi, initGapiTokenClient, parseJwt } from './api/gapi.js';
 import {buttonStyle} from './styles/styles.js';
 
 // components
@@ -18,10 +21,15 @@ import Player from './components/player.js';
 import Load from './components/load.js';
 import Shuffle from './components/shuffle.js';
 
-
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
 const App = (props) => {
+  const [newSongsLoaded, setNewSongsLoaded] = useState({});
+
+  const handleLoadedSongs = (songs) => {
+    console.log("songs loaded")
+    setNewSongsLoaded(songs);
+  }
 
   const Copyright = () => {
     return (
@@ -38,11 +46,19 @@ const App = (props) => {
 
   const Options = () => {
     const [folderName, setFolderName] = useState(''); 
+    const [playlistName, setPlaylistName] = useState('');
+
     return (
       <div>
         <TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} />
+        <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} />
         <ButtonGroup variant="outlined" aria-label="outlined button group">
-          <Load folderName={folderName} user={props.user}/>
+          <Load 
+            folderName={folderName} 
+            playlistName={playlistName}
+            user={props.user} 
+            handleLoadedSongs={handleLoadedSongs}
+          />
           <Playlists />
           <Shuffle />
         </ButtonGroup>
@@ -64,8 +80,8 @@ const App = (props) => {
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ my: 4 }}>
-        <Grid container spacing={2}>
+      <Box sx={{ my: 6 }}>
+        <Grid container spacing={4}>
           <Grid item xs={16}>
             <Greeting />
           </Grid>

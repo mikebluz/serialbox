@@ -78,7 +78,7 @@ app.post('/playlist', async (req, res) => {
   }
   await Song.sync()
   await PlaylistSong.sync();
-  res.send(200);
+  res.status(200).send(JSON.stringify(playlist));
 });
 
 app.listen(port, () => {
