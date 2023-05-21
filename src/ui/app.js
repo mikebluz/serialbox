@@ -17,6 +17,7 @@ import {buttonStyle} from './styles/styles.js';
 
 // components
 import AllSongs from './components/allsongs.js';
+import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
 import Player from './components/player.js';
 import Load from './components/load.js';
@@ -89,6 +90,7 @@ const App = (props) => {
           </Grid>
           <Grid item xs={16} style={componentDisplayStyle}>
             <Player />
+            <Playlist />
           </Grid>
           <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
             <Copyright />

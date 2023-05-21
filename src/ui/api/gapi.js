@@ -27,12 +27,16 @@ function getToken() {
 }
 
 async function tokenIsValid() {
-	try {
-		const res = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${getToken()}`)	
+	if (getToken()) {
+		const res = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${getToken()}`);
 		const json = await res.json();
-		return json['expires_in'] > 0;	
-	} catch (err) {
-		// Token is not valid
+		if (json.error) {
+			console.error('error validating token:', json.error)
+			return false;
+		} else {
+			return json['expires_in'] > 0;
+		}
+	} else {
 		return false;
 	}
 }
@@ -45,9 +49,13 @@ export async function getAccessToken(callback) {
 			scope: 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.readonly',
 			// This callback is for calls on the client, i.e., requestAccessToken below
 			callback: (res) => {
-				const token = res.access_token;
-				saveToken(token);
-				callback(token);
+				if (!res.error) {
+					const token = res.access_token;
+					saveToken(token);
+					callback(token);
+				} else {
+					console.error(`Error encountered attempting to fetch access token: ${res.error}`);
+				}
 			},
 		});
 		client.requestAccessToken({prompt: 'consent'});

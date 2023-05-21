@@ -45,10 +45,8 @@ const Load = (props) => {
 			// ToDo: Add "loading" display to dialog modal (in place of inputs)
 
 			const folders = await fetchDriveFolders(folderName, token);
-			console.log('folders', folders);
 			if (folders.length) {
 				const files = await fetchDriveFolderContents(folders, token);
-				console.log('files', files);
 				if (Object.keys(files).length) {
 					const count = Object.values(files).reduce((acc, arr) => acc += arr.length, 0);
 					console.log(`${count} files loaded across ${Object.keys(files).length} folders`);
