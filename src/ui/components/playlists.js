@@ -24,7 +24,9 @@ const Playlists = () => {
             onMouseLeave={handleMouseLeave}
 			onClick={handleClick} 
 			style={buttonStyle(isHovering)}
-		>Playlists</Button>
+		>
+			Playlists
+		</Button>
 	)
 }
 

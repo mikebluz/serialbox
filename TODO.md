@@ -1,15 +1,7 @@
     /** 
      * ToDos
      * 
-
-     Backend API needs auth
-
      * Load (Data Query bootstrap) Component: 
-     * 3. Save playlist and songs in db
-     *    - We many have to start small here and start with one user per playlist,
-     *      but it would be cool eventually to have many users, so have the ability to share a playlist with another user, form
-     *      that would accept a gmail (the person you want to share with) and then automatically give that gmail access to the files
-     *      and add the new User to Playlist relation in the db.
      * 4. Render Playlist component and display Songs for this playlist.
      * 5. Allow user to play, etc.
      * 
@@ -26,4 +18,7 @@
      * Messaging subsystem:
      * 1. Notifications (someone has shared a playlist with you)
      * 2. Direct/Group messaging
+     * 
+     * Record audio and save to drive
+     *
      **/

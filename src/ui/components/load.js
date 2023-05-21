@@ -18,17 +18,18 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 const Load = (props) => {
 	const [open, setOpen] = useState(false);
-    const [isHovering, setIsHovering] = useState(false);
-    const [folderName, setFolderName] = useState(''); 
-    const [playlistName, setPlaylistName] = useState('');
-    const [artistName, setArtistName] = useState('');
+	const [isHovering, setIsHovering] = useState(false);
+	const [folderName, setFolderName] = useState(''); 
+	const [playlistName, setPlaylistName] = useState('');
+	const [artistName, setArtistName] = useState('');
 
-    const handleMouseEnter = () => {
-      setIsHovering(true);
-    };
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-    };
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+  };
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -40,6 +41,9 @@ const Load = (props) => {
 
 	const handleClick = () => {
 		getAccessToken(async (token) => {
+
+			// ToDo: Add "loading" display to dialog modal (in place of inputs)
+
 			const folders = await fetchDriveFolders(folderName, token);
 			console.log('folders', folders);
 			if (folders.length) {
@@ -71,9 +75,9 @@ const Load = (props) => {
 	return (
 		<div>
 			<Button 
-	            onMouseEnter={handleMouseEnter}
-	            onMouseLeave={handleMouseLeave}
-	            style={buttonStyle(isHovering)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={buttonStyle(isHovering)}
 				variant="outlined" 
 				onClick={handleClickOpen}>
 				Load
@@ -84,7 +88,7 @@ const Load = (props) => {
 			  aria-labelledby="modal-modal-title"
 			  aria-describedby="modal-modal-description"
 			>	 
-		        <DialogTitle>Create Playlist</DialogTitle>
+        <DialogTitle>Create Playlist</DialogTitle>
 				<DialogContent>
 				  <DialogContentText>
 					Enter a string to search your Google Drive folders by name for audio to load.
@@ -96,8 +100,8 @@ const Load = (props) => {
   					{ JSON.stringify(audioFileMimeTypes) }
   				  </DialogContentText>
 				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} />
-	    	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} />
-	        	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)} />
+  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} />
+      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)} />
 				</DialogContent>
 				<DialogActions>
 				  <Button onClick={handleClick}>Load</Button>

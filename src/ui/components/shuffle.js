@@ -24,7 +24,9 @@ const Shuffle = () => {
             onMouseLeave={handleMouseLeave}
 			onClick={handleClick} 
 			style={buttonStyle(isHovering)}
-		>Shuffle</Button>
+		>
+			Shuffle
+		</Button>
 	)
 }
 

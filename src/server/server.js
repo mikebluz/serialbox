@@ -18,14 +18,6 @@ app.use(express.json());
 
 app.use(express.static('public'));
 
-// This login endpoint uses the *old* Google API auth flow for CLI Node apps
-// app.post('/login', async (req, res) => {
-//   await authorize();
-//   console.log("Authorized!", req.body);
-//   await fetchFiles();
-//   res.send(200);
-// });
-
 app.post('/login', async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
   if (!user) {
