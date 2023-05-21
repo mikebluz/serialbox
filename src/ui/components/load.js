@@ -26,7 +26,7 @@ const Load = (props) => {
   const handleMouseEnter = () => {
     setIsHovering(true);
   };
-  
+
   const handleMouseLeave = () => {
     setIsHovering(false);
   };
@@ -56,6 +56,7 @@ const Load = (props) => {
 						name: props.playlistName,
 						email: props.user.email,
 						songs: JSON.stringify(files),
+						artist: artistName,
 					});
 					console.log('Playlist created', playlistCreatedRes);
 					props.handleLoadedSongs(files);

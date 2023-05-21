@@ -8,7 +8,6 @@ const express = require('express');
 const app = express()
 const port = 3005
 const {User, Playlist, PlaylistSong, Song} = require('./persistence/models.js');
-const {authorize, fetchFiles} = require('./api/gapi.js');
 const cors = require('cors');  
 
 // ToDo: Remove in production
