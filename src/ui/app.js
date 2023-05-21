@@ -64,8 +64,6 @@ const App = (props) => {
             user={props.user} 
             handleLoadedSongs={handleLoadedSongs}
           />
-          <Playlists />
-          <Shuffle />
         </ButtonGroup>
       </div>
     )
