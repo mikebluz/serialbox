@@ -62,7 +62,7 @@ export async function getAccessToken(callback) {
  * 
  * */
 // ToDo: determine what mimeTypes we want to allow (are lossless files too big?)
-const audioFileMimeTypes = [
+export const audioFileMimeTypes = [
 	'audio/mpeg', 
 	'audio/mp4', 
 	'audio/x-m4a', 

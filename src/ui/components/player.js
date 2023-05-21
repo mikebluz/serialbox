@@ -10,10 +10,6 @@ const Player = () => {
 
     return (
         <div>
-            <div id='track-details' className="details">
-                <marquee id='track-info' behavior='scroll' direction='left' scrollamount='12'>Enter a Google Drive folder name to load some tracks ... Enter an Artist name to apply to all tracks ... Listen to demos and try out some project names!</marquee>
-            </div>
-
             <div className="ctrl-buttons">
                 <div className="prev-track" onClick={() => console.log("PREVIOUS")}>
                   <SkipPreviousOutlinedIcon />

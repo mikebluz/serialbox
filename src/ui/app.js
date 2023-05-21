@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 // mui
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -23,6 +24,18 @@ import Shuffle from './components/shuffle.js';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
+const headerFooterStyle = {
+  backgroundColor: 'black',
+  color: 'white',
+};
+
+const componentDisplayStyle = { 
+  display: 'flex',
+  border: '1px solid black', 
+  borderRadius: '6px',
+  margin: '2px',
+};
+
 const App = (props) => {
   const [newSongsLoaded, setNewSongsLoaded] = useState({});
 
@@ -33,31 +46,21 @@ const App = (props) => {
 
   const Copyright = () => {
     return (
-      <Typography variant="body2" color="text.secondary" align="center">
+      <Typography variant="body2" align="center">
         {'Copyright © '}
         <Link color="inherit" href="https://mercywizard.com/">
           SerialBox
         </Link>{' '}
         {new Date().getFullYear()}
-        {'.'}
       </Typography>
     );
   }
 
   const Options = () => {
-    const [folderName, setFolderName] = useState(''); 
-    const [playlistName, setPlaylistName] = useState('');
-    const [artistName, setArtistName] = useState('');
-
     return (
       <div>
-        <TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} />
-        <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} />
-        <TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)} />
-        <ButtonGroup variant="outlined" aria-label="outlined button group">
+        <ButtonGroup variant="contained" aria-label="outlined button group">
           <Load 
-            folderName={folderName} 
-            playlistName={playlistName}
             user={props.user} 
             handleLoadedSongs={handleLoadedSongs}
           />
@@ -70,7 +73,9 @@ const App = (props) => {
 
   const Greeting = () => {
     return (
-      <h1>Welcome, {props.user.given_name}!</h1>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Welcome, {props.user.given_name}!
+      </Typography>
     )
   }
 
@@ -78,21 +83,16 @@ const App = (props) => {
     <Container maxWidth="sm">
       <Box sx={{ my: 6 }}>
         <Grid container spacing={4}>
-          <Grid item xs={16}>
+          <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
             <Greeting />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={16} style={componentDisplayStyle}>
             <Options />
           </Grid>
-          <Grid item xs={16}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              SerialBox is a music player for unpublished work.
-            </Typography>
-          </Grid>
-          <Grid item xs={16}>
+          <Grid item xs={16} style={componentDisplayStyle}>
             <Player />
           </Grid>
-          <Grid item xs={16}>
+          <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
             <Copyright />
           </Grid>
         </Grid>
