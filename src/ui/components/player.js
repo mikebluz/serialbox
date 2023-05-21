@@ -10,28 +10,75 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import PauseOutlinedIcon from '@mui/icons-material/PauseOutlined';
 import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
+import {playerButtonStyle} from '../styles/styles.js';
 
-const Player = () => {
+const Player = (props) => {
+    const [isHovering, setIsHovering] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50);
     const [track, setTrack] = useState(undefined);
-    const [audioNode, setAudioNode] = useState(new Audio());
+    const [audio, setAudio] = useState(new Audio());
+    const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+
+    if (Object.keys(props.songs).length) {
+        console.log(props.songs);
+        loadSong(props.playlist[currentTrackIndex]);
+    }
+
+    const handleMouseEnter = () => {
+        setIsHovering(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovering(false);
+    };
 
     const handleSetVolume = (e) => {
-        console.log("volume changed", e.target.value);
+        audio.volume = e.target.value / 100;
         setVolume(e.target.value);
     };
+
+    const playPause = (e) => {
+        if (isPlaying) {
+            // ToDo: change to pause icon
+        } else {
+            // ToDo: change to play icon
+        }
+        setIsPlaying(!isPlaying);
+    }
+
+    async function loadSong(file) {
+        console.log('file', file);
+    }
 
     return (
         <div>
             <ButtonGroup variant="contained" aria-label="outlined button group">
-                <Button className="prev-track" onClick={() => console.log("PREVIOUS")}>
+                <Button 
+                    className="prev-track" 
+                    onClick={() => console.log("PREVIOUS")} 
+                    style={playerButtonStyle(isHovering)}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
                   <SkipPreviousOutlinedIcon />
                 </Button>
-                <Button id="track-art" className="playpause-track" onClick={() => console.log("PLAY")}>
+                <Button 
+                    className="playpause-track" 
+                    onClick={playPause} 
+                    style={playerButtonStyle(isHovering)}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
                     <ArrowRightOutlinedIcon />
                 </Button>
-                <Button className="next-track" onClick={() => console.log("NEXT")}>
+                <Button 
+                    className="next-track" 
+                    onClick={() => console.log("NEXT")} 
+                    style={playerButtonStyle(isHovering)}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
                   <SkipNextOutlinedIcon />
                 </Button>
             </ButtonGroup>

@@ -13,7 +13,11 @@ import Typography from '@mui/material/Typography';
 
 // repo
 import { initGapi, initGapiTokenClient, parseJwt } from './api/gapi.js';
-import {buttonStyle} from './styles/styles.js';
+import {
+  buttonStyle, 
+  componentDisplayStyle, 
+  headerFooterStyle
+} from './styles/styles.js';
 
 // components
 import AllSongs from './components/allsongs.js';
@@ -25,24 +29,12 @@ import Shuffle from './components/shuffle.js';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
-const headerFooterStyle = {
-  backgroundColor: 'black',
-  color: 'white',
-};
-
-const componentDisplayStyle = { 
-  display: 'flex',
-  border: '1px solid black', 
-  borderRadius: '6px',
-  margin: '2px',
-};
-
 const App = (props) => {
-  const [newSongsLoaded, setNewSongsLoaded] = useState({});
+  const [songsLoaded, setSongsLoaded] = useState([]);
 
   const handleLoadedSongs = (songs) => {
     console.log("songs loaded")
-    setNewSongsLoaded(songs);
+    // setSongsLoaded(songs);
   }
 
   const Copyright = () => {
@@ -70,11 +62,14 @@ const App = (props) => {
     )
   }
 
-  const Greeting = () => {
+  const Header = () => {
     return (
-      <Typography variant="h4" component="h1" gutterBottom>
-        Welcome, {props.user.given_name}!
-      </Typography>
+      <div style={{ padding: '10px' }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Welcome, {props.user.given_name}!
+        </Typography>
+        <Options />
+      </div>
     )
   }
 
@@ -83,13 +78,10 @@ const App = (props) => {
       <Box sx={{ my: 6 }}>
         <Grid container spacing={4}>
           <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
-            <Greeting />
+            <Header />
           </Grid>
           <Grid item xs={16} style={componentDisplayStyle}>
-            <Options />
-          </Grid>
-          <Grid item xs={16} style={componentDisplayStyle}>
-            <Player />
+            <Player songs={songsLoaded} />
             <Playlist />
           </Grid>
           <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>

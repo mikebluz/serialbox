@@ -58,6 +58,7 @@ const Load = (props) => {
 					});
 					console.log('Playlist created', playlistCreatedRes);
 					props.handleLoadedSongs(files);
+					handleClose();
 				} else {
 					// ToDo: Display in dialog modal
 					console.log("No tracks found.")
@@ -76,9 +77,10 @@ const Load = (props) => {
 			<Button 
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        style={buttonStyle(isHovering)}
 				variant="outlined" 
-				onClick={handleClickOpen}>
+				onClick={handleClickOpen}
+				style={buttonStyle(isHovering)}
+			>
 				Load
 			</Button>
 			<Dialog
