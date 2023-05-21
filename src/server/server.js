@@ -57,7 +57,7 @@ app.post('/playlist', async (req, res) => {
       try {
         const createdSong = await Song.create({
           title: song.name,
-          artist: req.body.artist ?? 'whatever',
+          artist: req.body.artist ?? 'unknown',
           folderName,
           gDriveId: song.id,
           mimeType: song.mimeType,

@@ -20,7 +20,7 @@ const Load = (props) => {
 			const playlistCreatedRes = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlist`, {
 				name: props.playlistName,
 				email: props.user.email,
-				songs: JSON.stringify(files),
+				songs: JSON.stringify(files.map((song) => song.artist = props.artist)),
 			});
 			console.log('Playlist created', playlistCreatedRes);
 			props.handleLoadedSongs(files);

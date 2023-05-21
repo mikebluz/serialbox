@@ -47,11 +47,13 @@ const App = (props) => {
   const Options = () => {
     const [folderName, setFolderName] = useState(''); 
     const [playlistName, setPlaylistName] = useState('');
+    const [artistName, setArtistName] = useState('');
 
     return (
       <div>
         <TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} />
         <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} />
+        <TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)} />
         <ButtonGroup variant="outlined" aria-label="outlined button group">
           <Load 
             folderName={folderName} 
@@ -72,12 +74,6 @@ const App = (props) => {
     )
   }
 
-  const Login = async () => {
-    const result = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/login`, {
-      user: 'test',
-    });
-  }
-
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 6 }}>
@@ -85,7 +81,7 @@ const App = (props) => {
           <Grid item xs={16}>
             <Greeting />
           </Grid>
-          <Grid item xs={16}>
+          <Grid item xs={6}>
             <Options />
           </Grid>
           <Grid item xs={16}>
