@@ -22,8 +22,8 @@
     "googleapis": "^105.0.0",
     "pg": "^8.11.0",
     "pg-hstore": "^2.3.4",
-    "react": "latest",
-    "react-dom": "latest",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "latest",
     "sequelize": "^6.31.1",
     "sqlite3": "^5.1.6"
