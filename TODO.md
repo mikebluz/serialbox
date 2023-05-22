@@ -6,7 +6,7 @@
      * 5. Allow user to play, etc.
      * 
      * Playlist component:
-     * 1. Need an audio player with play, pause, stop, track change, track jump, repeat, loop (loop sections of song you can set via the progress bar), shuffle (but 
+     * 1. Implement track change, track jump, repeat, loop (loop sections of song you can set via the progress bar), shuffle (but 
      *    that should be integrated with the same Shuffle button), volume control, progress slider/skipper.
      * 2. Play component needs to load the track from google (drive API call to get file with alt: 'media' option)
      *    and should use Web Audio component to play.
@@ -20,5 +20,9 @@
      * 2. Direct/Group messaging
      * 
      * Record audio and save to drive
+     * 
+     * Add ability to play multiple tracks at once
+     *
+     * Add ability to loop segments of a track (A to B)
      *
      **/

@@ -31,7 +31,10 @@ const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleuserconten
 
 const App = (props) => {
   const [songsLoaded, setSongsLoaded] = useState([]);
-  const [trackObj, setTrackObj] = useState(new Audio());
+  const [trackRefData, setTrackRefData] = useState(undefined);
+  const [src, setSrc] = useState('');
+
+  const trackRef = useRef();
 
   const handleLoadedSongs = (songs) => {
     console.log("songs loaded")
@@ -70,8 +73,6 @@ const App = (props) => {
       </div>
     )
   }
-
-  const trackRef = useRef();
 
   // Flatten folders object into array
   const formatSongsLoadedForPlayer = () => {
