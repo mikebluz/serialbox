@@ -1,5 +1,4 @@
 import {useState, useEffect} from 'react';
-import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
@@ -8,6 +7,7 @@ import VolumeUp from '@mui/icons-material/VolumeUp';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import PauseOutlinedIcon from '@mui/icons-material/PauseOutlined';
+import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
 import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 import {playerButtonStyle} from '../styles/styles.js';
@@ -19,9 +19,8 @@ import { fetchDriveFileBlob, getAccessToken } from '../api/gapi.js';
 const Player = (props) => {
     const trackRef = props.trackRef;
 
-    console.log('Player render, trackRef: ', trackRef);
     const [isHovering, setIsHovering] = useState(false);
-    const [volume, setVolume] = useState(50);
+    const [volume, setVolume] = useState(.5);
     const [trackIndex, setTrackIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [track, setTrack] = useState(undefined);
@@ -30,7 +29,6 @@ const Player = (props) => {
     const [src, setSrc] = useState('');
 
     useEffect(() => {
-        console.log("useEffect")
         if (isPlaying) {
           trackRef.current.play();
         } else {
@@ -43,12 +41,10 @@ const Player = (props) => {
         loadSong(props.songs[trackIndex]);
     } else {
         // Songs already loaded or no songs to load
-        console.log('already loaded')
+        console.log('already loaded or no songs loaded')
     }
 
-    // trackRef.current.onplay = () => console.log("Track should be playing...")
-
-    async function onSongEnd(trackIndex, playlist, loadSong) {
+    const onSongEnd = async () => {
         console.log("Song is over")
         trackIndex++;
         playPause(trackRef);
@@ -59,25 +55,15 @@ const Player = (props) => {
           trackIndex = 0;
           await loadSong(playlist[trackIndex]);
         }
-    };
-
-    const playPause = () => {
-        if (!isPlaying) {
-            // ToDo: change to pause icon
-            console.log('Playing');
-            const wtf = trackRef.current.play()
-            wtf.then((ok) => console.log('Track is actually playing now?')).catch(err => console.error(err));
-            console.log("TRACK should be playing", trackRef, wtf)
-        } else {
-            // ToDo: change to play icon
-            console.log('Pausing');
-            trackRef.current.pause();
-        }
+        setTrackIndex(index);
     };
 
     const handlePlayPause = () => {
-        console.log("playing", trackRef.current)
-      trackRef.current.play();
+        if (!isPlaying) {
+            setIsPlaying(true);
+        } else {
+            setIsPlaying(false);
+        }
     }
 
     const handleMouseEnter = () => {
@@ -100,7 +86,7 @@ const Player = (props) => {
                 const trackBlob = await fetchDriveFileBlob(file, token);
                 setTrackRefData(trackBlob);
                 setSrc(URL.createObjectURL(trackBlob));
-                trackRef.current.onend = () => onSongEnd(trackIndex, props.songs, loadSong);
+                trackRef.current.onend = onSongEnd;
                 trackRef.current.load();
                 console.log('song loaded');
             });
@@ -127,7 +113,13 @@ const Player = (props) => {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    <ArrowRightOutlinedIcon />
+                    {
+                        isPlaying
+                        ?
+                        <PauseOutlinedIcon />
+                        :
+                        <PlayArrowOutlinedIcon />
+                    }
                 </Button>
                 <Button 
                     className="next-track" 
