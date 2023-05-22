@@ -50,7 +50,7 @@ const App = (props) => {
   const [src, setSrc] = useState('');
   const [trackLoaded, setTrackLoaded] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(100);
 
   const trackRef = useRef();
 
@@ -154,10 +154,10 @@ const App = (props) => {
     }
   }
 
-  const handleSetVolume = (e, value) => {
-    const newVolume = value / 100;
-    trackRef.current.volume = newVolume;
-    setVolume(newVolume);
+  const handleSetVolume = (value) => {
+    const newValue = value / 100;
+    trackRef.current.volume = newValue;
+    setVolume(value);
   }
 
   const loadSong = (file) => {
@@ -167,7 +167,7 @@ const App = (props) => {
                 const trackBlob = await fetchDriveFileBlob(file, token);
                 setSrc(URL.createObjectURL(trackBlob));
                 trackRef.current.onend = nextSong;
-                trackRef.current.volume = volume;
+                trackRef.current.volume = volume / 100;
                 trackRef.current.load();
                 trackRef.current.oncanplay = () => {
                     setTrackLoaded(true);

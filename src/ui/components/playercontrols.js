@@ -18,6 +18,7 @@ import {playerButtonStyle} from '../styles/styles.js';
 const PlayerControls = (props) => {
 
     const [isHovering, setIsHovering] = useState(false)
+    const [localVolume, setLocalVolume] = useState(props.volume);
 
     const handleMouseEnter = () => {
         setIsHovering(true);
@@ -29,6 +30,11 @@ const PlayerControls = (props) => {
 
     const handleSetVolume = (e) => {
         props.setVolume(e.target.value);
+    }
+
+    const handleLocalVolume = (e, newValue) => {
+        props.handleSetVolume(newValue);
+        setLocalVolume(newValue);
     }
 
     return (
@@ -73,8 +79,8 @@ const PlayerControls = (props) => {
                 <VolumeDown />
                     <Slider 
                       aria-label="Volume" 
-                      value={props.volume} 
-                      onChange={props.handleSetVolume} 
+                      value={localVolume} 
+                      onChange={handleLocalVolume} 
                       style={{color: 'black'}} 
                     />
                 <VolumeUp />

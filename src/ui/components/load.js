@@ -56,7 +56,6 @@ const Load = (props) => {
 						songs: JSON.stringify(files),
 						artist: artistName,
 					});
-					console.log('Playlist created', playlistCreatedRes);
 					props.handleLoadedSongs(files);
 					handleClose();
 				} else {
