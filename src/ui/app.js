@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 // mui
 import Box from '@mui/material/Box';
@@ -31,10 +31,11 @@ const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleuserconten
 
 const App = (props) => {
   const [songsLoaded, setSongsLoaded] = useState([]);
+  const [trackObj, setTrackObj] = useState(new Audio());
 
   const handleLoadedSongs = (songs) => {
     console.log("songs loaded")
-    // setSongsLoaded(songs);
+    setSongsLoaded(songs);
   }
 
   const Copyright = () => {
@@ -65,12 +66,23 @@ const App = (props) => {
   const Header = () => {
     return (
       <div style={{ padding: '10px' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Welcome, {props.user.given_name}!
-        </Typography>
         <Options />
       </div>
     )
+  }
+
+  const trackRef = useRef();
+
+  // Flatten folders object into array
+  const formatSongsLoadedForPlayer = () => {
+    const allSongs = [];
+    for (const [folderName, songs] of Object.entries(songsLoaded)) {
+      allSongs.push(...songs.map((song) => {
+        song.folderName = folderName
+        return song;
+      }))
+    }
+    return allSongs;
   }
 
   return (
@@ -78,10 +90,15 @@ const App = (props) => {
       <Box sx={{ my: 6 }}>
         <Grid container spacing={4}>
           <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              Welcome, {props.user.given_name}!
+            </Typography>
+          </Grid>
+          <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
             <Header />
           </Grid>
           <Grid item xs={16} style={componentDisplayStyle}>
-            <Player songs={songsLoaded} />
+            <Player songs={formatSongsLoadedForPlayer()} trackRef={trackRef} />
             <Playlist />
           </Grid>
           <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 const GAPI_HOST = 'https://www.googleapis.com'
+const GAPI_CONTENT_HOST = 'https://content.googleapis.com'
 
 export async function initGapi(resolve) {
 	window.google.accounts.id.initialize({
@@ -28,6 +29,7 @@ function getToken() {
 
 async function tokenIsValid() {
 	if (getToken()) {
+		// ToDo: switch to axios
 		const res = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${getToken()}`);
 		const json = await res.json();
 		if (json.error) {
@@ -104,14 +106,14 @@ export async function fetchDriveFolderContents(folders, accessToken) {
   	return files;
 }
 
-export async function fetchDriveFile(metadata) {
-	const fileRes = await axios.get(`${GAPI_HOST}/drive/v3/files?fileId=${metadata.id}&alt=media`, {
+export async function fetchDriveFileBlob(metadata, accessToken) {
+	// ToDo: switch to axios
+	const fileRes = await fetch(`${GAPI_HOST}/drive/v3/files/${metadata.id}?alt=media`, {
 		headers: {
-			"Authorization": `Bearer ${accessToken}`
+			"Authorization": `Bearer ${accessToken}`,
 		}
-	});
-	const dataArr = Uint8Array.from(fileRes.body.split('').map((chr) => chr.charCodeAt(0)));
-	return new File([dataArr], metadata.name, { type: metadata.mimeType });
+	})
+	return await fileRes.blob();
 }
 
 export function parseJwt (token) {

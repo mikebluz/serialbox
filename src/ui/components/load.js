@@ -100,13 +100,13 @@ const Load = (props) => {
 				  <DialogContentText>
   					{ JSON.stringify(audioFileMimeTypes) }
   				  </DialogContentText>
-				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} />
-  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} />
-      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)} />
+				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} defaultValue={'demos'}/>
+  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} defaultValue={'test'}/>
+      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)} defaultValue={'test'}/>
 				</DialogContent>
 				<DialogActions>
-				  <Button onClick={handleClick}>Load</Button>
-				  <Button onClick={handleClose}>Cancel</Button>
+				  <Button onClick={handleClick} style={buttonStyle(false)}>Load</Button>
+				  <Button onClick={handleClose} style={buttonStyle(false)}>Cancel</Button>
 				</DialogActions>       
 			</Dialog>
 		</div>

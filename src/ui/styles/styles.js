@@ -1,8 +1,9 @@
 export function buttonStyle(isHovering) {
 	return {
-		backgroundColor: isHovering ? 'yellow' : 'white',
-		color: isHovering ? 'black' : 'black',
+		backgroundColor: isHovering ? 'black' : 'white',
+		color: isHovering ? 'white' : 'black',
   		cursor: isHovering ? 'pointer' : 'arrow',
+  		borderColor: 'black'
 	}
 }
 
