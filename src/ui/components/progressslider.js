@@ -1,13 +1,36 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
 import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
 
+import ReplayOutlinedIcon from '@mui/icons-material/ReplayOutlined';
+import Replay5OutlinedIcon from '@mui/icons-material/Replay5Outlined';
+import Replay10OutlinedIcon from '@mui/icons-material/Replay10Outlined';
+import Replay30OutlinedIcon from '@mui/icons-material/Replay30Outlined';
+
+import Forward5OutlinedIcon from '@mui/icons-material/Forward5Outlined';
+import Forward10OutlinedIcon from '@mui/icons-material/Forward10Outlined';
+import Forward30OutlinedIcon from '@mui/icons-material/Forward30Outlined';
+
+import {playerButtonStyle, buttonGroupStyle} from '../styles/styles.js';
+
 let updateTimer;
 
 const ProgressSlider = (props) => {
+    const [isHovering, setIsHovering] = useState(false)
+
+    const handleMouseEnter = () => {
+        setIsHovering(true);
+    }
+
+    const handleMouseLeave = () => {
+        setIsHovering(false);
+    }
+
 	const [currentPosition, setCurrentPosition] = useState(0);
 	const [currentMinutes, setCurrentMinutes] = useState(0);
 	const [currentSeconds, setCurrentSeconds] = useState(0);
@@ -17,9 +40,16 @@ const ProgressSlider = (props) => {
 	const trackRef = props.trackRef;
 
 	const handleSeek = (event, newValue) => {
-		trackRef.current.currentTime = trackRef.current.duration * (newValue / 100);;
-		setCurrentPosition(newValue);
+		seek(newValue);
 	};
+
+	function seek(newValue) {
+		console.log('currentTime', trackRef.current.currentTime)
+		console.log('duration', trackRef.current.duration)
+		console.log('newValue', newValue)
+		trackRef.current.currentTime = trackRef.current.duration * (newValue / 100);
+		setCurrentPosition(newValue);
+	}
 
 	function calcPosition() {
 		return trackRef.current.currentTime * (100 / trackRef.current.duration);
@@ -72,6 +102,75 @@ const ProgressSlider = (props) => {
 		    <Slider aria-label="Volume" value={currentPosition} onChange={handleSeek} sx={{ color: 'black' }} />
 		  	<p>{padSingleDigits(durationMinutes) + ":" + padSingleDigits(durationSeconds)}</p>
 		  </Stack>
+        	<ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
+                <Button 
+                    className="restart" 
+                    onClick={() => seek(0)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    <ReplayOutlinedIcon />
+                </Button>
+        	</ButtonGroup>
+          	<ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
+                <Button 
+                    className="rewind-5" 
+                    onClick={() => seek(trackRef.current.currentTime - 5)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    <Replay5OutlinedIcon />
+                </Button>
+                <Button 
+                    className="rewind-10" 
+                    onClick={() => seek(trackRef.current.currentTime - 10)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    <Replay10OutlinedIcon />
+                </Button>
+                <Button 
+                    className="rewind-30" 
+                    onClick={() => seek(trackRef.current.currentTime - 30)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    <Replay30OutlinedIcon />
+                </Button>
+            </ButtonGroup>
+          	<ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
+                <Button 
+                    className="rewind-5" 
+                    onClick={() => seek(trackRef.current.currentTime + 5)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    <Forward5OutlinedIcon />
+                </Button>
+                <Button 
+                    className="rewind-10" 
+                    onClick={() => seek(trackRef.current.currentTime + 10)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    <Forward10OutlinedIcon />
+                </Button>
+                <Button 
+                    className="rewind-30" 
+                    onClick={() => seek(trackRef.current.currentTime + 30)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    <Forward30OutlinedIcon />
+                </Button>
+            </ButtonGroup>
 		</Box>
 	);
 }

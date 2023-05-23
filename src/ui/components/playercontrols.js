@@ -17,7 +17,7 @@ import GridItem from './griditem.js';
 import VolumeSlider from './volumeslider.js';
 import ProgressSlider from './progressslider.js';
 
-import {playerButtonStyle} from '../styles/styles.js';
+import {playerButtonStyle, buttonGroupStyle} from '../styles/styles.js';
 
 const PlayerControls = (props) => {
 
@@ -33,8 +33,7 @@ const PlayerControls = (props) => {
 
     return (
         <div>
-            <ProgressSlider trackRef={props.trackRef} isPlaying={props.isPlaying}/>
-            <ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
+            <ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={buttonGroupStyle}>
                 <Button 
                     className="prev-track" 
                     onClick={props.previousSong} 
@@ -72,6 +71,7 @@ const PlayerControls = (props) => {
                   <SkipNextOutlinedIcon />
                 </Button>
             </ButtonGroup>
+            <ProgressSlider trackRef={props.trackRef} isPlaying={props.isPlaying}/>
             <VolumeSlider trackRef={props.trackRef}/>
         </div>
     )

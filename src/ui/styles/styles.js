@@ -33,3 +33,7 @@ export function playerButtonStyle(isHovering) {
   		cursor: isHovering ? 'pointer' : 'arrow',
 	}
 }
+
+export const buttonGroupStyle = {
+	width: '90vw',
+}
