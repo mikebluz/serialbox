@@ -1,6 +1,6 @@
 import {useRef, useState, useEffect} from 'react';
 
-import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
 import Button from '@mui/material/Button';
@@ -13,12 +13,15 @@ import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
 import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 
+import GridItem from './griditem.js';
+import VolumeSlider from './volumeslider.js';
+import ProgressSlider from './progressslider.js';
+
 import {playerButtonStyle} from '../styles/styles.js';
 
 const PlayerControls = (props) => {
 
     const [isHovering, setIsHovering] = useState(false)
-    const [localVolume, setLocalVolume] = useState(props.volume);
 
     const handleMouseEnter = () => {
         setIsHovering(true);
@@ -28,24 +31,17 @@ const PlayerControls = (props) => {
         setIsHovering(false);
     }
 
-    const handleSetVolume = (e) => {
-        props.setVolume(e.target.value);
-    }
-
-    const handleLocalVolume = (e, newValue) => {
-        props.handleSetVolume(newValue);
-        setLocalVolume(newValue);
-    }
-
     return (
         <div>
-            <ButtonGroup variant="contained" aria-label="outlined button group">
+            <ProgressSlider trackRef={props.trackRef} isPlaying={props.isPlaying}/>
+            <ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
                 <Button 
                     className="prev-track" 
                     onClick={props.previousSong} 
                     style={playerButtonStyle(isHovering)}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
+                    sx={{width: '100%'}}
                 >
                   <SkipPreviousOutlinedIcon />
                 </Button>
@@ -55,6 +51,7 @@ const PlayerControls = (props) => {
                     style={playerButtonStyle(isHovering)}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
+                    sx={{width: '100%'}}
                 >
                     {
                         props.isPlaying
@@ -70,21 +67,12 @@ const PlayerControls = (props) => {
                     style={playerButtonStyle(isHovering)}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
+                    sx={{width: '100%'}}
                 >
                   <SkipNextOutlinedIcon />
                 </Button>
             </ButtonGroup>
-            { /* ToDo: implement Controlled Slider correctly for volume change */ }
-            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
-                <VolumeDown />
-                    <Slider 
-                      aria-label="Volume" 
-                      value={localVolume} 
-                      onChange={handleLocalVolume} 
-                      style={{color: 'black'}} 
-                    />
-                <VolumeUp />
-            </Stack>  
+            <VolumeSlider trackRef={props.trackRef}/>
         </div>
     )
 }

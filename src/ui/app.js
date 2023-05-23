@@ -13,6 +13,9 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+
 // mui icons
 import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
@@ -33,6 +36,7 @@ import {
 
 // components
 import AllSongs from './components/allsongs.js';
+import GridItem from './components/griditem.js';
 import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
 import PlayerControls from './components/playercontrols.js';
@@ -47,10 +51,10 @@ const App = (props) => {
   const [songsAreLoaded, setSongsAreLoaded] = useState(false);
   // "setIsPlaying" precipitates the playing
   const [isPlaying, setIsPlaying] = useState(false);
-  const [src, setSrc] = useState('');
+  const [src, setSrc] = useState(undefined);
   const [trackLoaded, setTrackLoaded] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
-  const [volume, setVolume] = useState(100);
+  const [volume, setVolume] = useState(1);
 
   const trackRef = useRef();
 
@@ -70,10 +74,18 @@ const App = (props) => {
     return allSongs;
   }
 
+  const Greeting = () => {
+    return (
+      <Typography variant="h4" component="h1" gutterBottom>
+        Welcome, {props.user.given_name}!
+      </Typography>
+    )
+  }
+
   const Copyright = () => {
     return (
       <Typography variant="body2" align="center">
-        {'Copyright © '}
+        {'© '}
         <Link color="inherit" href="https://mercywizard.com/">
           SerialBox
         </Link>{' '}
@@ -95,28 +107,43 @@ const App = (props) => {
     )
   }
 
-  const Header = () => {
-    return (
-      <div style={{ padding: '10px' }}>
-        <Options />
-      </div>
-    )
+  const Player = () => {
+    if (songsLoaded.length > 0) {
+      return (
+        <div sx={{width: '100%'}}>
+          <Grid item xs={4} sx={{width: '100%'}}>
+            <PlayerControls 
+              playPause={handlePlayPauseClick}
+              nextSong={nextSong}
+              previousSong={previousSong}
+              trackRef={trackRef}
+              isPlaying={isPlaying}
+             />
+          </Grid>     
+          <Grid item xs={4}>
+             <Playlist playlist={songsLoaded}/>
+          </Grid> 
+        </div>
+      )
+    }
   }
 
-  const nextSong = async () => {
+  const nextSong = () => {
     let i = trackIndex;
     i++;
-    trackRef.current.pause();
+    setTrackLoaded(false);
+    toggleIsPlaying();
     if (i === songsLoaded.length) {
         i = 0;
     }
     handleChangeTrack(i);
   }
 
-  const previousSong = async () => {
+  const previousSong = () => {
     let i = trackIndex;
     i--;
-    trackRef.current.pause();
+    setTrackLoaded(false);
+    toggleIsPlaying();
     if (i < 0) {
         i = songsLoaded.length - 1;
     }
@@ -124,63 +151,59 @@ const App = (props) => {
   }
 
   const handleChangeTrack = (trackIndex) => {
-    setTrackIndex(trackIndex);
-    setTrackLoaded(false);
-    setSrc('');
+    loadSong(songsLoaded[trackIndex], () => {
+      setTrackIndex(trackIndex)
+    });
   }
 
-  const playPause = () => {
+  const toggleIsPlaying = () => {
     if (!isPlaying) {
-        setIsPlaying(true);
+      // console.log("isplaying to true")
+      setIsPlaying(true);
     } else {
-        setIsPlaying(false);
+      // console.log("isplaying to false")
+      setIsPlaying(false);
     }
   }
 
-  const handlePlayPause = async () => {
+  const handlePlayPauseClick = () => {
+    if (!trackRef.current.src.includes('blob') && songsLoaded.length) {
+      loadSong(songsLoaded[trackIndex]);
+    } else if (trackLoaded) {
+      toggleIsPlaying();
+    }
+  }
+
+  const playPauseAudio = async () => {
     if (trackRef.current) {
-      const doPlayPause = () => {
-          if (isPlaying) {
-              trackRef.current.play();
-          } else {
-              trackRef.current.pause();
-          }
-      };
-      if (!trackRef.current.src.includes('blob') && songsLoaded.length) {
-          loadSong(songsLoaded[trackIndex]).then(doPlayPause);
-      } else if (trackLoaded) {
-          doPlayPause();
+      if (isPlaying) {
+        trackRef.current.play();
+      } else {
+        trackRef.current.pause();
       }
     }
   }
 
-  const handleSetVolume = (value) => {
-    const newValue = value / 100;
-    trackRef.current.volume = newValue;
-    setVolume(value);
-  }
-
-  const loadSong = (file) => {
-    return new Promise((res, rej) => {
-        if (trackRef.current) {
-            getAccessToken(async (token) => {
-                const trackBlob = await fetchDriveFileBlob(file, token);
-                setSrc(URL.createObjectURL(trackBlob));
-                trackRef.current.onend = nextSong;
-                trackRef.current.volume = volume / 100;
-                trackRef.current.load();
-                trackRef.current.oncanplay = () => {
-                    setTrackLoaded(true);
-                    res();
-                };
-            });
-        }
-    });
+  const loadSong = (file, callback) => {
+    if (trackRef.current) {
+      getAccessToken(async (token) => {
+        const blob = await fetchDriveFileBlob(file, token);
+        const src = URL.createObjectURL(blob);
+        setSrc(src);
+        if (callback) callback();
+      });
+    }
   }
 
   useEffect(() => {
-      handlePlayPause();
-  }, [isPlaying, trackIndex, trackRef]);
+    playPauseAudio();
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (trackLoaded) {
+      setIsPlaying(true);
+    }
+  }, [trackLoaded]);
 
   useEffect(() => {
     if (trackRef.current) {
@@ -188,38 +211,32 @@ const App = (props) => {
     }
   }, [songsLoaded])
 
+  useEffect(() => {
+    if (src) {
+      trackRef.current.volume = 1;
+      trackRef.current.load();
+      trackRef.current.oncanplay = () => setTrackLoaded(true);
+      trackRef.current.onerror = (e) => console.error('Error loading song', e.target.error);
+    }
+  }, [src])
+
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ my: 6 }}>
-        <Grid container spacing={4}>
-          <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Welcome, {props.user.given_name}!
-            </Typography>
+    <Container sx={{width: '100vw'}}>
+      <audio src={src} ref={trackRef} onEnded={nextSong}/>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={12}>
+            <GridItem><Greeting /></GridItem>
           </Grid>
-          <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
-            <Header />
+          <Grid item xs={12} md={12}>
+            <GridItem><Options /></GridItem>
           </Grid>
-          {
-            songsLoaded.length > 0
-            &&
-            <Grid item xs={16} style={componentDisplayStyle}>
-              <audio src={src} ref={trackRef} />
-              <PlayerControls 
-                playPause={playPause}
-                nextSong={nextSong}
-                previousSong={previousSong}
-                volume={volume}
-                handleSetVolume={handleSetVolume}
-                isPlaying={isPlaying}
-               />
-            </Grid>      
-          }
-          <Grid item xs={16} style={{...componentDisplayStyle, ...headerFooterStyle}}>
-            <Copyright />
+          <Grid item xs={12} md={12} sx={{width: '100%'}}>
+            <Player />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <GridItem><Copyright /></GridItem>
           </Grid>
         </Grid>
-      </Box>
     </Container>
   )
 }

@@ -22,11 +22,13 @@ new Promise((res, rej) => {
   // Render React App
   const root = ReactDOM.createRoot(rootElement);
   root.render(
+    <div>
     <ThemeProvider theme={theme}>
       {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
       <CssBaseline />
       <App user={googleUser}/>
-    </ThemeProvider>,
+    </ThemeProvider>
+    </div>,
   );
 
 });

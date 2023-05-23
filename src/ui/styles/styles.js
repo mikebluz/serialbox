@@ -19,6 +19,13 @@ export const componentDisplayStyle = {
   margin: '2px',
 };
 
+export const songStyle = {
+	'&:hover': {
+		backgroundColor: 'yellow',
+		cursor: 'pointer'
+	}
+};
+
 export function playerButtonStyle(isHovering) {
 	return {
 		backgroundColor: 'black',
