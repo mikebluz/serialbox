@@ -40,15 +40,27 @@ const ProgressSlider = (props) => {
 	const trackRef = props.trackRef;
 
 	const handleSeek = (event, newValue) => {
-		seek(newValue);
+		seek(newValue > 0 ? newValue : 0);
 	};
 
 	function seek(newValue) {
-		console.log('currentTime', trackRef.current.currentTime)
-		console.log('duration', trackRef.current.duration)
-		console.log('newValue', newValue)
-		trackRef.current.currentTime = trackRef.current.duration * (newValue / 100);
-		setCurrentPosition(newValue);
+		if (trackRef.current.duration) {
+			trackRef.current.currentTime = trackRef.current.duration * (newValue / 100);
+			setCurrentPosition(newValue);
+			calculateCurrentTime();
+		}
+	}
+
+	function scan(seconds) {
+		if (trackRef.current.duration) {
+			if (seconds === 0) {
+				trackRef.current.currentTime = 0;
+			} else {
+				trackRef.current.currentTime = (trackRef.current.currentTime + seconds) > 0 ? trackRef.current.currentTime + seconds : 0;
+			}
+			setCurrentPosition(trackRef.current.currentTime * (100 / trackRef.current.duration));
+			calculateCurrentTime();
+		}
 	}
 
 	function calcPosition() {
@@ -105,7 +117,7 @@ const ProgressSlider = (props) => {
         	<ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
                 <Button 
                     className="restart" 
-                    onClick={() => seek(0)} 
+                    onClick={() => scan(0)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
@@ -116,7 +128,7 @@ const ProgressSlider = (props) => {
           	<ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
                 <Button 
                     className="rewind-5" 
-                    onClick={() => seek(trackRef.current.currentTime - 5)} 
+                    onClick={() => scan(-5)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
@@ -125,7 +137,7 @@ const ProgressSlider = (props) => {
                 </Button>
                 <Button 
                     className="rewind-10" 
-                    onClick={() => seek(trackRef.current.currentTime - 10)} 
+                    onClick={() => scan(-10)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
@@ -134,7 +146,7 @@ const ProgressSlider = (props) => {
                 </Button>
                 <Button 
                     className="rewind-30" 
-                    onClick={() => seek(trackRef.current.currentTime - 30)} 
+                    onClick={() => scan(-30)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
@@ -145,7 +157,7 @@ const ProgressSlider = (props) => {
           	<ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
                 <Button 
                     className="rewind-5" 
-                    onClick={() => seek(trackRef.current.currentTime + 5)} 
+                    onClick={() => scan(5)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
@@ -154,7 +166,7 @@ const ProgressSlider = (props) => {
                 </Button>
                 <Button 
                     className="rewind-10" 
-                    onClick={() => seek(trackRef.current.currentTime + 10)} 
+                    onClick={() => scan(10)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
@@ -163,7 +175,7 @@ const ProgressSlider = (props) => {
                 </Button>
                 <Button 
                     className="rewind-30" 
-                    onClick={() => seek(trackRef.current.currentTime + 30)} 
+                    onClick={() => scan(30)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
