@@ -1,3 +1,8 @@
+export const appStyle = {
+	backgroundColor: 'black',
+	color: 'white',
+}
+
 export function buttonStyle(isHovering) {
 	return {
 		backgroundColor: isHovering ? 'black' : 'white',

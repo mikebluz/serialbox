@@ -19,9 +19,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 const Load = (props) => {
 	const [open, setOpen] = useState(false);
 	const [isHovering, setIsHovering] = useState(false);
-	const [folderName, setFolderName] = useState(''); 
-	const [playlistName, setPlaylistName] = useState('');
-	const [artistName, setArtistName] = useState('');
+	const [folderName, setFolderName] = useState('demos'); 
+	const [playlistName, setPlaylistName] = useState('not provided');
+	const [artistName, setArtistName] = useState('not provided');
 
   const handleMouseEnter = () => {
     setIsHovering(true);
@@ -50,8 +50,8 @@ const Load = (props) => {
 				if (Object.keys(files).length) {
 					const count = Object.values(files).reduce((acc, arr) => acc += arr.length, 0);
 					console.log(`${count} files loaded across ${Object.keys(files).length} folders`);
-					const playlistCreatedRes = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlist`, {
-						name: props.playlistName,
+					await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
+						name: playlistName,
 						email: props.user.email,
 						songs: JSON.stringify(files),
 						artist: artistName,
@@ -99,9 +99,9 @@ const Load = (props) => {
 				  <DialogContentText>
   					{ JSON.stringify(audioFileMimeTypes) }
   				  </DialogContentText>
-				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)} defaultValue={'demos'}/>
-  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)} defaultValue={'test'}/>
-      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)} defaultValue={'test'}/>
+				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)}/>
+  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)}/>
+      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)}/>
 				</DialogContent>
 				<DialogActions>
 				  <Button onClick={handleClick} style={buttonStyle(false)}>Load</Button>

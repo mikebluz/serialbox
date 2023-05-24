@@ -20,7 +20,7 @@ import {playerButtonStyle, buttonGroupStyle} from '../styles/styles.js';
 
 let updateTimer;
 
-const ProgressSlider = (props) => {
+const ProgressController = (props) => {
     const [isHovering, setIsHovering] = useState(false)
 
     const handleMouseEnter = () => {
@@ -187,4 +187,4 @@ const ProgressSlider = (props) => {
 	);
 }
 
-export default ProgressSlider;
+export default ProgressController;

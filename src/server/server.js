@@ -33,9 +33,24 @@ app.get('/users', async (req, res) => {
   res.send(JSON.stringify(users));
 });
 
+app.get('/playlists/all/users/:email', async (req, res) => {
+  const user = await User.findOne({ where: { email: req.params.email } });
+  const playlists = await Playlist.findAll({
+    where: {
+      userId: user.id
+    }
+  });
+  res.send(JSON.stringify(playlists));
+});
+
+app.get('/playlists/:playlistId/songs', async (req, res) => {
+  const {songs} = await Playlist.findOne({ where: { id: req.params.playlistId }, include: Song });
+  res.send(JSON.stringify(songs.map((raw) => raw.dataValues)));
+});
+
 // ToDo: Separate the REST calls into separate endpoints and orchestrate on the front end ?
 // ToDo: Handle "already exists" errors
-app.post('/playlist', async (req, res) => {
+app.post('/playlists', async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
   const songsRaw = JSON.parse(req.body.songs);
   const playlist = await Playlist.create({
@@ -43,11 +58,11 @@ app.post('/playlist', async (req, res) => {
     userId: user.id,
   });
   await Playlist.sync();
-  for(const [folderName, songs] of Object.entries(songsRaw)) {
+  for (const [folderName, songs] of Object.entries(songsRaw)) {
     songs.forEach(async (song) => {
       try {
         const createdSong = await Song.create({
-          title: song.name,
+          name: song.name,
           artist: req.body.artist ?? 'unknown',
           folderName,
           gDriveId: song.id,

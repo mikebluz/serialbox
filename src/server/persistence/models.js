@@ -29,7 +29,7 @@ const Song = pg.define('song', {
     primaryKey: true
   },
   artist: DataTypes.STRING,
-  title: DataTypes.STRING,
+  name: DataTypes.STRING,
   size: DataTypes.STRING,
   folderName: DataTypes.STRING,
   gDriveId: DataTypes.STRING,

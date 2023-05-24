@@ -108,7 +108,9 @@ export async function fetchDriveFolderContents(folders, accessToken) {
 
 export async function fetchDriveFileBlob(metadata, accessToken) {
 	// ToDo: switch to axios
-	const fileRes = await fetch(`${GAPI_HOST}/drive/v3/files/${metadata.id}?alt=media`, {
+	// NOTE: if the metadata is coming from our backend, the correct id will be gDriveId, 
+	//  else it's directly from google drive and it's simply id
+	const fileRes = await fetch(`${GAPI_HOST}/drive/v3/files/${metadata.gDriveId ?? metadata.id}?alt=media`, {
 		headers: {
 			"Authorization": `Bearer ${accessToken}`,
 		}

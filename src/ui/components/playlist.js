@@ -21,6 +21,7 @@ const Playlist = (props) => {
 		<Container sx={{ width: '100%' }}>
 		{
 			props.playlist.map((song) => {
+				console.log('song', song);
 				return (
 					<Box key={song.name + '-item'} sx={songStyle}>{song.name.split('.')[0]}</Box>
 				)

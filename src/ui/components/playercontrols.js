@@ -15,7 +15,7 @@ import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 
 import GridItem from './griditem.js';
 import VolumeSlider from './volumeslider.js';
-import ProgressSlider from './progressslider.js';
+import ProgressController from './progresscontroller.js';
 
 import {playerButtonStyle, buttonGroupStyle} from '../styles/styles.js';
 
@@ -37,20 +37,18 @@ const PlayerControls = (props) => {
                 <Button 
                     className="prev-track" 
                     onClick={props.previousSong} 
-                    style={playerButtonStyle(isHovering)}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{width: '100%'}}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
                 >
                   <SkipPreviousOutlinedIcon />
                 </Button>
                 <Button 
                     className="playpause-track" 
                     onClick={props.playPause} 
-                    style={playerButtonStyle(isHovering)}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{width: '100%'}}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
                 >
                     {
                         props.isPlaying
@@ -63,15 +61,14 @@ const PlayerControls = (props) => {
                 <Button 
                     className="next-track" 
                     onClick={props.nextSong} 
-                    style={playerButtonStyle(isHovering)}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{width: '100%'}}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
                 >
                   <SkipNextOutlinedIcon />
                 </Button>
             </ButtonGroup>
-            <ProgressSlider trackRef={props.trackRef} isPlaying={props.isPlaying}/>
+            <ProgressController trackRef={props.trackRef} isPlaying={props.isPlaying}/>
             <VolumeSlider trackRef={props.trackRef}/>
         </div>
     )

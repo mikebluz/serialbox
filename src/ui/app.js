@@ -14,7 +14,6 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
 
 // mui icons
 import VolumeDown from '@mui/icons-material/VolumeDown';
@@ -59,7 +58,7 @@ const App = (props) => {
   const trackRef = useRef();
 
   const handleLoadedSongs = (songs) => {
-    setSongsLoaded(formatSongsLoadedForPlayer(songs));
+    setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
   }
 
   // Flatten folders object into array
@@ -82,6 +81,23 @@ const App = (props) => {
     )
   }
 
+  const Options = () => {
+    return (
+      <div>
+        <ButtonGroup variant="contained" aria-label="outlined button group">
+          <Load 
+            user={props.user} 
+            handleLoadedSongs={handleLoadedSongs}
+          />
+          <Playlists 
+            user={props.user} 
+            handleLoadedSongs={handleLoadedSongs}
+          />
+        </ButtonGroup>
+      </div>
+    )
+  }
+
   const Copyright = () => {
     return (
       <Typography variant="body2" align="center">
@@ -92,19 +108,6 @@ const App = (props) => {
         {new Date().getFullYear()}
       </Typography>
     );
-  }
-
-  const Options = () => {
-    return (
-      <div>
-        <ButtonGroup variant="contained" aria-label="outlined button group">
-          <Load 
-            user={props.user} 
-            handleLoadedSongs={handleLoadedSongs}
-          />
-        </ButtonGroup>
-      </div>
-    )
   }
 
   const Player = () => {
@@ -158,10 +161,8 @@ const App = (props) => {
 
   const toggleIsPlaying = () => {
     if (!isPlaying) {
-      // console.log("isplaying to true")
       setIsPlaying(true);
     } else {
-      // console.log("isplaying to false")
       setIsPlaying(false);
     }
   }
