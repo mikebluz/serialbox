@@ -254,11 +254,6 @@ const App = (props) => {
             <Greeting />
           </GridItem>
         </Grid>
-        <Grid item xs={12} md={12} sx={gridBlockStyle}>
-          <GridItem sx={{ backgroundColor: 'white' }}x>
-            <Options />
-          </GridItem>
-        </Grid>
         { 
           trackLoaded 
           && 
@@ -266,6 +261,11 @@ const App = (props) => {
             <NowPlaying /> 
           </Grid>
         }
+        <Grid item xs={12} md={12} sx={gridBlockStyle}>
+          <GridItem sx={{ backgroundColor: 'white' }}x>
+            <Options />
+          </GridItem>
+        </Grid>
         {
           songsLoaded.length > 0
           &&

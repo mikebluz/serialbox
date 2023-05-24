@@ -51,7 +51,8 @@ export function progressButtonStyle(isHovering) {
 		backgroundColor: 'black',
 		color: 'white',
   		cursor: isHovering ? 'pointer' : 'arrow',
-  		margin: '4px'
+  		margin: '4px',
+  		width: '100%'
 	}
 }
 

@@ -108,30 +108,46 @@ const ProgressController = (props) => {
 	}
 
 	return (
-		<Box sx={{ color: 'black' }}>
+		<Box sx={{ color: 'black', width: '100%' }}>
 			<Stack spacing={2} direction="row" alignItems="center">
 				<p>{padSingleDigits(currentMinutes) + ":" + padSingleDigits(currentSeconds)}</p>
-				<Slider aria-label="ProgressBar" value={currentPosition} onChange={handleSeek} sx={{ color: '#2c97e8' }} />
+				<Slider 
+					aria-label="ProgressBar" 
+					value={currentPosition} 
+					onChange={handleSeek} 
+					sx={{ color: '#2c97e8' }} 
+				/>
 				<p>{padSingleDigits(durationMinutes) + ":" + padSingleDigits(durationSeconds)}</p>
 			</Stack>
-			<ButtonGroup variant="contained" aria-label="outlined button group" size="large">
+			<ButtonGroup 
+				variant="contained" 
+				aria-label="outlined button group" 
+				size="large" 
+				sx={{ width: '100%' }}
+			>
 			    <Button 
 			        className="restart" 
 			        onClick={() => scan(0)} 
 			        onMouseEnter={handleMouseEnter}
 			        onMouseLeave={handleMouseLeave}
-			        sx={{...progressButtonStyle(isHovering), width: '100%'}}
+			        sx={{...progressButtonStyle(isHovering)}}
 			    >
 			        <ReplayOutlinedIcon />
 			    </Button>
 			</ButtonGroup>
-          	<ButtonGroup variant="contained" aria-label="outlined button group" size="large">
+			<Stack spacing={2} direction="row" alignItems="center">
+          	<ButtonGroup 
+          		variant="contained" 
+          		aria-label="outlined button group" 
+          		size="large"
+				sx={{ width: '100%' }}
+      		>
                 <Button 
                     className="rewind-5" 
                     onClick={() => scan(-5)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
+			        sx={{...progressButtonStyle(isHovering)}}
                 >
                     <Replay5OutlinedIcon />
                 </Button>
@@ -140,7 +156,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(-10)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
+			        sx={{...progressButtonStyle(isHovering)}}
                 >
                     <Replay10OutlinedIcon />
                 </Button>
@@ -149,18 +165,25 @@ const ProgressController = (props) => {
                     onClick={() => scan(-30)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
+			        sx={{...progressButtonStyle(isHovering)}}
                 >
                     <Replay30OutlinedIcon />
                 </Button>
             </ButtonGroup>
-          	<ButtonGroup variant="contained" aria-label="outlined button group" size="large">
+            </Stack>
+			<Stack spacing={2} direction="row" alignItems="center">
+          	<ButtonGroup 
+          		variant="contained" 
+          		aria-label="outlined button group" 
+          		size="large"
+				sx={{ width: '100%' }}
+      		>
                 <Button 
                     className="rewind-5" 
                     onClick={() => scan(5)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering)}}
                 >
                     <Forward5OutlinedIcon />
                 </Button>
@@ -169,7 +192,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(10)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering)}}
                 >
                     <Forward10OutlinedIcon />
                 </Button>
@@ -178,11 +201,12 @@ const ProgressController = (props) => {
                     onClick={() => scan(30)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering)}}
                 >
                     <Forward30OutlinedIcon />
                 </Button>
             </ButtonGroup>
+			</Stack>
 		</Box>
 	);
 }

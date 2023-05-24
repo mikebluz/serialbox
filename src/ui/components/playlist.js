@@ -24,7 +24,7 @@ const Playlist = (props) => {
 	
 	return (
 		<Box>
-			<Container sx={{ width: '100%', border: '5px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'white' }}>
+			<Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'white' }}>
 			{
 				props.playlist.map((song, i) => {
 					return (
