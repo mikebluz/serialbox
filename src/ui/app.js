@@ -259,7 +259,7 @@ const App = (props) => {
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      minWidth="100vw"
+      maxWidth="100vw"
     >
       <audio src={src} ref={trackRef} onEnded={nextSong}/>
       <Grid container>
