@@ -6,6 +6,8 @@ import {
 	fetchDriveFolders, 
 	fetchDriveFolderContents,
 } from '../api/gapi.js';
+import {defaultPlaylistNames, getRandomInt} from '../helpers.js';
+
 import {buttonStyle} from '../styles/styles.js';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -21,16 +23,21 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-
 const Playlists = (props) => {
 	const [open, setOpen] = useState(false);
 	const [isHovering, setIsHovering] = useState(false);
 	const [folderName, setFolderName] = useState(''); 
 	const [playlists, setPlaylists] = useState([]);
+	const [playlistLookup, setPlaylistLookup] = useState({});
 	const [selectedPlaylistId, setSelectedPlaylistId] = useState('');
+	const [selectedPlaylistName, setSelectedPlaylistName] = useState(defaultPlaylistName());
 	const [artistName, setArtistName] = useState('');
 	const [randomPlaylistSize, setRandomPlaylistSize] = useState(10);
-	const [playlistName, setPlaylistName] = useState('not provided');
+
+	function defaultPlaylistName() {
+		const i = getRandomInt(defaultPlaylistNames.length - 1);
+		return `${defaultPlaylistNames[i]}-${(new Date()).toISOString()}`;
+	}
 
 	const handleMouseEnter = () => {
 		setIsHovering(true);
@@ -45,6 +52,9 @@ const Playlists = (props) => {
 		getAccessToken(async (token) => {
 			const { data: playlists } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/all/users/${props.user.email}`);
 			setPlaylists(playlists);
+			const map = {};
+			playlists.forEach((playlist) => map[playlist.id] = playlist.name);
+			setPlaylistLookup(map);
 		});
 	};
 
@@ -56,23 +66,25 @@ const Playlists = (props) => {
 		if (selectedPlaylistId !== '') {
 			getAccessToken(async (token) => {
 				const { data: songs } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs`);
-				props.handleLoadedSongs(songs);
+				props.handleLoadedSongs(songs, playlistLookup[selectedPlaylistId]);
 			});
 		}
 	};
 
-	const handlePlaylistChange = (e) => {
-		setSelectedPlaylistId(e.target.value);
+	const handlePlaylistChange = (playlistId, playlistName) => {
+		setSelectedPlaylistId(playlistId);
+		setSelectedPlaylistName(playlistName);
 	}
 
 	const handleRandom = () => {
+		const name = selectedPlaylistName !== '' ? selectedPlaylistName : defaultPlaylistName();
 		getAccessToken(async (token) => {
 			const { data: songs } = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists/random`, {
-				playlistName: playlistName,
+				playlistName: name,
 				email: props.user.email,
 				count: randomPlaylistSize,
 			});
-			props.handleLoadedSongs(songs);
+			props.handleLoadedSongs(songs, name);
 		});
 	}
 
@@ -109,7 +121,7 @@ const Playlists = (props) => {
 								id="demo-simple-select"
 								value={selectedPlaylistId}
 								label="Playlist"
-								onChange={handlePlaylistChange}
+								onChange={(e) => handlePlaylistChange(e.target.value, 'test')}
 							>
 							{
 								playlists.map((playlist) => <MenuItem key={playlist.id} value={playlist.id}>{playlist.name}</MenuItem>)
@@ -122,7 +134,7 @@ const Playlists = (props) => {
 					Or generate a new playlist consisting of random songs from your song bank
 				</DialogContentText>
 				<TextField id="rndm-playlist-size" label="Enter integer < 100" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)}/>
-		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)}/>
+		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)}/>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleSelect} style={buttonStyle(false)}>Select</Button>

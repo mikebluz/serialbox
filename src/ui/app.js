@@ -32,6 +32,7 @@ import {
   componentDisplayStyle, 
   headerFooterStyle
 } from './styles/styles.js';
+import {getRandomInt} from './helpers.js';
 
 // components
 import GridItem from './components/griditem.js';
@@ -46,6 +47,7 @@ const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleuserconten
 const App = (props) => {
 
   const [songsLoaded, setSongsLoaded] = useState([]);
+  const [playlistName, setPlaylistName] = useState('');
   // "setIsPlaying" precipitates the playing
   const [isPlaying, setIsPlaying] = useState(false);
   const [src, setSrc] = useState(undefined);
@@ -56,12 +58,10 @@ const App = (props) => {
 
   const trackRef = useRef();
 
-  const handleLoadedSongs = (songs) => {
+  const handleLoadedSongs = (songs, pName) => {
+    console.log('handleLoadedSongs', songs, pName);
     setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
-  }
-
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
+    if (pName) setPlaylistName(pName);
   }
 
   async function shuffle() {
@@ -106,10 +106,14 @@ const App = (props) => {
           <Load 
             user={props.user} 
             handleLoadedSongs={handleLoadedSongs}
+            playlistName={playlistName}
+            setPlaylistName={setPlaylistName}
           />
           <Playlists 
             user={props.user} 
             handleLoadedSongs={handleLoadedSongs}
+            playlistName={playlistName}
+            setPlaylistName={setPlaylistName}
           />
           <Button         
             style={buttonStyle(false)}
@@ -159,6 +163,7 @@ const App = (props) => {
   }
 
   const Player = () => {
+    console.log("Playlist playlistName", playlistName)
     if (songsLoaded.length > 0) {
       return (
         <Box sx={{width: '100%'}}>
@@ -171,6 +176,7 @@ const App = (props) => {
            />
           <Playlist 
             playlist={songsLoaded}
+            playlistName={playlistName}
             setTrackLoaded={setTrackLoaded}
             toggleIsPlaying={toggleIsPlaying}
             handleChangeTrack={handleChangeTrack}

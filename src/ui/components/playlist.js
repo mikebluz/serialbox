@@ -14,6 +14,7 @@ import {
 } from '../styles/styles.js';
 
 const Playlist = (props) => {
+	console.log("props", props)
 	const trackRef = props.trackRef;
 
 	const handleSongClick = (i) => {
@@ -24,13 +25,27 @@ const Playlist = (props) => {
 	
 	return (
 		<Box>
-			<Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'white' }}>
+			<Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'black' }}>
+        	<marquee 
+	          behavior='scroll' 
+	          direction='left'
+	          scrollamount='6' 
+	          style={{ 
+	            color: 'black', 
+	            fontSize: '2em', 
+	            color: '#39ff2b', 
+	            fontFamily: 'courier' 
+	          }}
+	        >
+				Playlist: {props.playlistName}
+			</marquee>
 			<Button         
-				style={buttonStyle(false)}
+				style={{...buttonStyle(false), width: '100%', backgroundColor: 'yellow'}}
 				onClick={props.shuffle}
 			>
 				Shuffle
 			</Button>
+			</Container>
 			{
 				props.playlist.map((song, i) => {
 					return (
@@ -38,7 +53,6 @@ const Playlist = (props) => {
 					)
 				})
 			}
-			</Container>
 		</Box>
 	)
 	

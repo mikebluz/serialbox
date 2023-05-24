@@ -21,8 +21,9 @@ const Load = (props) => {
 	const [open, setOpen] = useState(false);
 	const [isHovering, setIsHovering] = useState(false);
 	const [folderName, setFolderName] = useState('demos'); 
-	const [playlistName, setPlaylistName] = useState('not provided');
 	const [artistName, setArtistName] = useState('not provided');
+	const playlistName = props.playlistName;
+	const setPlaylistName = props.setPlaylistName;
 
   const handleMouseEnter = () => {
     setIsHovering(true);
@@ -57,7 +58,8 @@ const Load = (props) => {
 						songs: JSON.stringify(files),
 						artist: artistName,
 					});
-					props.handleLoadedSongs(files);
+					console.log("Load playlistName", playlistName);
+					props.handleLoadedSongs(files, playlistName);
 					handleClose();
 				} else {
 					// ToDo: Display in dialog modal
