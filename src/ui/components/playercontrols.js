@@ -11,6 +11,7 @@ import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
 import PauseOutlinedIcon from '@mui/icons-material/PauseOutlined';
 import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
+import RepeatOutlinedIcon from '@mui/icons-material/RepeatOutlined';
 import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 
@@ -67,6 +68,15 @@ const PlayerControls = (props) => {
                     sx={{...playerButtonStyle(isHovering), width: '100%'}}
                 >
                   <SkipNextOutlinedIcon />
+                </Button>
+                <Button 
+                    className="next-track" 
+                    onClick={() => props.repeatSong(!props.repeat)} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: props.repeat ? 'grey' : 'black'}}
+                >
+                  <RepeatOutlinedIcon />
                 </Button>
             </ButtonGroup>
             <ProgressController trackRef={props.trackRef} isPlaying={props.isPlaying}/>

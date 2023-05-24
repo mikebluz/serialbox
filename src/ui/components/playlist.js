@@ -14,7 +14,6 @@ import {
 } from '../styles/styles.js';
 
 const Playlist = (props) => {
-	console.log("props", props)
 	const trackRef = props.trackRef;
 
 	const handleSongClick = (i) => {

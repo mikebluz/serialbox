@@ -55,11 +55,11 @@ const App = (props) => {
   const [trackIndex, setTrackIndex] = useState(0);
   const [volume, setVolume] = useState(1);
   const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
+  const [repeat, setRepeat] = useState(false);
 
   const trackRef = useRef();
 
   const handleLoadedSongs = (songs, pName) => {
-    console.log('handleLoadedSongs', songs, pName);
     setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
     if (pName) setPlaylistName(pName);
   }
@@ -163,7 +163,6 @@ const App = (props) => {
   }
 
   const Player = () => {
-    console.log("Playlist playlistName", playlistName)
     if (songsLoaded.length > 0) {
       return (
         <Box sx={{width: '100%'}}>
@@ -171,6 +170,8 @@ const App = (props) => {
             playPause={handlePlayPauseClick}
             nextSong={nextSong}
             previousSong={previousSong}
+            repeatSong={setRepeat}
+            repeat={repeat}
             trackRef={trackRef}
             isPlaying={isPlaying}
            />
@@ -208,6 +209,11 @@ const App = (props) => {
         i = songsLoaded.length - 1;
     }
     handleChangeTrack(i);
+  }
+
+  const restart = () => {
+    trackRef.current.currentTime = 0;
+    trackRef.current.play();
   }
 
   const handleChangeTrack = (trackIndex) => {
@@ -294,7 +300,7 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <audio src={src} ref={trackRef} onEnded={nextSong}/>
+      <audio src={src} ref={trackRef} onEnded={repeat ? restart : nextSong}/>
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>
