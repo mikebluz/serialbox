@@ -53,7 +53,6 @@ const Playlists = (props) => {
 	const handleSelect = () => {
 		getAccessToken(async (token) => {
 			const { data: songs } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs`);
-			console.log(songs);
 			props.handleLoadedSongs(songs);
 		});
 	};

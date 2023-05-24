@@ -75,7 +75,7 @@ const App = (props) => {
 
   const Greeting = () => {
     return (
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'black' }}>
         Welcome, {props.user.given_name}!
       </Typography>
     )
@@ -176,10 +176,12 @@ const App = (props) => {
   }
 
   const playPauseAudio = async () => {
-    if (trackRef.current) {
+    if (trackRef.current && trackRef.current.src.includes('blob')) {
       if (isPlaying) {
+        console.log('playing')
         trackRef.current.play();
       } else {
+        console.log('pausing')
         trackRef.current.pause();
       }
     }
@@ -229,7 +231,7 @@ const App = (props) => {
             <GridItem><Greeting /></GridItem>
           </Grid>
           <Grid item xs={12} md={12}>
-            <GridItem><Options /></GridItem>
+            <GridItem sx={{ backgroundColor: 'white' }}x><Options /></GridItem>
           </Grid>
           <Grid item xs={12} md={12} sx={{width: '100%'}}>
             <Player />

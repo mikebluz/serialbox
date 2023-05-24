@@ -5,7 +5,7 @@ export const appStyle = {
 
 export function buttonStyle(isHovering) {
 	return {
-		backgroundColor: isHovering ? 'black' : 'white',
+		backgroundColor: isHovering ? 'black' : 'green',
 		color: isHovering ? 'white' : 'black',
   		cursor: isHovering ? 'pointer' : 'arrow',
   		borderColor: 'black'
