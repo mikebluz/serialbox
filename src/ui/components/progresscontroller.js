@@ -21,7 +21,6 @@ import {playerButtonStyle, progressButtonStyle, buttonGroupStyle} from '../style
 let updateTimer;
 
 const ProgressController = (props) => {
-	console.log("OK")
     const [isHovering, setIsHovering] = useState(false)
 
     const handleMouseEnter = () => {

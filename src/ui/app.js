@@ -56,6 +56,7 @@ const App = (props) => {
   const [volume, setVolume] = useState(1);
   const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
   const [repeat, setRepeat] = useState(false);
+  const [restarting, setRestarting] = useState(false);
 
   const trackRef = useRef();
 
@@ -213,7 +214,8 @@ const App = (props) => {
 
   const restart = () => {
     trackRef.current.currentTime = 0;
-    trackRef.current.play();
+    setIsPlaying(false);
+    setRestarting(true);
   }
 
   const handleChangeTrack = (trackIndex) => {
@@ -260,7 +262,12 @@ const App = (props) => {
   }
 
   useEffect(() => {
-    playPauseAudio();
+    if (restarting && !isPlaying) {
+      setIsPlaying(true);
+      setRestarting(false);
+    } else {
+      playPauseAudio();
+    }
     setMarqueeMessage(getMarqueeMessage());
   }, [isPlaying]);
 

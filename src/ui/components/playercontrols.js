@@ -24,6 +24,7 @@ import {playerButtonStyle, buttonGroupStyle} from '../styles/styles.js';
 const PlayerControls = (props) => {
 
     const [isHovering, setIsHovering] = useState(false)
+    const [repeat, setRepeat] = useState(false);
 
     const handleMouseEnter = () => {
         setIsHovering(true);
@@ -31,6 +32,11 @@ const PlayerControls = (props) => {
 
     const handleMouseLeave = () => {
         setIsHovering(false);
+    }
+
+    const handleRepeat = () => {
+        props.trackRef.current.loop = !repeat;
+        setRepeat(!repeat);
     }
 
     return (
@@ -70,11 +76,11 @@ const PlayerControls = (props) => {
                   <SkipNextOutlinedIcon />
                 </Button>
                 <Button 
-                    className="next-track" 
-                    onClick={() => props.repeatSong(!props.repeat)} 
+                    className="repeat-btn" 
+                    onClick={handleRepeat} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: props.repeat ? 'grey' : 'black'}}
+                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
                 >
                   <RepeatOutlinedIcon />
                 </Button>
