@@ -26,7 +26,7 @@ export const componentDisplayStyle = {
 };
 
 export const songStyle = {
-	backgroundColor: '#bde2ff',
+	backgroundColor: '#39ff2b',
 	border: '3px solid black',
 	padding: '10px',
 	margin: '5px',
@@ -56,5 +56,5 @@ export function progressButtonStyle(isHovering) {
 }
 
 export const buttonGroupStyle = {
-	width: '90vw',
+	width: '100%'
 }

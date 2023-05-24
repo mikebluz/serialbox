@@ -1,5 +1,6 @@
 import {useRef, useState, useEffect} from 'react';
 
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
@@ -32,7 +33,7 @@ const PlayerControls = (props) => {
     }
 
     return (
-        <div>
+        <Box sx={{ width: '100%' }}>
             <ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={buttonGroupStyle}>
                 <Button 
                     className="prev-track" 
@@ -70,7 +71,7 @@ const PlayerControls = (props) => {
             </ButtonGroup>
             <ProgressController trackRef={props.trackRef} isPlaying={props.isPlaying}/>
             <VolumeSlider trackRef={props.trackRef}/>
-        </div>
+        </Box>
     )
 }
 

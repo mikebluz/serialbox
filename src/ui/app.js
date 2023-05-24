@@ -82,7 +82,7 @@ const App = (props) => {
 
   const Options = () => {
     return (
-      <div>
+      <Box>
         <ButtonGroup variant="contained" aria-label="outlined button group">
           <Load 
             user={props.user} 
@@ -93,7 +93,7 @@ const App = (props) => {
             handleLoadedSongs={handleLoadedSongs}
           />
         </ButtonGroup>
-      </div>
+      </Box>
     )
   }
 
@@ -109,28 +109,34 @@ const App = (props) => {
     );
   }
 
+  const NowPlaying = () => {
+    return (
+      <Box style={{ backgroundColor: 'black', borderRadius: '10px' }}>
+        <marquee behavior='scroll' direction='left' scrollamount='10' style={{ color: 'black', fontSize: '2em', color: '#39ff2b', fontFamily: 'courier' }}>
+          {`${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}`}
+        </marquee>
+      </Box>
+    );
+  }
+
   const Player = () => {
     if (songsLoaded.length > 0) {
       return (
-        <div sx={{width: '100%'}}>
-          <Grid item xs={4} sx={{width: '100%'}}>
-            <PlayerControls 
-              playPause={handlePlayPauseClick}
-              nextSong={nextSong}
-              previousSong={previousSong}
-              trackRef={trackRef}
-              isPlaying={isPlaying}
-             />
-          </Grid>     
-          <Grid item xs={4}>
+        <Box sx={{width: '100%'}}>
+          <PlayerControls 
+            playPause={handlePlayPauseClick}
+            nextSong={nextSong}
+            previousSong={previousSong}
+            trackRef={trackRef}
+            isPlaying={isPlaying}
+           />
           <Playlist 
             playlist={songsLoaded}
             setTrackLoaded={setTrackLoaded}
             toggleIsPlaying={toggleIsPlaying}
             handleChangeTrack={handleChangeTrack}
           />
-          </Grid> 
-        </div>
+        </Box>
       )
     }
   }
@@ -227,24 +233,53 @@ const App = (props) => {
     }
   }, [src])
 
+  const gridBlockStyle = {
+    width: '100%',
+    margin: '10px 10px 0px 10px'
+  };
+
   return (
-    <Container sx={{ width: '100vw', backgroundColor: '#dde7f0' }}>
+    <Box 
+      sx={{ backgroundColor: '#dde7f0' }}   
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      minWidth="100vw"
+    >
       <audio src={src} ref={trackRef} onEnded={nextSong}/>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={12} sx={{ marginTop: '10px' }}>
-          <GridItem><Greeting /></GridItem>
+      <Grid container>
+        <Grid item xs={12} md={12} sx={gridBlockStyle}>
+          <GridItem>
+            <Greeting />
+          </GridItem>
         </Grid>
-        <Grid item xs={12} md={12}>
-          <GridItem sx={{ backgroundColor: 'white' }}x><Options /></GridItem>
+        <Grid item xs={12} md={12} sx={gridBlockStyle}>
+          <GridItem sx={{ backgroundColor: 'white' }}x>
+            <Options />
+          </GridItem>
         </Grid>
-        <Grid item xs={12} md={12} sx={{width: '100%'}}>
-          <Player />
-        </Grid>
-        <Grid item xs={12} md={12} sx={{ marginBottom: '10px' }}>
-          <GridItem><Copyright /></GridItem>
+        { 
+          trackLoaded 
+          && 
+          <Grid item xs={12} md={12} sx={gridBlockStyle}>
+            <NowPlaying /> 
+          </Grid>
+        }
+        {
+          songsLoaded.length > 0
+          &&
+          <Grid item xs={12} md={12} sx={gridBlockStyle}>
+            <Player />
+          </Grid>
+        }
+        <Grid item xs={12} md={12} sx={gridBlockStyle}>
+          <GridItem>
+            <Copyright />
+          </GridItem>
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   )
 }
 

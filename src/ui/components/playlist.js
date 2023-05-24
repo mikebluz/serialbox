@@ -23,7 +23,7 @@ const Playlist = (props) => {
 	}
 	
 	return (
-		<div style={{ width: '90vw' }}>
+		<Box>
 			<Container sx={{ width: '100%', border: '5px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'white' }}>
 			{
 				props.playlist.map((song, i) => {
@@ -33,7 +33,7 @@ const Playlist = (props) => {
 				})
 			}
 			</Container>
-		</div>
+		</Box>
 	)
 	
 };
