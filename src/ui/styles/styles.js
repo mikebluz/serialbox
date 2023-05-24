@@ -5,7 +5,7 @@ export const appStyle = {
 
 export function buttonStyle(isHovering) {
 	return {
-		backgroundColor: isHovering ? 'black' : '#2c97e8',
+		backgroundColor: isHovering ? 'black' : '#bde2ff',
 		color: isHovering ? 'white' : 'black',
   		cursor: isHovering ? 'pointer' : 'arrow',
   		borderColor: '#dde7f0',
@@ -21,11 +21,16 @@ export const headerFooterStyle = {
 export const componentDisplayStyle = { 
 	display: 'flex',
 	border: '1px solid black', 
-	borderRadius: '6px',
+	borderRadius: '12px',
 	margin: '2px',
 };
 
 export const songStyle = {
+	backgroundColor: '#bde2ff',
+	border: '3px solid black',
+	padding: '10px',
+	margin: '5px',
+	borderRadius: '10px',
 	'&:hover': {
 		backgroundColor: 'yellow',
 		cursor: 'pointer'

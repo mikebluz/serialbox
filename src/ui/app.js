@@ -47,7 +47,6 @@ const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleuserconten
 const App = (props) => {
 
   const [songsLoaded, setSongsLoaded] = useState([]);
-  const [songsAreLoaded, setSongsAreLoaded] = useState(false);
   // "setIsPlaying" precipitates the playing
   const [isPlaying, setIsPlaying] = useState(false);
   const [src, setSrc] = useState(undefined);
@@ -124,7 +123,12 @@ const App = (props) => {
              />
           </Grid>     
           <Grid item xs={4}>
-             <Playlist playlist={songsLoaded}/>
+          <Playlist 
+            playlist={songsLoaded}
+            setTrackLoaded={setTrackLoaded}
+            toggleIsPlaying={toggleIsPlaying}
+            handleChangeTrack={handleChangeTrack}
+          />
           </Grid> 
         </div>
       )
