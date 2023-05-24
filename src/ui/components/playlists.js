@@ -29,6 +29,8 @@ const Playlists = (props) => {
 	const [playlists, setPlaylists] = useState([]);
 	const [selectedPlaylistId, setSelectedPlaylistId] = useState('');
 	const [artistName, setArtistName] = useState('');
+	const [randomPlaylistSize, setRandomPlaylistSize] = useState(10);
+	const [playlistName, setPlaylistName] = useState('not provided');
 
 	const handleMouseEnter = () => {
 		setIsHovering(true);
@@ -51,18 +53,24 @@ const Playlists = (props) => {
 	};
 
 	const handleSelect = () => {
-		getAccessToken(async (token) => {
-			const { data: songs } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs`);
-			props.handleLoadedSongs(songs);
-		});
+		if (selectedPlaylistId !== '') {
+			getAccessToken(async (token) => {
+				const { data: songs } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs`);
+				props.handleLoadedSongs(songs);
+			});
+		}
 	};
 
 	const handlePlaylistChange = (e) => {
 		setSelectedPlaylistId(e.target.value);
 	}
 
+	const handleRandom = () => {
+		console.log("Random")
+	}
+
 	return (
-		<div>
+		<Box>
 			<Button 
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
@@ -78,35 +86,44 @@ const Playlists = (props) => {
 				aria-labelledby="modal-modal-title"
 				aria-describedby="modal-modal-description"
 			>	 
-		        <DialogTitle>Select Playlist</DialogTitle>
+		        <DialogTitle>Playlists</DialogTitle>
+				<DialogContent>
 				{
 					playlists.length > 0
 					&&
-					<DialogContent>
-					    <Box sx={{ minWidth: 120 }}>
-							<FormControl fullWidth>
-								<InputLabel id="demo-simple-select-label">Playlist</InputLabel>
-								<Select
-									labelId="demo-simple-select-label"
-									id="demo-simple-select"
-									value={selectedPlaylistId}
-									label="Playlist"
-									onChange={handlePlaylistChange}
-								>
-								{
-									playlists.map((playlist) => <MenuItem key={playlist.id} value={playlist.id}>{playlist.name}</MenuItem>)
-								}
-								</Select>
-							</FormControl>
-					    </Box>
-					</DialogContent>
+				    <Box sx={{ minWidth: 120 }}>
+						<DialogContentText>
+							Choose existing
+						</DialogContentText>
+						<FormControl fullWidth>
+							<InputLabel id="demo-simple-select-label">Playlist</InputLabel>
+							<Select
+								labelId="demo-simple-select-label"
+								id="demo-simple-select"
+								value={selectedPlaylistId}
+								label="Playlist"
+								onChange={handlePlaylistChange}
+							>
+							{
+								playlists.map((playlist) => <MenuItem key={playlist.id} value={playlist.id}>{playlist.name}</MenuItem>)
+							}
+							</Select>
+						</FormControl>
+				    </Box>
 				}
+				<DialogContentText>
+					Or generate a new playlist consisting of random songs from your song bank
+				</DialogContentText>
+				<TextField id="rndm-playlist-size" label="Enter integer < 100" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)}/>
+		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)}/>
+				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleSelect} style={buttonStyle(false)}>Select</Button>
+					<Button onClick={handleRandom} style={buttonStyle(false)}>Random</Button>
 					<Button onClick={handleClose} style={buttonStyle(false)}>Cancel</Button>
 				</DialogActions>       
 			</Dialog>
-		</div>
+		</Box>
 	);
 }
 

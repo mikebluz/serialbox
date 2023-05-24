@@ -103,9 +103,9 @@ const Load = (props) => {
 				  <DialogContentText>
   					{ JSON.stringify(audioFileMimeTypes) }
   				  </DialogContentText>
-				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(evt) => setFolderName(evt.target.value)}/>
-  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(evt) => setPlaylistName(evt.target.value)}/>
-      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)}/>
+				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)}/>
+  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)}/>
+      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)}/>
 				</DialogContent>
 				<DialogActions>
 				<ButtonGroup>

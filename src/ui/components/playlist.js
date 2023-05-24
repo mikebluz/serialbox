@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 
@@ -17,7 +18,6 @@ const Playlist = (props) => {
 
 	const handleSongClick = (i) => {
 		props.setTrackLoaded(false);
-		console.log('isPlaying', props.isPlaying)
     	if (props.isPlaying) props.toggleIsPlaying();
 		props.handleChangeTrack(i)
 	}
@@ -25,6 +25,12 @@ const Playlist = (props) => {
 	return (
 		<Box>
 			<Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'white' }}>
+			<Button         
+				style={buttonStyle(false)}
+				onClick={props.shuffle}
+			>
+				Shuffle
+			</Button>
 			{
 				props.playlist.map((song, i) => {
 					return (

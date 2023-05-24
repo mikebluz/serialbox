@@ -113,9 +113,9 @@ const App = (props) => {
           />
           <Button         
             style={buttonStyle(false)}
-            onClick={shuffle}
+            onClick={() => console.log('find')}
           >
-            Shuffle
+            Find
           </Button>
         </ButtonGroup>
       </Box>
@@ -175,6 +175,7 @@ const App = (props) => {
             toggleIsPlaying={toggleIsPlaying}
             handleChangeTrack={handleChangeTrack}
             isPlaying={isPlaying}
+            shuffle={shuffle}
           />
         </Box>
       )
