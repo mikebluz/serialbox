@@ -15,9 +15,9 @@ const VolumeSlider = (props) => {
 
   return (
     <Box sx={{ width: '90vw', color: 'black' }}>
-      <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+      <Stack spacing={2} direction="row" alignItems="center">
         <VolumeDown />
-        <Slider aria-label="Volume" value={value} onChange={handleChange} sx={{ color: 'black' }} />
+        <Slider aria-label="Volume" value={value} onChange={handleChange} sx={{ color: '#2c97e8' }} />
         <VolumeUp />
       </Stack>
     </Box>

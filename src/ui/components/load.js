@@ -8,6 +8,7 @@ import {
 } from '../api/gapi.js';
 import {buttonStyle} from '../styles/styles.js';
 import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -91,10 +92,13 @@ const Load = (props) => {
         <DialogTitle>Create Playlist</DialogTitle>
 				<DialogContent>
 				  <DialogContentText>
-					Enter a string to search your Google Drive folders by name for audio to load.
+						Enter a string to search your Google Drive folders by name for audio to load.
 				  </DialogContentText>
 				  <DialogContentText>
-					All compatible files in matching folders will be loaded and saved as a playlist. Compatible mime types:
+						All compatible files in matching folders will be loaded and saved as a playlist.
+				  </DialogContentText>
+				  <DialogContentText>
+				  	Compatible mime types:
 				  </DialogContentText>
 				  <DialogContentText>
   					{ JSON.stringify(audioFileMimeTypes) }
@@ -104,8 +108,10 @@ const Load = (props) => {
       	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(evt) => setArtistName(evt.target.value)}/>
 				</DialogContent>
 				<DialogActions>
+				<ButtonGroup>
 				  <Button onClick={handleClick} style={buttonStyle(false)}>Load</Button>
 				  <Button onClick={handleClose} style={buttonStyle(false)}>Cancel</Button>
+				</ButtonGroup>
 				</DialogActions>       
 			</Dialog>
 		</div>

@@ -16,7 +16,7 @@ import Forward5OutlinedIcon from '@mui/icons-material/Forward5Outlined';
 import Forward10OutlinedIcon from '@mui/icons-material/Forward10Outlined';
 import Forward30OutlinedIcon from '@mui/icons-material/Forward30Outlined';
 
-import {playerButtonStyle, buttonGroupStyle} from '../styles/styles.js';
+import {playerButtonStyle, progressButtonStyle, buttonGroupStyle} from '../styles/styles.js';
 
 let updateTimer;
 
@@ -109,9 +109,9 @@ const ProgressController = (props) => {
 
 	return (
 		<Box sx={{ width: '90vw', color: 'black' }}>
-		  <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+		  <Stack spacing={2} direction="row" alignItems="center">
 		  	<p>{padSingleDigits(currentMinutes) + ":" + padSingleDigits(currentSeconds)}</p>
-		    <Slider aria-label="Volume" value={currentPosition} onChange={handleSeek} sx={{ color: 'black' }} />
+		    <Slider aria-label="ProgressBar" value={currentPosition} onChange={handleSeek} sx={{ color: '#2c97e8' }} />
 		  	<p>{padSingleDigits(durationMinutes) + ":" + padSingleDigits(durationSeconds)}</p>
 		  </Stack>
         	<ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={{width: '90vw'}}>
@@ -120,7 +120,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(0)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
                 >
                     <ReplayOutlinedIcon />
                 </Button>
@@ -131,7 +131,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(-5)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
                 >
                     <Replay5OutlinedIcon />
                 </Button>
@@ -140,7 +140,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(-10)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
                 >
                     <Replay10OutlinedIcon />
                 </Button>
@@ -149,7 +149,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(-30)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
                 >
                     <Replay30OutlinedIcon />
                 </Button>
@@ -160,7 +160,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(5)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
                 >
                     <Forward5OutlinedIcon />
                 </Button>
@@ -169,7 +169,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(10)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
                 >
                     <Forward10OutlinedIcon />
                 </Button>
@@ -178,7 +178,7 @@ const ProgressController = (props) => {
                     onClick={() => scan(30)} 
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                    sx={{...progressButtonStyle(isHovering), width: '100%'}}
                 >
                     <Forward30OutlinedIcon />
                 </Button>

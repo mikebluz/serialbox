@@ -5,23 +5,24 @@ export const appStyle = {
 
 export function buttonStyle(isHovering) {
 	return {
-		backgroundColor: isHovering ? 'black' : 'green',
+		backgroundColor: isHovering ? 'black' : '#2c97e8',
 		color: isHovering ? 'white' : 'black',
   		cursor: isHovering ? 'pointer' : 'arrow',
-  		borderColor: 'black'
+  		borderColor: '#dde7f0',
+  		margin: '2px'
 	}
 }
 
 export const headerFooterStyle = {
-  backgroundColor: 'black',
-  color: 'white',
+	backgroundColor: 'black',
+	color: 'white',
 };
 
 export const componentDisplayStyle = { 
-  display: 'flex',
-  border: '1px solid black', 
-  borderRadius: '6px',
-  margin: '2px',
+	display: 'flex',
+	border: '1px solid black', 
+	borderRadius: '6px',
+	margin: '2px',
 };
 
 export const songStyle = {
@@ -36,6 +37,16 @@ export function playerButtonStyle(isHovering) {
 		backgroundColor: 'black',
 		color: 'white',
   		cursor: isHovering ? 'pointer' : 'arrow',
+  		margin: '4px',
+	}
+}
+
+export function progressButtonStyle(isHovering) {
+	return {
+		backgroundColor: 'black',
+		color: 'white',
+  		cursor: isHovering ? 'pointer' : 'arrow',
+  		margin: '4px'
 	}
 }
 

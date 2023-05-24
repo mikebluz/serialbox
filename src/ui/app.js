@@ -75,7 +75,7 @@ const App = (props) => {
 
   const Greeting = () => {
     return (
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'black' }}>
+      <Typography variant="h4" component="h1" sx={{ color: 'black' }}>
         Welcome, {props.user.given_name}!
       </Typography>
     )
@@ -224,22 +224,22 @@ const App = (props) => {
   }, [src])
 
   return (
-    <Container sx={{width: '100vw'}}>
+    <Container sx={{ width: '100vw', backgroundColor: '#dde7f0' }}>
       <audio src={src} ref={trackRef} onEnded={nextSong}/>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={12}>
-            <GridItem><Greeting /></GridItem>
-          </Grid>
-          <Grid item xs={12} md={12}>
-            <GridItem sx={{ backgroundColor: 'white' }}x><Options /></GridItem>
-          </Grid>
-          <Grid item xs={12} md={12} sx={{width: '100%'}}>
-            <Player />
-          </Grid>
-          <Grid item xs={12} md={12}>
-            <GridItem><Copyright /></GridItem>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={12} sx={{ marginTop: '10px' }}>
+          <GridItem><Greeting /></GridItem>
         </Grid>
+        <Grid item xs={12} md={12}>
+          <GridItem sx={{ backgroundColor: 'white' }}x><Options /></GridItem>
+        </Grid>
+        <Grid item xs={12} md={12} sx={{width: '100%'}}>
+          <Player />
+        </Grid>
+        <Grid item xs={12} md={12} sx={{ marginBottom: '10px' }}>
+          <GridItem><Copyright /></GridItem>
+        </Grid>
+      </Grid>
     </Container>
   )
 }
