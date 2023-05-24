@@ -34,7 +34,6 @@ import {
 } from './styles/styles.js';
 
 // components
-import AllSongs from './components/allsongs.js';
 import GridItem from './components/griditem.js';
 import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
@@ -112,8 +111,24 @@ const App = (props) => {
   const NowPlaying = () => {
     return (
       <Box style={{ backgroundColor: 'black', borderRadius: '10px' }}>
-        <marquee behavior='scroll' direction='left' scrollamount='10' style={{ color: 'black', fontSize: '2em', color: '#39ff2b', fontFamily: 'courier' }}>
-          {`${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}`}
+        <marquee 
+          behavior='scroll' 
+          direction='left'
+          scrollamount='10' 
+          style={{ 
+            color: 'black', 
+            fontSize: '2em', 
+            color: '#39ff2b', 
+            fontFamily: 'courier' 
+          }}
+        >
+          { 
+            songsLoaded.length > 0
+            ?
+            `${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}` 
+            : 
+            'Load songs from Google Drive or choose a playlist'
+          }
         </marquee>
       </Box>
     );
@@ -135,6 +150,7 @@ const App = (props) => {
             setTrackLoaded={setTrackLoaded}
             toggleIsPlaying={toggleIsPlaying}
             handleChangeTrack={handleChangeTrack}
+            isPlaying={isPlaying}
           />
         </Box>
       )
@@ -188,10 +204,8 @@ const App = (props) => {
   const playPauseAudio = async () => {
     if (trackRef.current && trackRef.current.src.includes('blob')) {
       if (isPlaying) {
-        console.log('playing')
         trackRef.current.play();
       } else {
-        console.log('pausing')
         trackRef.current.pause();
       }
     }
@@ -254,13 +268,9 @@ const App = (props) => {
             <Greeting />
           </GridItem>
         </Grid>
-        { 
-          trackLoaded 
-          && 
-          <Grid item xs={12} md={12} sx={gridBlockStyle}>
-            <NowPlaying /> 
-          </Grid>
-        }
+        <Grid item xs={12} md={12} sx={gridBlockStyle}>
+          <NowPlaying /> 
+        </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem sx={{ backgroundColor: 'white' }}x>
             <Options />

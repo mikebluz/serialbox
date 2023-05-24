@@ -16,9 +16,9 @@ const Playlist = (props) => {
 	const trackRef = props.trackRef;
 
 	const handleSongClick = (i) => {
-		console.log('song selected', i);
 		props.setTrackLoaded(false);
-    	props.toggleIsPlaying();
+		console.log('isPlaying', props.isPlaying)
+    	if (props.isPlaying) props.toggleIsPlaying();
 		props.handleChangeTrack(i)
 	}
 	
@@ -28,7 +28,7 @@ const Playlist = (props) => {
 			{
 				props.playlist.map((song, i) => {
 					return (
-						<Box key={song.name + '-item'} sx={songStyle} onClick={() => handleSongClick(i)}>{song.name.split('.')[0]}</Box>
+						<Box key={song.gDriveId + '-item'} sx={songStyle} onClick={() => handleSongClick(i)}>{song.name.split('.')[0]}</Box>
 					)
 				})
 			}

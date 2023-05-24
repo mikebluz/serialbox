@@ -113,7 +113,7 @@ const ProgressController = (props) => {
 				<p>{padSingleDigits(currentMinutes) + ":" + padSingleDigits(currentSeconds)}</p>
 				<Slider 
 					aria-label="ProgressBar" 
-					value={currentPosition} 
+					value={currentPosition ? currentPosition : 0} 
 					onChange={handleSeek} 
 					sx={{ color: '#2c97e8' }} 
 				/>
