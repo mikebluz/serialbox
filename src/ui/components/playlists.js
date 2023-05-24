@@ -66,7 +66,14 @@ const Playlists = (props) => {
 	}
 
 	const handleRandom = () => {
-		console.log("Random")
+		getAccessToken(async (token) => {
+			const { data: songs } = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists/random`, {
+				playlistName: playlistName,
+				email: props.user.email,
+				count: randomPlaylistSize,
+			});
+			props.handleLoadedSongs(songs);
+		});
 	}
 
 	return (

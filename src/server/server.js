@@ -5,6 +5,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const Sequelize = require('sequelize');
 const app = express()
 const port = 3005
 const {User, Playlist, PlaylistSong, Song} = require('./persistence/models.js');
@@ -45,8 +46,36 @@ app.get('/playlists/all/users/:email', async (req, res) => {
 
 app.get('/playlists/:playlistId/songs', async (req, res) => {
   const {songs} = await Playlist.findOne({ where: { id: req.params.playlistId }, include: Song });
-  res.send(JSON.stringify(songs.map((raw) => raw.dataValues)));
+  res.status(200).send(JSON.stringify(songs.map((raw) => raw.dataValues)));
 });
+
+app.post('/playlists/random', async (req, res) => {
+  const user = await User.findOne({ where: { email: req.body.email } });
+  const songs = await Song.findAll({ order: Sequelize.literal('random()'), limit: req.body.count })
+  const playlist = await Playlist.create({
+    name: req.body.playlistName,
+    userId: user.id,
+  });
+  await Playlist.sync();
+  songs.forEach(async (song) => {
+    try {
+      await PlaylistSong.create({
+        playlistId: playlist.dataValues.id,
+        songId: song.id,
+      });
+    } catch(err) {
+      err.errors.forEach((e) => {
+        // if there is a non-"must be unique" errors, log it
+        if (!e.message.includes('must be unique')) {
+          console.error("There has been some kind of mistake", e);
+        }
+      })
+    }
+  });
+  await Song.sync()
+  await PlaylistSong.sync();
+  res.status(200).send(JSON.stringify(songs.map((raw) => raw.dataValues)));
+})
 
 // ToDo: Separate the REST calls into separate endpoints and orchestrate on the front end ?
 // ToDo: Handle "already exists" errors
