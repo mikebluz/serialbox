@@ -52,11 +52,31 @@ const App = (props) => {
   const [trackLoaded, setTrackLoaded] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
   const [volume, setVolume] = useState(1);
+  const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
 
   const trackRef = useRef();
 
   const handleLoadedSongs = (songs) => {
     setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
+  }
+
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  async function shuffle() {
+    // populateMarquee("Loading ...");
+    // pauseTrack();
+    let playlist = [...songsLoaded];
+    const newPlaylist = [];
+    while (newPlaylist.length < songsLoaded.length) {
+      let i = getRandomInt(playlist.length - 1);
+      const nextTrack = playlist[i];
+      newPlaylist.push(playlist[i]);
+      playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
+    }
+    setSongsLoaded(newPlaylist);
+    setTrackIndex(0);
   }
 
   // Flatten folders object into array
@@ -91,6 +111,12 @@ const App = (props) => {
             user={props.user} 
             handleLoadedSongs={handleLoadedSongs}
           />
+          <Button         
+            style={buttonStyle(false)}
+            onClick={shuffle}
+          >
+            Shuffle
+          </Button>
         </ButtonGroup>
       </Box>
     )
@@ -108,6 +134,10 @@ const App = (props) => {
     );
   }
 
+  function getMarqueeMessage() {
+    return songsLoaded.length > 0 ? `${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}` : 'Load songs from Google Drive or choose a playlist';
+  }
+
   const NowPlaying = () => {
     return (
       <Box style={{ backgroundColor: 'black', borderRadius: '10px' }}>
@@ -122,13 +152,7 @@ const App = (props) => {
             fontFamily: 'courier' 
           }}
         >
-          { 
-            songsLoaded.length > 0
-            ?
-            `${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}` 
-            : 
-            'Load songs from Google Drive or choose a playlist'
-          }
+          {marqueeMessage}
         </marquee>
       </Box>
     );
@@ -224,6 +248,7 @@ const App = (props) => {
 
   useEffect(() => {
     playPauseAudio();
+    setMarqueeMessage(getMarqueeMessage());
   }, [isPlaying]);
 
   useEffect(() => {
@@ -236,6 +261,7 @@ const App = (props) => {
     if (trackRef.current) {
       trackRef.current.src = '';
     }
+    setMarqueeMessage(getMarqueeMessage());
   }, [songsLoaded])
 
   useEffect(() => {
