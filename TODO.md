@@ -7,4 +7,3 @@ ToDos:
 - Record audio and save to drive
 - Add ability to play multiple tracks at once
 - Pre-load first song after all songs loaded (or after shuffle)
-- Display playlist name
