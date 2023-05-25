@@ -70,9 +70,12 @@ const ProgressController = (props) => {
 	const seekUpdate = () => {
 		let seekPosition = 0;
 
+		console.log('seekUpdate time', currentMinutes, currentSeconds, durationMinutes, durationSeconds)
+
 		// Check if the current track duration is a legible number
 		if (!isNaN(trackRef.current.duration)) {
 			seekPosition = calcPosition();
+			console.log('seekUpdate seekPosition', seekPosition)
 			setCurrentPosition(seekPosition);
 			calculateCurrentTime();
 		}
@@ -101,6 +104,7 @@ const ProgressController = (props) => {
 		let currSeconds = Math.floor(trackRef.current.currentTime - currMinutes * 60);
 		let durMinutes = Math.floor(trackRef.current.duration / 60);
 		let durSeconds = Math.floor(trackRef.current.duration - durMinutes * 60);
+		console.log('calculateCurrentTime', currMinutes, currSeconds, durMinutes, durSeconds)
 		setCurrentMinutes(currMinutes);
 		setCurrentSeconds(currSeconds);
 		setDurationMinutes(durMinutes);

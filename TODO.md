@@ -1,7 +1,6 @@
 ToDos:
 
-- Fix repeat
-    - Slider returns to zero and doesn't move again until user pauses and plays again)
+- Load songs earlier
 - Fix progress slider on song click
     - Song plays but the slider does not progress until you pause, then it jumps to where you are)
 - Fix shuffle bug (click on shuffle button while playing)

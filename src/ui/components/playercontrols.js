@@ -25,11 +25,9 @@ const PlayerControls = (props) => {
 
     const [isHovering, setIsHovering] = useState(false)
     const [repeat, setRepeat] = useState(false);
-    const [loopStart, setLoopStart] = useState(0);
-    const [loopEnd, setLoopEnd] = useState(props.trackRef.current.duration);
+    const [loopStart, setLoopStart] = useState(-1);
+    const [loopEnd, setLoopEnd] = useState(props.trackRef.current.currentTime+1);
     const [loopInterval, setLoopInterval] = useState(0);
-
-    console.log("loopStart loopEnd START", loopStart, loopEnd)
 
     const handleMouseEnter = () => {
         setIsHovering(true);
@@ -50,32 +48,28 @@ const PlayerControls = (props) => {
     const handleSetLoopStart = () => {
         if (props.isPlaying) props.trackRef.current.pause();
         const start = props.trackRef.current.currentTime;
-        // console.log('start', start)
-        setLoopStart(Math.floor(start));
+        setLoopStart(start);
     }
 
     const handleSetLoopEnd = () => {
         if (props.isPlaying) props.trackRef.current.pause();
         const end = props.trackRef.current.currentTime;
-        // console.log('end', Math.floor(end))
-        setLoopEnd(Math.floor(end));
+        setLoopEnd(end);
     }
 
     const handleClearLoopInterval = () => {
         clearInterval(loopInterval);
         setLoopStart(0);
-        setLoopEnd(trackRef.current.duration);
+        setLoopEnd(props.trackRef.current.duration);
+        setRepeat(false);
     }
 
     useEffect(() => {
-        console.log('loopStart and loopEnd effect', loopStart, loopEnd);
-        if (loopStart > 0 || loopEnd < props.trackRef.current.duration) {
-            console.log('rewinding to loopStart', loopStart)
+        if (loopStart >= 0 && loopEnd <= props.trackRef.current.duration) {
             props.trackRef.current.currentTime = loopStart;
             props.trackRef.current.play();
             let interval = setInterval(() => {
                 if (props.trackRef.current.currentTime > loopEnd) {
-                    console.log("Current time is past loopEnd", props.trackRef.current.currentTime, loopEnd, loopStart)
                     props.trackRef.current.currentTime = loopStart;
                 }
             }, 100)
@@ -129,35 +123,39 @@ const PlayerControls = (props) => {
                   <RepeatOutlinedIcon />
                 </Button>
             </ButtonGroup>
-            <ButtonGroup variant="contained" aria-label="outlined button group" size="small" sx={buttonGroupStyle}>
-                <Button 
-                    className="loop-start-btn" 
-                    onClick={handleSetLoopStart} 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
-                >
-                  <p>Start</p>
-                </Button>
-                <Button 
-                    className="loop-end-btn" 
-                    onClick={handleSetLoopEnd} 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
-                >
-                  <p>End</p>
-                </Button>
-                <Button 
-                    className="loop-end-btn" 
-                    onClick={handleClearLoopInterval} 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
-                >
-                  <p>Clear</p>
-                </Button>
-            </ButtonGroup>
+            {
+                repeat
+                &&
+                <ButtonGroup variant="contained" aria-label="outlined button group" size="small" sx={buttonGroupStyle}>
+                    <Button 
+                        className="loop-start-btn" 
+                        onClick={handleSetLoopStart} 
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
+                    >
+                      <p>Start</p>
+                    </Button>
+                    <Button 
+                        className="loop-end-btn" 
+                        onClick={handleSetLoopEnd} 
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
+                    >
+                      <p>End</p>
+                    </Button>
+                    <Button 
+                        className="loop-end-btn" 
+                        onClick={handleClearLoopInterval} 
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
+                    >
+                      <p>Clear</p>
+                    </Button>
+                </ButtonGroup>
+            }
             <ProgressController 
                 trackRef={props.trackRef} 
                 isPlaying={props.isPlaying}

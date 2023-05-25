@@ -13,11 +13,8 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import { styled } from '@mui/material/styles';
-
 // mui icons
-import VolumeDown from '@mui/icons-material/VolumeDown';
-import VolumeUp from '@mui/icons-material/VolumeUp';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // repo
 import {
@@ -46,6 +43,7 @@ const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleuserconten
 
 const App = (props) => {
 
+  const [isLoading, setIsLoading] = useState(false);
   const [songsLoaded, setSongsLoaded] = useState([]);
   const [playlistName, setPlaylistName] = useState('');
   // "setIsPlaying" precipitates the playing
@@ -63,11 +61,12 @@ const App = (props) => {
   const handleLoadedSongs = (songs, pName) => {
     setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
     if (pName) setPlaylistName(pName);
+    loadSong(songs[0], () => setTrackIndex(0));
   }
 
   async function shuffle() {
-    // populateMarquee("Loading ...");
-    // pauseTrack();
+    console.log('shuffling')
+    setIsPlaying(false);
     let playlist = [...songsLoaded];
     const newPlaylist = [];
     while (newPlaylist.length < songsLoaded.length) {
@@ -76,8 +75,9 @@ const App = (props) => {
       newPlaylist.push(playlist[i]);
       playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
     }
-    setSongsLoaded(newPlaylist);
-    setTrackIndex(0);
+    console.log('setting new loaded songs')
+    handleLoadedSongs(newPlaylist, playlistName);
+    console.log('setting track index');
   }
 
   // Flatten folders object into array
@@ -157,8 +157,8 @@ const App = (props) => {
             fontFamily: 'courier' 
           }}
         >
-          {marqueeMessage}
-        </marquee>
+          { isLoading ? "Loading ..." : marqueeMessage }
+        </marquee> 
       </Box>
     );
   }
@@ -214,6 +214,7 @@ const App = (props) => {
 
   const restart = () => {
     trackRef.current.currentTime = 0;
+    console.log("restart, setting isPlaying to false")
     setIsPlaying(false);
     setRestarting(true);
   }
@@ -226,6 +227,7 @@ const App = (props) => {
 
   const toggleIsPlaying = () => {
     if (!isPlaying) {
+      console.log("toggleIsPlaying, setting isPlaying to true")
       setIsPlaying(true);
     } else {
       setIsPlaying(false);
@@ -243,26 +245,39 @@ const App = (props) => {
   const playPauseAudio = async () => {
     if (trackRef.current && trackRef.current.src.includes('blob')) {
       if (isPlaying) {
+        console.log("playing")
         trackRef.current.play();
       } else {
+        console.log("pausing")
         trackRef.current.pause();
       }
+    } else {
+      console.log("oops", trackRef.current)
     }
   }
 
   const loadSong = (file, callback) => {
+    console.log('loadSong', file, trackRef.current)
+    setIsLoading(true);
     if (trackRef.current) {
-      getAccessToken(async (token) => {
-        const blob = await fetchDriveFileBlob(file, token);
-        const src = URL.createObjectURL(blob);
-        setSrc(src);
-        if (callback) callback();
+      getAccessToken((token) => {
+        console.log("fetching song")
+        const blob = fetchDriveFileBlob(file, token)
+          .then((blob) => {
+            console.log("song fetched");
+            const src = URL.createObjectURL(blob);
+            console.log("setting src", src);
+            setSrc(src);
+            if (callback) callback();
+          });
       });
     }
   }
 
   useEffect(() => {
+    console.log("isPlaying effect, setting isPlaying to true", restarting, isPlaying)
     if (restarting && !isPlaying) {
+      console.log("isPlaying effect, setting isPlaying to true")
       setIsPlaying(true);
       setRestarting(false);
     } else {
@@ -272,24 +287,32 @@ const App = (props) => {
   }, [isPlaying]);
 
   useEffect(() => {
+    console.log('trackLoaded effect', trackRef.current, trackLoaded)
     if (trackLoaded) {
+      console.log("trackLoaded effect, setting isPlaying to true")
       setIsPlaying(true);
     }
   }, [trackLoaded]);
 
   useEffect(() => {
+    console.log('songsLoaded effect', trackRef.current)
     if (trackRef.current) {
-      trackRef.current.src = '';
+      console.log("setting src from songsLoaded effect")
+      setSrc('');
     }
+    console.log("Setting marquee")
     setMarqueeMessage(getMarqueeMessage());
   }, [songsLoaded])
 
   useEffect(() => {
-    if (src) {
+    if (trackRef.current.src.includes('blob')) {
+      console.log("src effect, loading file", trackRef.current.src, src)
       trackRef.current.volume = 1;
       trackRef.current.load();
-      trackRef.current.oncanplay = () => setTrackLoaded(true);
-      trackRef.current.onerror = (e) => console.error('Error loading song', e.target.error);
+      trackRef.current.oncanplay = () => {
+        setIsLoading(false);
+        setTrackLoaded(true);
+      };
     }
   }, [src])
 
@@ -307,7 +330,7 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <audio src={src} ref={trackRef} onEnded={repeat ? restart : nextSong}/>
+      <audio preload={false} src={src} ref={trackRef} onEnded={repeat ? restart : nextSong} onError={(e) => console.error('Error loading song', e.target.error)}/>
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>
@@ -315,20 +338,16 @@ const App = (props) => {
           </GridItem>
         </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
-          <NowPlaying /> 
+        <NowPlaying />
         </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem sx={{ backgroundColor: 'white' }}x>
             <Options />
           </GridItem>
         </Grid>
-        {
-          songsLoaded.length > 0
-          &&
-          <Grid item xs={12} md={12} sx={gridBlockStyle}>
-            <Player />
-          </Grid>
-        }
+        <Grid item xs={12} md={12} sx={gridBlockStyle}>
+          <Player />
+        </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>
             <Copyright />

@@ -130,17 +130,19 @@ const Playlists = (props) => {
 						</FormControl>
 				    </Box>
 				}
+				<DialogActions>
+					<Button onClick={handleSelect} style={buttonStyle(false)}>Select</Button>
+				</DialogActions>  
 				<DialogContentText>
 					Or generate a new playlist consisting of random songs from your song bank
 				</DialogContentText>
-				<TextField id="rndm-playlist-size" label="Enter integer < 100" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)}/>
-		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)}/>
+				<TextField id="rndm-playlist-size" label="Enter integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%'}}/>
+		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%'}}/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleSelect} style={buttonStyle(false)}>Select</Button>
 					<Button onClick={handleRandom} style={buttonStyle(false)}>Random</Button>
 					<Button onClick={handleClose} style={buttonStyle(false)}>Cancel</Button>
-				</DialogActions>       
+				</DialogActions>        
 			</Dialog>
 		</Box>
 	);

@@ -7,6 +7,7 @@ import {
 	fetchDriveFolderContents,
 } from '../api/gapi.js';
 import {buttonStyle} from '../styles/styles.js';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import TextField from '@mui/material/TextField';
@@ -20,8 +21,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 const Load = (props) => {
 	const [open, setOpen] = useState(false);
 	const [isHovering, setIsHovering] = useState(false);
-	const [folderName, setFolderName] = useState('demos'); 
-	const [artistName, setArtistName] = useState('not provided');
+	const [folderName, setFolderName] = useState(''); 
+	const [artistName, setArtistName] = useState('');
 	const playlistName = props.playlistName;
 	const setPlaylistName = props.setPlaylistName;
 
@@ -42,6 +43,9 @@ const Load = (props) => {
 	};
 
 	const handleClick = () => {
+		if (folderName === '' || artistName === '') {
+			return;
+		}
 		getAccessToken(async (token) => {
 
 			// ToDo: Add "loading" display to dialog modal (in place of inputs)
@@ -93,20 +97,18 @@ const Load = (props) => {
         <DialogTitle>Create Playlist</DialogTitle>
 				<DialogContent>
 				  <DialogContentText>
-						Enter a string to search your Google Drive folders by name for audio to load.
-				  </DialogContentText>
-				  <DialogContentText>
+						Search your Google Drive folders by name for audio to load.
 						All compatible files in matching folders will be loaded and saved as a playlist.
 				  </DialogContentText>
-				  <DialogContentText>
-				  	Compatible mime types:
-				  </DialogContentText>
-				  <DialogContentText>
-  					{ JSON.stringify(audioFileMimeTypes) }
-  				  </DialogContentText>
-				<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)}/>
-  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)}/>
-      	<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)}/>
+			  	<h3>Compatible mime types:</h3>
+				  <ul>
+  					{ audioFileMimeTypes.map((mt) => <li key={mt}>{mt}</li>) }
+				  </ul>
+				  <Box sx={{ marginTop: '10px' }}>
+						<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%'}}/>
+						<TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)} sx={{width: '100%'}}/>
+						<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%'}}/>
+				  </Box>
 				</DialogContent>
 				<DialogActions>
 				<ButtonGroup>
