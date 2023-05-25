@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState, useRef } from 'react';
 
-// mui components
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -13,10 +12,29 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-// mui icons
 import CircularProgress from '@mui/material/CircularProgress';
+import ReplayOutlinedIcon from '@mui/icons-material/ReplayOutlined';
+import Replay5OutlinedIcon from '@mui/icons-material/Replay5Outlined';
+import Replay10OutlinedIcon from '@mui/icons-material/Replay10Outlined';
+import Replay30OutlinedIcon from '@mui/icons-material/Replay30Outlined';
+import Forward5OutlinedIcon from '@mui/icons-material/Forward5Outlined';
+import Forward10OutlinedIcon from '@mui/icons-material/Forward10Outlined';
+import Forward30OutlinedIcon from '@mui/icons-material/Forward30Outlined';
+import VolumeDown from '@mui/icons-material/VolumeDown';
+import VolumeUp from '@mui/icons-material/VolumeUp';
+import PauseOutlinedIcon from '@mui/icons-material/PauseOutlined';
+import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
+import RepeatOutlinedIcon from '@mui/icons-material/RepeatOutlined';
+import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
+import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 
-// repo
+import GridItem from './components/griditem.js';
+import Playlist from './components/playlist.js';
+import Playlists from './components/playlists.js';
+import Load from './components/load.js';
+import Shuffle from './components/shuffle.js';
+import VolumeSlider from './components/volumeslider.js';
+
 import {
   getAccessToken,
   fetchDriveFileBlob, 
@@ -24,73 +42,55 @@ import {
   initGapiTokenClient, 
   parseJwt 
 } from './api/gapi.js';
+
 import {
   buttonStyle, 
+  buttonGroupStyle,
   componentDisplayStyle, 
-  headerFooterStyle
+  gridBlockStyle,
+  headerFooterStyle,
+  playerButtonStyle, 
+  progressButtonStyle,
 } from './styles/styles.js';
-import {getRandomInt} from './helpers.js';
 
-// components
-import GridItem from './components/griditem.js';
-import Playlist from './components/playlist.js';
-import Playlists from './components/playlists.js';
-import PlayerControls from './components/playercontrols.js';
-import Load from './components/load.js';
-import Shuffle from './components/shuffle.js';
+import {getRandomInt} from './helpers.js';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
+// ToDo: break out into separate components, being careful not to break any state change flows
+
 const App = (props) => {
 
+  const trackRef = useRef();
+
+  // Loading
   const [isLoading, setIsLoading] = useState(false);
   const [songsLoaded, setSongsLoaded] = useState([]);
+
+  // Playlist/Song data
   const [playlistName, setPlaylistName] = useState('');
-  // "setIsPlaying" precipitates the playing
+
+  // Player and <audio> component state
   const [isPlaying, setIsPlaying] = useState(false);
   const [src, setSrc] = useState(undefined);
   const [trackLoaded, setTrackLoaded] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
   const [volume, setVolume] = useState(1);
-  const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
   const [repeat, setRepeat] = useState(false);
   const [restarting, setRestarting] = useState(false);
+  const [loopStart, setLoopStart] = useState(-1);
+  const [loopEnd, setLoopEnd] = useState(trackRef.current ? trackRef.current.currentTime+1 : 0);
+  const [loopInterval, setLoopInterval] = useState(0);
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [currentMinutes, setCurrentMinutes] = useState(0);
+  const [currentSeconds, setCurrentSeconds] = useState(0);
+  const [durationMinutes, setDurationMinutes] = useState(0);
+  const [durationSeconds, setDurationSeconds] = useState(0);
+  const [updateTimer, setUpdateTimer] = useState(0);
 
-  const trackRef = useRef();
-
-  const handleLoadedSongs = (songs, pName) => {
-    setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
-    setTrackLoaded(false);
-    if (pName) setPlaylistName(pName);
-  }
-
-  async function shuffle() {
-    console.log('shuffling')
-    setIsPlaying(false);
-    let playlist = [...songsLoaded];
-    const newPlaylist = [];
-    while (newPlaylist.length < songsLoaded.length) {
-      let i = getRandomInt(playlist.length - 1);
-      const nextTrack = playlist[i];
-      newPlaylist.push(playlist[i]);
-      playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
-    }
-    console.log('setting new loaded songs')
-    handleLoadedSongs(newPlaylist, playlistName);
-    console.log('setting track index');
-  }
-
-  // Flatten folders object into array
-  const formatSongsLoadedForPlayer = (songsByFolder) => {
-    const allSongs = [];
-    for (const [folderName, songs] of Object.entries(songsByFolder)) {
-      allSongs.push(...songs.map((song) => {
-        song.folderName = folderName
-        return song;
-      }))
-    }
-    return allSongs;
-  }
+  // Display
+  const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
+  const [isHovering, setIsHovering] = useState(false)
 
   const Greeting = () => {
     return (
@@ -139,32 +139,340 @@ const App = (props) => {
     );
   }
 
-  function getMarqueeMessage() {
-    return songsLoaded.length > 0 ? `${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}` : 'Load songs from Google Drive or choose a playlist';
-  }
-
   const NowPlaying = () => {
     return (
       <Box style={{ backgroundColor: 'black', borderRadius: '10px' }}>
-        <marquee 
-          behavior='scroll' 
-          direction='left'
-          scrollamount='10' 
+        <p 
           style={{ 
             color: 'black', 
-            fontSize: '2em', 
             color: '#39ff2b', 
-            fontFamily: 'courier' 
+            fontFamily: 'courier',
+            padding: '10px',
+            margin: '0px'
           }}
         >
           { isLoading ? "Loading ..." : marqueeMessage }
-        </marquee> 
+        </p> 
+      </Box>
+    );
+  }
+
+  const PlayerControls = (props) => {
+
+    const handleMouseEnter = () => {
+        setIsHovering(true);
+    }
+
+    const handleMouseLeave = () => {
+        setIsHovering(false);
+    }
+
+    const handleRepeat = () => {
+        props.trackRef.current.loop = !repeat;
+        setRepeat(!repeat);
+        if (!repeat) {
+            clearInterval(loopInterval);
+        }
+    }
+
+    const handleSetLoopStart = () => {
+        if (props.isPlaying) props.trackRef.current.pause();
+        const start = props.trackRef.current.currentTime;
+        setLoopStart(start);
+    }
+
+    const handleSetLoopEnd = () => {
+        if (props.isPlaying) props.trackRef.current.pause();
+        const end = props.trackRef.current.currentTime;
+        setLoopEnd(end);
+    }
+
+    const handleClearLoopInterval = () => {
+        clearInterval(loopInterval);
+        setLoopStart(0);
+        setLoopEnd(props.trackRef.current.duration);
+        setRepeat(false);
+    }
+
+    useEffect(() => {
+        if (loopStart >= 0 && loopEnd <= props.trackRef.current.duration) {
+            props.trackRef.current.currentTime = loopStart;
+            props.trackRef.current.play();
+            let interval = setInterval(() => {
+                if (props.trackRef.current.currentTime > loopEnd) {
+                    props.trackRef.current.currentTime = loopStart;
+                }
+            }, 100)
+            setLoopInterval(interval);
+        }
+    }, [loopStart, loopEnd])
+
+    return (
+        <Box sx={{ width: '100%' }}>
+            <ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={buttonGroupStyle}>
+                <Button 
+                    className="prev-track" 
+                    onClick={props.previousSong} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                  <SkipPreviousOutlinedIcon />
+                </Button>
+                <Button 
+                    className="playpause-track" 
+                    onClick={props.playPause} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                    {
+                        props.isPlaying
+                        ?
+                        <PauseOutlinedIcon />
+                        :
+                        <PlayArrowOutlinedIcon />
+                    }
+                </Button>
+                <Button 
+                    className="next-track" 
+                    onClick={props.nextSong} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
+                >
+                  <SkipNextOutlinedIcon />
+                </Button>
+                <Button 
+                    className="repeat-btn" 
+                    onClick={handleRepeat} 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
+                >
+                  <RepeatOutlinedIcon />
+                </Button>
+            </ButtonGroup>
+            {
+                repeat
+                &&
+                <ButtonGroup variant="contained" aria-label="outlined button group" size="small" sx={buttonGroupStyle}>
+                    <Button 
+                        className="loop-start-btn" 
+                        onClick={handleSetLoopStart} 
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
+                    >
+                      <p>Start</p>
+                    </Button>
+                    <Button 
+                        className="loop-end-btn" 
+                        onClick={handleSetLoopEnd} 
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
+                    >
+                      <p>End</p>
+                    </Button>
+                    <Button 
+                        className="loop-end-btn" 
+                        onClick={handleClearLoopInterval} 
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
+                    >
+                      <p>Clear</p>
+                    </Button>
+                </ButtonGroup>
+            }
+            <ProgressController 
+                trackRef={props.trackRef} 
+                isPlaying={props.isPlaying}
+            />
+            <VolumeSlider trackRef={props.trackRef}/>
+        </Box>
+    )
+  }
+
+  const ProgressController = (props) => {
+
+    const [isHovering, setIsHovering] = useState(false)
+
+    const handleMouseEnter = () => {
+      setIsHovering(true);
+    }
+
+    const handleMouseLeave = () => {
+      setIsHovering(false);
+    }
+
+    const trackRef = props.trackRef;
+
+    const handleSeek = (event, newValue) => {
+      seek(newValue > 0 ? newValue : 0);
+    };
+
+    function seek(newValue) {
+      if (trackRef.current.duration) {
+        trackRef.current.currentTime = trackRef.current.duration * (newValue / 100);
+        setCurrentPosition(newValue);
+        calculateCurrentTime();
+      }
+    }
+
+    function scan(seconds) {
+      if (trackRef.current.duration) {
+        if (seconds === 0) {
+          trackRef.current.currentTime = 0;
+        } else {
+          trackRef.current.currentTime = (trackRef.current.currentTime + seconds) > 0 ? trackRef.current.currentTime + seconds : 0;
+        }
+        setCurrentPosition(trackRef.current.currentTime * (100 / trackRef.current.duration));
+        calculateCurrentTime();
+      }
+    }
+
+    function calcPosition() {
+      return trackRef.current.currentTime * (100 / trackRef.current.duration);
+    }
+
+    const seekUpdate = () => {
+      let seekPosition = 0;
+      // Check if the current track duration is a legible number
+      if (!isNaN(trackRef.current.duration)) {
+        seekPosition = calcPosition();
+        setCurrentPosition(seekPosition);
+        calculateCurrentTime();
+      }
+    }
+
+    function padSingleDigits(n) {
+      return n < 10 ? `0${n}` : n;
+    }
+
+    function calculateCurrentTime() {
+      let currMinutes = Math.floor(trackRef.current.currentTime / 60);
+      let currSeconds = Math.floor(trackRef.current.currentTime - currMinutes * 60);
+      let durMinutes = Math.floor(trackRef.current.duration / 60);
+      let durSeconds = Math.floor(trackRef.current.duration - durMinutes * 60);
+      setCurrentMinutes(currMinutes);
+      setCurrentSeconds(currSeconds);
+      setDurationMinutes(durMinutes);
+      setDurationSeconds(durSeconds);
+    }
+
+    useEffect(() => {
+      setTimeout(() => seekUpdate(), 1000);
+    }, [currentMinutes, currentSeconds, durationMinutes, durationSeconds, currentPosition]);
+
+    return (
+      <Box sx={{ color: 'black', width: '100%' }}>
+      <Stack spacing={2} direction="row" alignItems="center">
+        <p>{padSingleDigits(currentMinutes) + ":" + padSingleDigits(currentSeconds)}</p>
+        <Slider 
+          aria-label="ProgressBar" 
+          value={currentPosition ? currentPosition : 0} 
+          onChange={handleSeek} 
+          sx={{ color: '#2c97e8' }} 
+        />
+        <p>{padSingleDigits(durationMinutes) + ":" + padSingleDigits(durationSeconds)}</p>
+      </Stack>
+      <ButtonGroup 
+        variant="contained" 
+        aria-label="outlined button group" 
+        size="large" 
+        sx={{ width: '100%' }}
+      >
+          <Button 
+              className="restart" 
+              onClick={() => scan(0)} 
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              sx={{...progressButtonStyle(isHovering)}}
+          >
+              <ReplayOutlinedIcon />
+          </Button>
+      </ButtonGroup>
+      <Stack spacing={2} direction="row" alignItems="center">
+        <ButtonGroup 
+          variant="contained" 
+          aria-label="outlined button group" 
+          size="large"
+          sx={{ width: '100%' }}
+        >
+            <Button 
+                className="rewind-5" 
+                onClick={() => scan(-5)} 
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+          sx={{...progressButtonStyle(isHovering)}}
+            >
+                <Replay5OutlinedIcon />
+            </Button>
+            <Button 
+                className="rewind-10" 
+                onClick={() => scan(-10)} 
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+          sx={{...progressButtonStyle(isHovering)}}
+            >
+                <Replay10OutlinedIcon />
+            </Button>
+            <Button 
+                className="rewind-30" 
+                onClick={() => scan(-30)} 
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+          sx={{...progressButtonStyle(isHovering)}}
+            >
+                <Replay30OutlinedIcon />
+            </Button>
+        </ButtonGroup>
+      </Stack>
+      <Stack spacing={2} direction="row" alignItems="center">
+        <ButtonGroup 
+          variant="contained" 
+          aria-label="outlined button group" 
+          size="large"
+          sx={{ width: '100%' }}
+        >
+          <Button 
+              className="rewind-5" 
+              onClick={() => scan(5)} 
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              sx={{...progressButtonStyle(isHovering)}}
+          >
+              <Forward5OutlinedIcon />
+          </Button>
+          <Button 
+              className="rewind-10" 
+              onClick={() => scan(10)} 
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              sx={{...progressButtonStyle(isHovering)}}
+          >
+              <Forward10OutlinedIcon />
+          </Button>
+          <Button 
+              className="rewind-30" 
+              onClick={() => scan(30)} 
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              sx={{...progressButtonStyle(isHovering)}}
+          >
+              <Forward30OutlinedIcon />
+          </Button>
+        </ButtonGroup>
+      </Stack>
       </Box>
     );
   }
 
   const Player = () => {
     if (songsLoaded.length > 0) {
+      console.log("MOUNTING PLAYER")
       return (
         <Box sx={{width: '100%'}}>
           <PlayerControls 
@@ -187,6 +495,27 @@ const App = (props) => {
         </Box>
       )
     }
+  }
+
+  const handleLoadedSongs = (songs, pName) => {
+    setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
+    setTrackLoaded(false);
+    if (pName) setPlaylistName(pName);
+  }
+
+  const formatSongsLoadedForPlayer = (songsByFolder) => {
+    const allSongs = [];
+    for (const [folderName, songs] of Object.entries(songsByFolder)) {
+      allSongs.push(...songs.map((song) => {
+        song.folderName = folderName
+        return song;
+      }))
+    }
+    return allSongs;
+  }
+
+  const getMarqueeMessage = () => {
+    return songsLoaded.length > 0 ? `${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}` : 'Load songs from Google Drive or choose a playlist';
   }
 
   const nextSong = () => {
@@ -215,7 +544,6 @@ const App = (props) => {
 
   const restart = () => {
     trackRef.current.currentTime = 0;
-    console.log("restart, setting isPlaying to false")
     setIsPlaying(false);
     setRestarting(true);
   }
@@ -279,10 +607,21 @@ const App = (props) => {
     }
   }
 
+  const shuffle = () => {
+    setIsPlaying(false);
+    let playlist = [...songsLoaded];
+    const newPlaylist = [];
+    while (newPlaylist.length < songsLoaded.length) {
+      let i = getRandomInt(playlist.length - 1);
+      const nextTrack = playlist[i];
+      newPlaylist.push(playlist[i]);
+      playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
+    }
+    handleLoadedSongs(newPlaylist, playlistName);
+  }
+
   useEffect(() => {
-    console.log("isPlaying effect, setting isPlaying to true", restarting, isPlaying)
     if (restarting && !isPlaying) {
-      console.log("isPlaying effect, done restarting, setting isPlaying to true")
       setIsPlaying(true);
       setRestarting(false);
     } else {
@@ -300,12 +639,9 @@ const App = (props) => {
   }, [trackLoaded]);
 
   useEffect(() => {
-    console.log('songsLoaded effect', trackRef.current)
     if (songsLoaded.length > 0) {
       loadSong(songsLoaded[0], () => {
-        console.log("setting track index")
         setTrackIndex(0);
-        console.log("Setting marquee")
         setMarqueeMessage(getMarqueeMessage());
       });
     }
@@ -324,11 +660,6 @@ const App = (props) => {
     }
   }, [src])
 
-  const gridBlockStyle = {
-    width: '100%',
-    margin: '10px 10px 0px 10px'
-  };
-
   return (
     <Box 
       sx={{ backgroundColor: '#dde7f0' }}   
@@ -338,7 +669,7 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <audio preload={false} src={src} ref={trackRef} onEnded={repeat ? restart : nextSong} onError={(e) => console.error('Audio element error', e.target.error)}/>
+      <audio preload={'false'} src={src} ref={trackRef} onEnded={repeat ? restart : nextSong} onError={(e) => console.error('Audio element error', e.target.error)}/>
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>
@@ -346,7 +677,7 @@ const App = (props) => {
           </GridItem>
         </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
-        <NowPlaying />
+          <NowPlaying />
         </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem sx={{ backgroundColor: 'white' }}x>

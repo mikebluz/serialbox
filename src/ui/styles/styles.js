@@ -59,3 +59,8 @@ export function progressButtonStyle(isHovering) {
 export const buttonGroupStyle = {
 	width: '100%'
 }
+
+export const gridBlockStyle = {
+	width: '100%',
+	margin: '10px 10px 0px 10px'
+};

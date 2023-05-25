@@ -23,8 +23,7 @@ const Load = (props) => {
 	const [isHovering, setIsHovering] = useState(false);
 	const [folderName, setFolderName] = useState(''); 
 	const [artistName, setArtistName] = useState('');
-	const playlistName = props.playlistName;
-	const setPlaylistName = props.setPlaylistName;
+	const [playlistName, setPlaylistName] = useState('');
 
   const handleMouseEnter = () => {
     setIsHovering(true);

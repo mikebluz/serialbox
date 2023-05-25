@@ -24,19 +24,17 @@ const Playlist = (props) => {
 	return (
 		<Box>
 			<Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'black' }}>
-        	<marquee 
-	          behavior='scroll' 
-	          direction='left'
-	          scrollamount='6' 
+        	<p 
 	          style={{ 
 	            color: 'black', 
-	            fontSize: '2em', 
 	            color: '#39ff2b', 
-	            fontFamily: 'courier' 
+	            fontFamily: 'courier',
+	            padding: '10px',
+	            margin: '0px'
 	          }}
 	        >
 				Playlist: {props.playlistName}
-			</marquee>
+			</p>
 			<Button         
 				style={{...buttonStyle(false), width: '100%', backgroundColor: 'yellow'}}
 				onClick={props.shuffle}
@@ -47,7 +45,7 @@ const Playlist = (props) => {
 			{
 				props.playlist.map((song, i) => {
 					return (
-						<Box key={song.gDriveId + '-item'} sx={songStyle} onClick={() => handleSongClick(i)}>{song.name.split('.')[0]}</Box>
+						<Box key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} sx={songStyle} onClick={() => handleSongClick(i)}>{song.name.split('.')[0]}</Box>
 					)
 				})
 			}
