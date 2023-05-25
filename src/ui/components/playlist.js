@@ -36,7 +36,7 @@ const Playlist = (props) => {
 				Playlist: {props.playlistName}
 			</p>
 			<Button         
-				style={{...buttonStyle(false), width: '100%', backgroundColor: 'yellow'}}
+				style={{...buttonStyle, width: '100%', backgroundColor: 'yellow'}}
 				onClick={props.shuffle}
 			>
 				Shuffle

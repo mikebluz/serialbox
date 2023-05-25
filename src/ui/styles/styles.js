@@ -3,14 +3,14 @@ export const appStyle = {
 	color: 'white',
 }
 
-export function buttonStyle(isHovering) {
-	return {
-		backgroundColor: isHovering ? 'black' : '#bde2ff',
-		color: isHovering ? 'white' : 'black',
-  		cursor: isHovering ? 'pointer' : 'arrow',
-  		borderColor: '#dde7f0',
-  		margin: '2px'
-	}
+export const buttonStyle = {
+	backgroundColor: '#bde2ff',
+	color: 'black',
+	'&:hover': {
+		cursor: 'arrow',
+	},
+	borderColor: '#dde7f0',
+	margin: '2px'
 }
 
 export const headerFooterStyle = {
@@ -34,26 +34,26 @@ export const songStyle = {
 	'&:hover': {
 		backgroundColor: 'yellow',
 		cursor: 'pointer'
-	}
+	},
 };
 
-export function playerButtonStyle(isHovering) {
-	return {
-		backgroundColor: 'black',
-		color: 'white',
-  		cursor: isHovering ? 'pointer' : 'arrow',
-  		margin: '4px',
-	}
+export const playerButtonStyle = {	 
+	backgroundColor: 'black',
+	color: 'white',
+	'&:hover': {
+  		cursor: 'arrow',
+	},
+	margin: '4px',	
 }
 
-export function progressButtonStyle(isHovering) {
-	return {
-		backgroundColor: 'black',
-		color: 'white',
-  		cursor: isHovering ? 'pointer' : 'arrow',
-  		margin: '4px',
-  		width: '100%'
-	}
+export const progressButtonStyle = {
+	backgroundColor: 'black',
+	color: 'white',
+	'&:hover': {
+		cursor: 'arrow',
+	},
+	margin: '4px',
+	width: '100%'
 }
 
 export const buttonGroupStyle = {

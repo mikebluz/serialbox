@@ -25,7 +25,6 @@ import Select from '@mui/material/Select';
 
 const Playlists = (props) => {
 	const [open, setOpen] = useState(false);
-	const [isHovering, setIsHovering] = useState(false);
 	const [folderName, setFolderName] = useState(''); 
 	const [playlists, setPlaylists] = useState([]);
 	const [playlistLookup, setPlaylistLookup] = useState({});
@@ -38,14 +37,6 @@ const Playlists = (props) => {
 		const i = getRandomInt(defaultPlaylistNames.length - 1);
 		return `${defaultPlaylistNames[i]}-${(new Date()).toISOString()}`;
 	}
-
-	const handleMouseEnter = () => {
-		setIsHovering(true);
-	};
-
-	const handleMouseLeave = () => {
-		setIsHovering(false);
-	};
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -91,11 +82,9 @@ const Playlists = (props) => {
 	return (
 		<Box>
 			<Button 
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
 				variant="outlined" 
 				onClick={handleClickOpen}
-				style={buttonStyle(isHovering)}
+				style={buttonStyle}
 			>
 				Playlists
 			</Button>
@@ -131,7 +120,7 @@ const Playlists = (props) => {
 				    </Box>
 				}
 				<DialogActions>
-					<Button onClick={handleSelect} style={buttonStyle(false)}>Select</Button>
+					<Button onClick={handleSelect} style={buttonStyle}>Select</Button>
 				</DialogActions>  
 				<DialogContentText>
 					Or generate a new playlist consisting of random songs from your song bank
@@ -140,8 +129,8 @@ const Playlists = (props) => {
 		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%'}}/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleRandom} style={buttonStyle(false)}>Random</Button>
-					<Button onClick={handleClose} style={buttonStyle(false)}>Cancel</Button>
+					<Button onClick={handleRandom} style={buttonStyle}>Random</Button>
+					<Button onClick={handleClose} style={buttonStyle}>Cancel</Button>
 				</DialogActions>        
 			</Dialog>
 		</Box>

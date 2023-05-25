@@ -20,18 +20,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 const Load = (props) => {
 	const [open, setOpen] = useState(false);
-	const [isHovering, setIsHovering] = useState(false);
 	const [folderName, setFolderName] = useState(''); 
 	const [artistName, setArtistName] = useState('');
 	const [playlistName, setPlaylistName] = useState('');
-
-  const handleMouseEnter = () => {
-    setIsHovering(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-  };
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -79,11 +70,9 @@ const Load = (props) => {
 	return (
 		<div>
 			<Button 
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
 				variant="outlined" 
 				onClick={handleClickOpen}
-				style={buttonStyle(isHovering)}
+				style={buttonStyle}
 			>
 				Load
 			</Button>
@@ -111,8 +100,8 @@ const Load = (props) => {
 				</DialogContent>
 				<DialogActions>
 				<ButtonGroup>
-				  <Button onClick={handleClick} style={buttonStyle(false)}>Load</Button>
-				  <Button onClick={handleClose} style={buttonStyle(false)}>Cancel</Button>
+				  <Button onClick={handleClick} style={buttonStyle}>Load</Button>
+				  <Button onClick={handleClose} style={buttonStyle}>Cancel</Button>
 				</ButtonGroup>
 				</DialogActions>       
 			</Dialog>

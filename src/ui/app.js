@@ -90,7 +90,6 @@ const App = (props) => {
   const [updateTimer, setUpdateTimer] = useState(0);
 
   // Display
-  // const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
   const [nowPlayingSongName, setNowPlayingSongName] = useState('Nothing loaded');
   const [nowPlayingArtist, setNowPlayingArtist] = useState('Nothing loaded');
 
@@ -121,8 +120,7 @@ const App = (props) => {
             setPlaylistName={setPlaylistName}
           />
           <Button         
-            style={buttonStyle(false)}
-            onClick={() => console.log('find')}
+            style={buttonStyle} onClick={() => console.log('find')}
           >
             Find
           </Button>
@@ -172,132 +170,105 @@ const App = (props) => {
     );
   }
 
-  const PlayerControls = (props) => {
-
-    const handleMouseEnter = () => {
-        setIsHovering(true);
-    }
-
-    const handleMouseLeave = () => {
-        setIsHovering(false);
-    }
+  const PlayerControls = () => {
 
     const handleRepeat = () => {
-        props.trackRef.current.loop = !repeat;
-        setRepeat(!repeat);
-        if (!repeat) {
-            clearInterval(loopInterval);
-        }
+      trackRef.current.loop = !repeat;
+      setRepeat(!repeat);
+      if (!repeat) {
+          clearInterval(loopInterval);
+      }
     }
 
     const handleSetLoopStart = () => {
-      if (isPlaying) trackRef.current.pause();
       const start = trackRef.current.currentTime;
       setLoopStart(start);
     }
 
     const handleSetLoopEnd = () => {
-      if (props.isPlaying) props.trackRef.current.pause();
-      const end = props.trackRef.current.currentTime;
+      const end = trackRef.current.currentTime;
       setLoopEnd(end);
     }
 
     const handleClearLoopInterval = () => {
       clearInterval(loopInterval);
       setLoopStart(0);
-      setLoopEnd(props.trackRef.current.duration);
+      setLoopEnd(trackRef.current.duration);
       setRepeat(false);
     }
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={buttonGroupStyle}>
-                <Button 
-                    className="prev-track" 
-                    onClick={props.previousSong} 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
-                >
-                  <SkipPreviousOutlinedIcon />
-                </Button>
-                <Button 
-                    className="playpause-track" 
-                    onClick={props.playPause} 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
-                >
-                    {
-                        props.isPlaying
-                        ?
-                        <PauseOutlinedIcon />
-                        :
-                        <PlayArrowOutlinedIcon />
-                    }
-                </Button>
-                <Button 
-                    className="next-track" 
-                    onClick={props.nextSong} 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%'}}
-                >
-                  <SkipNextOutlinedIcon />
-                </Button>
-                <Button 
-                    className="repeat-btn" 
-                    onClick={handleRepeat} 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{...playerButtonStyle(isHovering), width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
-                >
-                  <RepeatOutlinedIcon />
-                </Button>
-            </ButtonGroup>
-            {
-                repeat
-                &&
-                <ButtonGroup variant="contained" aria-label="outlined button group" size="small" sx={buttonGroupStyle}>
-                    <Button 
-                        className="loop-start-btn" 
-                        onClick={handleSetLoopStart} 
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
-                    >
-                      <p>Start</p>
-                    </Button>
-                    <Button 
-                        className="loop-end-btn" 
-                        onClick={handleSetLoopEnd} 
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
-                    >
-                      <p>End</p>
-                    </Button>
-                    <Button 
-                        className="loop-end-btn" 
-                        onClick={handleClearLoopInterval} 
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        sx={{...playerButtonStyle(isHovering), width: '100%' }}
-                    >
-                      <p>Clear</p>
-                    </Button>
-                </ButtonGroup>
-            }
-            <ProgressController 
-                trackRef={props.trackRef} 
-                isPlaying={props.isPlaying}
-            />
-            <VolumeSlider trackRef={props.trackRef}/>
-        </Box>
+      <Box sx={{ width: '100%' }}>
+        <ButtonGroup variant="contained" aria-label="outlined button group" size="large" sx={buttonGroupStyle}>
+            <Button
+              className="prev-track" 
+              onClick={previousSong} 
+              sx={{...playerButtonStyle, width: '100%'}}
+            >
+              <SkipPreviousOutlinedIcon />
+            </Button>
+            <Button 
+              className="playpause-track" 
+              onClick={handlePlayPauseClick} 
+              sx={{...playerButtonStyle, width: '100%'}}
+            >
+                {
+                    isPlaying
+                    ?
+                    <PauseOutlinedIcon />
+                    :
+                    <PlayArrowOutlinedIcon />
+                }
+            </Button>
+            <Button 
+              className="next-track" 
+              onClick={nextSong} 
+              sx={{...playerButtonStyle, width: '100%'}}
+            >
+              <SkipNextOutlinedIcon />
+            </Button>
+            <Button 
+              className="repeat-btn" 
+              onClick={handleRepeat} 
+              sx={{...playerButtonStyle, width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
+            >
+              <RepeatOutlinedIcon />
+            </Button>
+        </ButtonGroup>
+        {
+          repeat
+          &&
+          <ButtonGroup variant="contained" aria-label="outlined button group" size="small" sx={buttonGroupStyle}>
+            <Button 
+              className="loop-start-btn" 
+              onClick={handleSetLoopStart} 
+              sx={{...playerButtonStyle, width: '100%' }}
+            >
+              <p>Start</p>
+            </Button>
+            <Button 
+              className="loop-end-btn" 
+              onClick={handleSetLoopEnd} 
+              sx={{...playerButtonStyle, width: '100%' }}
+            >
+              <p>End</p>
+            </Button>
+            <Button 
+              className="loop-end-btn" 
+              onClick={handleClearLoopInterval} 
+              sx={{...playerButtonStyle, width: '100%' }}
+            >
+              <p>Clear</p>
+            </Button>
+          </ButtonGroup>
+        }
+        <ProgressController />
+        <VolumeSlider />
+      </Box>
     )
   }
 
-  const VolumeSlider = (props) => {
+  const VolumeSlider = () => {
     const handleChange = (event, newValue) => {
       setVolume(newValue / 100);
     };
@@ -312,19 +283,7 @@ const App = (props) => {
     );
   }
 
-  const ProgressController = (props) => {
-
-    const [isHovering, setIsHovering] = useState(false)
-
-    const handleMouseEnter = () => {
-      setIsHovering(true);
-    }
-
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-    }
-
-    const trackRef = props.trackRef;
+  const ProgressController = () => {
 
     const handleSeek = (event, newValue) => {
       seek(newValue > 0 ? newValue : 0);
@@ -375,9 +334,7 @@ const App = (props) => {
           <Button 
               className="restart" 
               onClick={() => scan(0)} 
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              sx={{...progressButtonStyle(isHovering)}}
+              sx={{...progressButtonStyle}}
           >
               <ReplayOutlinedIcon />
           </Button>
@@ -391,28 +348,22 @@ const App = (props) => {
         >
             <Button 
                 className="rewind-5" 
-                onClick={() => scan(-5)} 
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-          sx={{...progressButtonStyle(isHovering)}}
+                onClick={() => scan(-5)}
+          sx={{...progressButtonStyle}}
             >
                 <Replay5OutlinedIcon />
             </Button>
             <Button 
                 className="rewind-10" 
-                onClick={() => scan(-10)} 
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-          sx={{...progressButtonStyle(isHovering)}}
+                onClick={() => scan(-10)}
+          sx={{...progressButtonStyle}}
             >
                 <Replay10OutlinedIcon />
             </Button>
             <Button 
                 className="rewind-30" 
-                onClick={() => scan(-30)} 
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-          sx={{...progressButtonStyle(isHovering)}}
+                onClick={() => scan(-30)}
+          sx={{...progressButtonStyle}}
             >
                 <Replay30OutlinedIcon />
             </Button>
@@ -428,27 +379,21 @@ const App = (props) => {
           <Button 
               className="rewind-5" 
               onClick={() => scan(5)} 
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              sx={{...progressButtonStyle(isHovering)}}
+              sx={{...progressButtonStyle}}
           >
               <Forward5OutlinedIcon />
           </Button>
           <Button 
               className="rewind-10" 
               onClick={() => scan(10)} 
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              sx={{...progressButtonStyle(isHovering)}}
+              sx={{...progressButtonStyle}}
           >
               <Forward10OutlinedIcon />
           </Button>
           <Button 
               className="rewind-30" 
               onClick={() => scan(30)} 
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              sx={{...progressButtonStyle(isHovering)}}
+              sx={{...progressButtonStyle}}
           >
               <Forward30OutlinedIcon />
           </Button>
@@ -712,12 +657,12 @@ const App = (props) => {
           </GridItem>
         </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
-          <NowPlaying />
-        </Grid>
-        <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem sx={{ backgroundColor: 'white' }}x>
             <Options />
           </GridItem>
+        </Grid>
+        <Grid item xs={12} md={12} sx={gridBlockStyle}>
+          <NowPlaying />
         </Grid>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <Player />
