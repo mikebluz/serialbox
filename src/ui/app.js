@@ -56,6 +56,8 @@ import {getRandomInt} from './helpers.js';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
+const sliderColor = "#ff7c0a";
+
 // ToDo: break out into separate components, being careful not to break any state change flows
 
 const App = (props) => {
@@ -78,7 +80,7 @@ const App = (props) => {
   const [repeat, setRepeat] = useState(false);
   const [restarting, setRestarting] = useState(false);
   const [loopStart, setLoopStart] = useState(-1);
-  const [loopEnd, setLoopEnd] = useState(trackRef.current ? trackRef.current.currentTime+1 : 0);
+  const [loopEnd, setLoopEnd] = useState(100_000);
   const [loopInterval, setLoopInterval] = useState(0);
   const [currentPosition, setCurrentPosition] = useState(0);
   const [currentMinutes, setCurrentMinutes] = useState(0);
@@ -88,7 +90,10 @@ const App = (props) => {
   const [updateTimer, setUpdateTimer] = useState(0);
 
   // Display
-  const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
+  // const [marqueeMessage, setMarqueeMessage] = useState('Load songs from Google Drive or choose a playlist');
+  const [nowPlayingSongName, setNowPlayingSongName] = useState('Nothing loaded');
+  const [nowPlayingArtist, setNowPlayingArtist] = useState('Nothing loaded');
+
   const [isHovering, setIsHovering] = useState(false)
 
   const Greeting = () => {
@@ -150,7 +155,18 @@ const App = (props) => {
             margin: '0px'
           }}
         >
-          { isLoading ? "Loading ..." : marqueeMessage }
+          { isLoading ? "Loading ..." : `Song: ${nowPlayingSongName}` }
+        </p> 
+        <p 
+          style={{ 
+            color: 'black', 
+            color: '#39ff2b', 
+            fontFamily: 'courier',
+            padding: '10px',
+            margin: '0px'
+          }}
+        >
+          { isLoading ? "Loading ..." : `Artist: ${nowPlayingArtist}` }
         </p> 
       </Box>
     );
@@ -175,36 +191,23 @@ const App = (props) => {
     }
 
     const handleSetLoopStart = () => {
-        if (props.isPlaying) props.trackRef.current.pause();
-        const start = props.trackRef.current.currentTime;
-        setLoopStart(start);
+      if (isPlaying) trackRef.current.pause();
+      const start = trackRef.current.currentTime;
+      setLoopStart(start);
     }
 
     const handleSetLoopEnd = () => {
-        if (props.isPlaying) props.trackRef.current.pause();
-        const end = props.trackRef.current.currentTime;
-        setLoopEnd(end);
+      if (props.isPlaying) props.trackRef.current.pause();
+      const end = props.trackRef.current.currentTime;
+      setLoopEnd(end);
     }
 
     const handleClearLoopInterval = () => {
-        clearInterval(loopInterval);
-        setLoopStart(0);
-        setLoopEnd(props.trackRef.current.duration);
-        setRepeat(false);
+      clearInterval(loopInterval);
+      setLoopStart(0);
+      setLoopEnd(props.trackRef.current.duration);
+      setRepeat(false);
     }
-
-    useEffect(() => {
-        if (loopStart >= 0 && loopEnd <= props.trackRef.current.duration) {
-            props.trackRef.current.currentTime = loopStart;
-            props.trackRef.current.play();
-            let interval = setInterval(() => {
-                if (props.trackRef.current.currentTime > loopEnd) {
-                    props.trackRef.current.currentTime = loopStart;
-                }
-            }, 100)
-            setLoopInterval(interval);
-        }
-    }, [loopStart, loopEnd])
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -302,7 +305,7 @@ const App = (props) => {
       <Box sx={{ color: 'black' }}>
         <Stack spacing={2} direction="row" alignItems="center">
           <VolumeDown />
-          <Slider aria-label="Volume" value={volume*100} onChange={handleChange} sx={{ color: '#2c97e8' }} />
+          <Slider aria-label="Volume" value={volume*100} onChange={handleChange} sx={{ color: sliderColor }} />
           <VolumeUp />
         </Stack>
       </Box>
@@ -347,38 +350,9 @@ const App = (props) => {
       }
     }
 
-    function calcPosition() {
-      return trackRef.current.currentTime * (100 / trackRef.current.duration);
-    }
-
-    const seekUpdate = () => {
-      let seekPosition = 0;
-      // Check if the current track duration is a legible number
-      if (!isNaN(trackRef.current.duration)) {
-        seekPosition = calcPosition();
-        setCurrentPosition(seekPosition);
-        calculateCurrentTime();
-      }
-    }
-
     function padSingleDigits(n) {
       return n < 10 ? `0${n}` : n;
     }
-
-    function calculateCurrentTime() {
-      let currMinutes = Math.floor(trackRef.current.currentTime / 60);
-      let currSeconds = Math.floor(trackRef.current.currentTime - currMinutes * 60);
-      let durMinutes = Math.floor(trackRef.current.duration / 60);
-      let durSeconds = Math.floor(trackRef.current.duration - durMinutes * 60);
-      setCurrentMinutes(currMinutes);
-      setCurrentSeconds(currSeconds);
-      setDurationMinutes(durMinutes);
-      setDurationSeconds(durSeconds);
-    }
-
-    useEffect(() => {
-      setTimeout(() => seekUpdate(), 1000);
-    }, [currentMinutes, currentSeconds, durationMinutes, durationSeconds, currentPosition]);
 
     return (
       <Box sx={{ color: 'black', width: '100%' }}>
@@ -388,7 +362,7 @@ const App = (props) => {
           aria-label="ProgressBar" 
           value={currentPosition ? currentPosition : 0} 
           onChange={handleSeek} 
-          sx={{ color: '#2c97e8' }} 
+          sx={{ color: sliderColor }} 
         />
         <p>{padSingleDigits(durationMinutes) + ":" + padSingleDigits(durationSeconds)}</p>
       </Stack>
@@ -510,6 +484,18 @@ const App = (props) => {
     }
   }
 
+  const resetDisplayValues = () => {
+    setLoopStart(-1);
+    setLoopEnd(100_000);
+    clearInterval(loopInterval);
+    setLoopInterval(0);
+    setCurrentPosition(0);
+    setCurrentMinutes(0);
+    setCurrentSeconds(0);
+    setDurationMinutes(0);
+    setDurationSeconds(0);
+  }
+
   const handleLoadedSongs = (songs, pName) => {
     setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
     setTrackLoaded(false);
@@ -624,27 +610,55 @@ const App = (props) => {
     handleLoadedSongs(newPlaylist, playlistName);
   }
 
+  const calcPosition = () => {
+    return trackRef.current.currentTime * (100 / trackRef.current.duration);
+  }
+
+  const progressUpdate = () => {
+    // Check if the current track duration is a legible number
+    if (!isNaN(trackRef.current.duration)) {
+      setCurrentPosition(calcPosition());
+      calculateCurrentTime();
+    }
+  }
+
+  const calculateCurrentTime = () => {
+    let currMinutes = Math.floor(trackRef.current.currentTime / 60);
+    let currSeconds = Math.floor(trackRef.current.currentTime - currMinutes * 60);
+    let durMinutes = Math.floor(trackRef.current.duration / 60);
+    let durSeconds = Math.floor(trackRef.current.duration - durMinutes * 60);
+    setCurrentMinutes(currMinutes);
+    setCurrentSeconds(currSeconds);
+    setDurationMinutes(durMinutes);
+    setDurationSeconds(durSeconds);
+  }
+
   useEffect(() => {
     if (restarting && !isPlaying) {
       setIsPlaying(true);
       setRestarting(false);
     } else {
       playPauseAudio();
+      if (songsLoaded.length > 0) {
+        // setMarqueeMessage(getMarqueeMessage());
+        setNowPlayingArtist(songsLoaded[trackIndex].name.split('.')[0]);
+        setNowPlayingSongName(songsLoaded[trackIndex].artist);
+      }
     }
-    setMarqueeMessage(getMarqueeMessage());
+    progressUpdate();
   }, [isPlaying]);
 
   useEffect(() => {
-    if (trackLoaded) {
-      setIsPlaying(true);
-    }
+    if (trackLoaded) setIsPlaying(true);
   }, [trackLoaded]);
 
   useEffect(() => {
     if (songsLoaded.length > 0) {
       loadSong(songsLoaded[0], () => {
         setTrackIndex(0);
-        setMarqueeMessage(getMarqueeMessage());
+        // setMarqueeMessage(getMarqueeMessage());
+        setNowPlayingArtist(songsLoaded[trackIndex].name.split('.')[0]);
+        setNowPlayingSongName(songsLoaded[trackIndex].artist);
       });
     }
   }, [songsLoaded])
@@ -663,6 +677,23 @@ const App = (props) => {
   useEffect(() => {
       trackRef.current.volume = volume;
   }, [volume])
+
+  useEffect(() => {
+    setTimeout(() => progressUpdate(), 1000);
+  }, [currentMinutes, currentSeconds, durationMinutes, durationSeconds, currentPosition]);
+
+  useEffect(() => {
+    if (loopStart >= 0 && loopEnd <= trackRef.current.duration) {
+        trackRef.current.currentTime = loopStart;
+        trackRef.current.play();
+        let interval = setInterval(() => {
+            if (trackRef.current.currentTime > loopEnd) {
+                trackRef.current.currentTime = loopStart;
+            }
+        }, 100)
+        setLoopInterval(interval);
+    }
+  }, [loopStart, loopEnd])
 
   return (
     <Box 
