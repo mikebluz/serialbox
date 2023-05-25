@@ -60,8 +60,8 @@ const App = (props) => {
 
   const handleLoadedSongs = (songs, pName) => {
     setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
+    setTrackLoaded(false);
     if (pName) setPlaylistName(pName);
-    loadSong(songs[0], () => setTrackIndex(0));
   }
 
   async function shuffle() {
@@ -179,7 +179,6 @@ const App = (props) => {
           <Playlist 
             playlist={songsLoaded}
             playlistName={playlistName}
-            setTrackLoaded={setTrackLoaded}
             toggleIsPlaying={toggleIsPlaying}
             handleChangeTrack={handleChangeTrack}
             isPlaying={isPlaying}
@@ -191,25 +190,27 @@ const App = (props) => {
   }
 
   const nextSong = () => {
-    let i = trackIndex;
-    i++;
-    setTrackLoaded(false);
-    toggleIsPlaying();
-    if (i === songsLoaded.length) {
-        i = 0;
+    if (!isLoading) {
+      let i = trackIndex;
+      i++;
+      toggleIsPlaying();
+      if (i === songsLoaded.length) {
+          i = 0;
+      }
+      handleChangeTrack(i);
     }
-    handleChangeTrack(i);
   }
 
   const previousSong = () => {
-    let i = trackIndex;
-    i--;
-    setTrackLoaded(false);
-    toggleIsPlaying();
-    if (i < 0) {
-        i = songsLoaded.length - 1;
+    if (!isLoading) {
+      let i = trackIndex;
+      i--;
+      toggleIsPlaying();
+      if (i < 0) {
+          i = songsLoaded.length - 1;
+      }
+      handleChangeTrack(i);
     }
-    handleChangeTrack(i);
   }
 
   const restart = () => {
@@ -220,6 +221,8 @@ const App = (props) => {
   }
 
   const handleChangeTrack = (trackIndex) => {
+    setTrackLoaded(false);
+    trackRef.current.pause();
     loadSong(songsLoaded[trackIndex], () => {
       setTrackIndex(trackIndex)
     });
@@ -243,21 +246,23 @@ const App = (props) => {
   }
 
   const playPauseAudio = async () => {
-    if (trackRef.current && trackRef.current.src.includes('blob')) {
-      if (isPlaying) {
-        console.log("playing")
-        trackRef.current.play();
+    if (!isLoading) {
+      if (trackRef.current && trackRef.current.src.includes('blob')) {
+        if (isPlaying) {
+          console.log("playing")
+          trackRef.current.play();
+        } else {
+          console.log("pausing")
+          trackRef.current.pause();
+        }
       } else {
-        console.log("pausing")
-        trackRef.current.pause();
+        console.log("oops", trackRef.current)
       }
-    } else {
-      console.log("oops", trackRef.current)
     }
   }
 
   const loadSong = (file, callback) => {
-    console.log('loadSong', file, trackRef.current)
+    console.log('loadSong called', file, trackRef.current)
     setIsLoading(true);
     if (trackRef.current) {
       getAccessToken((token) => {
@@ -277,7 +282,7 @@ const App = (props) => {
   useEffect(() => {
     console.log("isPlaying effect, setting isPlaying to true", restarting, isPlaying)
     if (restarting && !isPlaying) {
-      console.log("isPlaying effect, setting isPlaying to true")
+      console.log("isPlaying effect, done restarting, setting isPlaying to true")
       setIsPlaying(true);
       setRestarting(false);
     } else {
@@ -289,27 +294,30 @@ const App = (props) => {
   useEffect(() => {
     console.log('trackLoaded effect', trackRef.current, trackLoaded)
     if (trackLoaded) {
-      console.log("trackLoaded effect, setting isPlaying to true")
+      console.log("trackLoaded effect, track is loaded, starting isPlaying to true")
       setIsPlaying(true);
     }
   }, [trackLoaded]);
 
   useEffect(() => {
     console.log('songsLoaded effect', trackRef.current)
-    if (trackRef.current) {
-      console.log("setting src from songsLoaded effect")
-      setSrc('');
+    if (songsLoaded.length > 0) {
+      loadSong(songsLoaded[0], () => {
+        console.log("setting track index")
+        setTrackIndex(0);
+        console.log("Setting marquee")
+        setMarqueeMessage(getMarqueeMessage());
+      });
     }
-    console.log("Setting marquee")
-    setMarqueeMessage(getMarqueeMessage());
   }, [songsLoaded])
 
   useEffect(() => {
     if (trackRef.current.src.includes('blob')) {
-      console.log("src effect, loading file", trackRef.current.src, src)
+      console.log("src effect, song is loaded, src has been set, loading audio file", trackRef.current.src, src)
       trackRef.current.volume = 1;
       trackRef.current.load();
       trackRef.current.oncanplay = () => {
+        console.log("track is loaded and can play");
         setIsLoading(false);
         setTrackLoaded(true);
       };
@@ -330,7 +338,7 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <audio preload={false} src={src} ref={trackRef} onEnded={repeat ? restart : nextSong} onError={(e) => console.error('Error loading song', e.target.error)}/>
+      <audio preload={false} src={src} ref={trackRef} onEnded={repeat ? restart : nextSong} onError={(e) => console.error('Audio element error', e.target.error)}/>
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>

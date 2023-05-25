@@ -17,7 +17,6 @@ const Playlist = (props) => {
 	const trackRef = props.trackRef;
 
 	const handleSongClick = (i) => {
-		props.setTrackLoaded(false);
     	if (props.isPlaying) props.toggleIsPlaying();
 		props.handleChangeTrack(i)
 	}
