@@ -241,14 +241,14 @@ const App = (props) => {
             <Button 
               className="loop-start-btn" 
               onClick={handleSetLoopStart} 
-              sx={{...playerButtonStyle, width: '100%' }}
+              sx={{...playerButtonStyle, width: '100%', backgroundColor: loopStart > 0 ? 'grey' : 'black' }}
             >
               <p>Start</p>
             </Button>
             <Button 
               className="loop-end-btn" 
               onClick={handleSetLoopEnd} 
-              sx={{...playerButtonStyle, width: '100%' }}
+              sx={{...playerButtonStyle, width: '100%', backgroundColor: loopEnd <= trackRef.current.duration ? 'grey' : 'black' }}
             >
               <p>End</p>
             </Button>
@@ -491,16 +491,24 @@ const App = (props) => {
             <Options />
           </GridItem>
         </Grid>
+        {
+          songsLoaded.length > 0
+          &&
+          <Grid item xs={12} md={12} sx={gridBlockStyle}>
+            <NowPlaying />
+          </Grid>
+        }
+        {
+          songsLoaded.length > 0
+          &&
+          <Grid item xs={12} md={12} sx={gridBlockStyle}>
+            <Player />
+          </Grid>
+        }
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
-          <NowPlaying />
-        </Grid>
-        <Grid item xs={12} md={12} sx={gridBlockStyle}>
-          <Player />
-        </Grid>
-        <Grid item xs={12} md={12} sx={gridBlockStyle}>
-          <GridItem>
-            <Copyright />
-          </GridItem>
+        <GridItem>
+          <Copyright />
+        </GridItem>
         </Grid>
       </Grid>
     </Box>
