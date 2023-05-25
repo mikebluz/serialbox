@@ -48,7 +48,7 @@ export async function getAccessToken(callback) {
 	if (!getToken() || !valid) {
 		const client = window.google.accounts.oauth2.initTokenClient({
 			client_id: CLIENT_ID,
-			scope: 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.readonly',
+			scope: 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive',
 			// This callback is for calls on the client, i.e., requestAccessToken below
 			callback: (res) => {
 				if (!res.error) {
@@ -80,6 +80,7 @@ export const audioFileMimeTypes = [
 ];
 export async function fetchDriveFolders(name, accessToken) {
 	const q = `name contains '${name}'`;
+	console.log('q', q, accessToken)
 	const folderRes = await axios.get(`${GAPI_HOST}/drive/v3/files?pageSize=10&fields=files(id,name,mimeType)&q=${q}`, {
 		headers: {
 			"Authorization": `Bearer ${accessToken}`
@@ -118,6 +119,44 @@ export async function fetchDriveFileBlob(metadata, accessToken) {
 	return await fileRes.blob();
 }
 
+export async function uploadFile(data, accessToken) {
+	// const body = {
+	// 	requestBody: {
+	// 		name: 'thisisanothing',
+	// 		// parents: ['id of parent']
+	// 	},
+	// 	media: { 
+	// 		body: data,
+	// 		mimeType: 'audio/mpeg'
+	// 	},
+	// };
+	const [folder] = await fetchDriveFolders("bikdgjk", accessToken);
+	console.log('folder', folder)
+	const body = data;
+	const post = await axios.post(`${GAPI_HOST}/upload/drive/v3/files?uploadType=media`, body, {
+		headers: {
+			"Authorization": `Bearer ${accessToken}`,
+			"Content-Type": "audio/mpeg",
+		}
+	});
+	const updated = await axios.patch(`${GAPI_HOST}/drive/v3/files/${post.data.id}?addParents=${folder.id}`, {
+		name: "new name",
+		addParents: [folder.id],
+		mimeType: "audio/mpeg",
+	}, {
+		headers: {
+			"Authorization": `Bearer ${accessToken}`,
+		}
+	});
+	console.log("WHAT", updated);
+}
+
+
+/**
+ * 
+ * Helpers
+ * 
+ * */
 export function parseJwt (token) {
 	var base64Url = token.split('.')[1];
 	var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

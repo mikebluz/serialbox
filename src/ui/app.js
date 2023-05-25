@@ -33,7 +33,7 @@ import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
 import ProgressController from './components/progresscontroller.js';
 import Load from './components/load.js';
-import Shuffle from './components/shuffle.js';
+import Recorder from './record/rec.js';
 
 import {
   getAccessToken,
@@ -112,11 +112,6 @@ const App = (props) => {
             playlistName={playlistName}
             setPlaylistName={setPlaylistName}
           />
-          <Button         
-            style={buttonStyle} onClick={() => console.log('find')}
-          >
-            Find
-          </Button>
         </ButtonGroup>
       </Box>
     )
@@ -414,6 +409,9 @@ const App = (props) => {
   }
 
   useEffect(() => {
+    setTimeout(() => {
+      new Recorder();
+    }, 1000)
     if (restarting && !isPlaying) {
       setIsPlaying(true);
       setRestarting(false);
