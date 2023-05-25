@@ -80,7 +80,6 @@ export const audioFileMimeTypes = [
 ];
 export async function fetchDriveFolders(name, accessToken) {
 	const q = `name contains '${name}'`;
-	console.log('q', q, accessToken)
 	const folderRes = await axios.get(`${GAPI_HOST}/drive/v3/files?pageSize=10&fields=files(id,name,mimeType)&q=${q}`, {
 		headers: {
 			"Authorization": `Bearer ${accessToken}`
@@ -120,18 +119,7 @@ export async function fetchDriveFileBlob(metadata, accessToken) {
 }
 
 export async function uploadFile(data, accessToken) {
-	// const body = {
-	// 	requestBody: {
-	// 		name: 'thisisanothing',
-	// 		// parents: ['id of parent']
-	// 	},
-	// 	media: { 
-	// 		body: data,
-	// 		mimeType: 'audio/mpeg'
-	// 	},
-	// };
-	const [folder] = await fetchDriveFolders("bikdgjk", accessToken);
-	console.log('folder', folder)
+	const [folder] = await fetchDriveFolders("hrkl", accessToken);
 	const body = data;
 	const post = await axios.post(`${GAPI_HOST}/upload/drive/v3/files?uploadType=media`, body, {
 		headers: {
@@ -148,7 +136,7 @@ export async function uploadFile(data, accessToken) {
 			"Authorization": `Bearer ${accessToken}`,
 		}
 	});
-	console.log("WHAT", updated);
+	return updated.data;
 }
 
 

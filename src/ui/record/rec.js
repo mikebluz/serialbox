@@ -49,13 +49,9 @@ export default class Recorder {
 	}
 
 	async sendData(data) {
-		console.log('data', data);
 		getAccessToken(async (token) => {
-
 			const upload = await uploadFile(data, token);
-
 			console.log("upload result", upload)
-
 		})
 	}
 }
