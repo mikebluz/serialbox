@@ -33,7 +33,6 @@ import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
 import Load from './components/load.js';
 import Shuffle from './components/shuffle.js';
-import VolumeSlider from './components/volumeslider.js';
 
 import {
   getAccessToken,
@@ -295,6 +294,21 @@ const App = (props) => {
     )
   }
 
+  const VolumeSlider = (props) => {
+    const handleChange = (event, newValue) => {
+      setVolume(newValue / 100);
+    };
+    return (
+      <Box sx={{ color: 'black' }}>
+        <Stack spacing={2} direction="row" alignItems="center">
+          <VolumeDown />
+          <Slider aria-label="Volume" value={volume*100} onChange={handleChange} sx={{ color: '#2c97e8' }} />
+          <VolumeUp />
+        </Stack>
+      </Box>
+    );
+  }
+
   const ProgressController = (props) => {
 
     const [isHovering, setIsHovering] = useState(false)
@@ -472,7 +486,6 @@ const App = (props) => {
 
   const Player = () => {
     if (songsLoaded.length > 0) {
-      console.log("MOUNTING PLAYER")
       return (
         <Box sx={{width: '100%'}}>
           <PlayerControls 
@@ -558,7 +571,6 @@ const App = (props) => {
 
   const toggleIsPlaying = () => {
     if (!isPlaying) {
-      console.log("toggleIsPlaying, setting isPlaying to true")
       setIsPlaying(true);
     } else {
       setIsPlaying(false);
@@ -577,29 +589,21 @@ const App = (props) => {
     if (!isLoading) {
       if (trackRef.current && trackRef.current.src.includes('blob')) {
         if (isPlaying) {
-          console.log("playing")
           trackRef.current.play();
         } else {
-          console.log("pausing")
           trackRef.current.pause();
         }
-      } else {
-        console.log("oops", trackRef.current)
       }
     }
   }
 
   const loadSong = (file, callback) => {
-    console.log('loadSong called', file, trackRef.current)
     setIsLoading(true);
     if (trackRef.current) {
       getAccessToken((token) => {
-        console.log("fetching song")
         const blob = fetchDriveFileBlob(file, token)
           .then((blob) => {
-            console.log("song fetched");
             const src = URL.createObjectURL(blob);
-            console.log("setting src", src);
             setSrc(src);
             if (callback) callback();
           });
@@ -631,9 +635,7 @@ const App = (props) => {
   }, [isPlaying]);
 
   useEffect(() => {
-    console.log('trackLoaded effect', trackRef.current, trackLoaded)
     if (trackLoaded) {
-      console.log("trackLoaded effect, track is loaded, starting isPlaying to true")
       setIsPlaying(true);
     }
   }, [trackLoaded]);
@@ -649,16 +651,18 @@ const App = (props) => {
 
   useEffect(() => {
     if (trackRef.current.src.includes('blob')) {
-      console.log("src effect, song is loaded, src has been set, loading audio file", trackRef.current.src, src)
       trackRef.current.volume = 1;
       trackRef.current.load();
       trackRef.current.oncanplay = () => {
-        console.log("track is loaded and can play");
         setIsLoading(false);
         setTrackLoaded(true);
       };
     }
   }, [src])
+
+  useEffect(() => {
+      trackRef.current.volume = volume;
+  }, [volume])
 
   return (
     <Box 
