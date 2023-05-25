@@ -64,3 +64,5 @@ export const gridBlockStyle = {
 	width: '100%',
 	margin: '10px 10px 0px 10px'
 };
+
+export const sliderColor = "#ff7c0a";

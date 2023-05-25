@@ -31,6 +31,7 @@ import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 import GridItem from './components/griditem.js';
 import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
+import ProgressController from './components/progresscontroller.js';
 import Load from './components/load.js';
 import Shuffle from './components/shuffle.js';
 
@@ -50,13 +51,12 @@ import {
   headerFooterStyle,
   playerButtonStyle, 
   progressButtonStyle,
+  sliderColor
 } from './styles/styles.js';
 
 import {getRandomInt} from './helpers.js';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
-
-const sliderColor = "#ff7c0a";
 
 // ToDo: break out into separate components, being careful not to break any state change flows
 
@@ -77,23 +77,16 @@ const App = (props) => {
   const [trackLoaded, setTrackLoaded] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
   const [volume, setVolume] = useState(1);
-  const [repeat, setRepeat] = useState(false);
   const [restarting, setRestarting] = useState(false);
   const [loopStart, setLoopStart] = useState(-1);
   const [loopEnd, setLoopEnd] = useState(100_000);
   const [loopInterval, setLoopInterval] = useState(0);
-  const [currentPosition, setCurrentPosition] = useState(0);
-  const [currentMinutes, setCurrentMinutes] = useState(0);
-  const [currentSeconds, setCurrentSeconds] = useState(0);
-  const [durationMinutes, setDurationMinutes] = useState(0);
-  const [durationSeconds, setDurationSeconds] = useState(0);
   const [updateTimer, setUpdateTimer] = useState(0);
+  const [isRepeating, setIsRepeating] = useState(false);
 
   // Display
   const [nowPlayingSongName, setNowPlayingSongName] = useState('Nothing loaded');
   const [nowPlayingArtist, setNowPlayingArtist] = useState('Nothing loaded');
-
-  const [isHovering, setIsHovering] = useState(false)
 
   const Greeting = () => {
     return (
@@ -172,12 +165,8 @@ const App = (props) => {
 
   const PlayerControls = () => {
 
-    const handleRepeat = () => {
-      trackRef.current.loop = !repeat;
-      setRepeat(!repeat);
-      if (!repeat) {
-          clearInterval(loopInterval);
-      }
+    const toggleIsRepeating = () => {
+      setIsRepeating(!isRepeating);
     }
 
     const handleSetLoopStart = () => {
@@ -194,8 +183,18 @@ const App = (props) => {
       clearInterval(loopInterval);
       setLoopStart(0);
       setLoopEnd(trackRef.current.duration);
-      setRepeat(false);
+      setIsRepeating(false);
     }
+
+    useEffect(() => {
+      trackRef.current.loop = isRepeating;
+      if (!isRepeating) {
+        clearInterval(loopInterval);
+        trackRef.current.onended = nextSong;
+      } else {
+        trackRef.current.onended = restart;
+      }
+    }, [isRepeating])
 
     return (
       <Box sx={{ width: '100%' }}>
@@ -229,14 +228,14 @@ const App = (props) => {
             </Button>
             <Button 
               className="repeat-btn" 
-              onClick={handleRepeat} 
-              sx={{...playerButtonStyle, width: '100%', backgroundColor: repeat ? 'grey' : 'black'}}
+              onClick={toggleIsRepeating} 
+              sx={{...playerButtonStyle, width: '100%', backgroundColor: isRepeating ? 'grey' : 'black'}}
             >
               <RepeatOutlinedIcon />
             </Button>
         </ButtonGroup>
         {
-          repeat
+          isRepeating
           &&
           <ButtonGroup variant="contained" aria-label="outlined button group" size="small" sx={buttonGroupStyle}>
             <Button 
@@ -253,16 +252,9 @@ const App = (props) => {
             >
               <p>End</p>
             </Button>
-            <Button 
-              className="loop-end-btn" 
-              onClick={handleClearLoopInterval} 
-              sx={{...playerButtonStyle, width: '100%' }}
-            >
-              <p>Clear</p>
-            </Button>
           </ButtonGroup>
         }
-        <ProgressController />
+        <ProgressController trackRef={trackRef} />
         <VolumeSlider />
       </Box>
     )
@@ -283,126 +275,6 @@ const App = (props) => {
     );
   }
 
-  const ProgressController = () => {
-
-    const handleSeek = (event, newValue) => {
-      seek(newValue > 0 ? newValue : 0);
-    };
-
-    function seek(newValue) {
-      if (trackRef.current.duration) {
-        trackRef.current.currentTime = trackRef.current.duration * (newValue / 100);
-        setCurrentPosition(newValue);
-        calculateCurrentTime();
-      }
-    }
-
-    function scan(seconds) {
-      if (trackRef.current.duration) {
-        if (seconds === 0) {
-          trackRef.current.currentTime = 0;
-        } else {
-          trackRef.current.currentTime = (trackRef.current.currentTime + seconds) > 0 ? trackRef.current.currentTime + seconds : 0;
-        }
-        setCurrentPosition(trackRef.current.currentTime * (100 / trackRef.current.duration));
-        calculateCurrentTime();
-      }
-    }
-
-    function padSingleDigits(n) {
-      return n < 10 ? `0${n}` : n;
-    }
-
-    return (
-      <Box sx={{ color: 'black', width: '100%' }}>
-      <Stack spacing={2} direction="row" alignItems="center">
-        <p>{padSingleDigits(currentMinutes) + ":" + padSingleDigits(currentSeconds)}</p>
-        <Slider 
-          aria-label="ProgressBar" 
-          value={currentPosition ? currentPosition : 0} 
-          onChange={handleSeek} 
-          sx={{ color: sliderColor }} 
-        />
-        <p>{padSingleDigits(durationMinutes) + ":" + padSingleDigits(durationSeconds)}</p>
-      </Stack>
-      <ButtonGroup 
-        variant="contained" 
-        aria-label="outlined button group" 
-        size="large" 
-        sx={{ width: '100%' }}
-      >
-          <Button 
-              className="restart" 
-              onClick={() => scan(0)} 
-              sx={{...progressButtonStyle}}
-          >
-              <ReplayOutlinedIcon />
-          </Button>
-      </ButtonGroup>
-      <Stack spacing={2} direction="row" alignItems="center">
-        <ButtonGroup 
-          variant="contained" 
-          aria-label="outlined button group" 
-          size="large"
-          sx={{ width: '100%' }}
-        >
-            <Button 
-                className="rewind-5" 
-                onClick={() => scan(-5)}
-          sx={{...progressButtonStyle}}
-            >
-                <Replay5OutlinedIcon />
-            </Button>
-            <Button 
-                className="rewind-10" 
-                onClick={() => scan(-10)}
-          sx={{...progressButtonStyle}}
-            >
-                <Replay10OutlinedIcon />
-            </Button>
-            <Button 
-                className="rewind-30" 
-                onClick={() => scan(-30)}
-          sx={{...progressButtonStyle}}
-            >
-                <Replay30OutlinedIcon />
-            </Button>
-        </ButtonGroup>
-      </Stack>
-      <Stack spacing={2} direction="row" alignItems="center">
-        <ButtonGroup 
-          variant="contained" 
-          aria-label="outlined button group" 
-          size="large"
-          sx={{ width: '100%' }}
-        >
-          <Button 
-              className="rewind-5" 
-              onClick={() => scan(5)} 
-              sx={{...progressButtonStyle}}
-          >
-              <Forward5OutlinedIcon />
-          </Button>
-          <Button 
-              className="rewind-10" 
-              onClick={() => scan(10)} 
-              sx={{...progressButtonStyle}}
-          >
-              <Forward10OutlinedIcon />
-          </Button>
-          <Button 
-              className="rewind-30" 
-              onClick={() => scan(30)} 
-              sx={{...progressButtonStyle}}
-          >
-              <Forward30OutlinedIcon />
-          </Button>
-        </ButtonGroup>
-      </Stack>
-      </Box>
-    );
-  }
-
   const Player = () => {
     if (songsLoaded.length > 0) {
       return (
@@ -411,8 +283,6 @@ const App = (props) => {
             playPause={handlePlayPauseClick}
             nextSong={nextSong}
             previousSong={previousSong}
-            repeatSong={setRepeat}
-            repeat={repeat}
             trackRef={trackRef}
             isPlaying={isPlaying}
            />
@@ -427,18 +297,6 @@ const App = (props) => {
         </Box>
       )
     }
-  }
-
-  const resetDisplayValues = () => {
-    setLoopStart(-1);
-    setLoopEnd(100_000);
-    clearInterval(loopInterval);
-    setLoopInterval(0);
-    setCurrentPosition(0);
-    setCurrentMinutes(0);
-    setCurrentSeconds(0);
-    setDurationMinutes(0);
-    setDurationSeconds(0);
   }
 
   const handleLoadedSongs = (songs, pName) => {
@@ -555,29 +413,6 @@ const App = (props) => {
     handleLoadedSongs(newPlaylist, playlistName);
   }
 
-  const calcPosition = () => {
-    return trackRef.current.currentTime * (100 / trackRef.current.duration);
-  }
-
-  const progressUpdate = () => {
-    // Check if the current track duration is a legible number
-    if (!isNaN(trackRef.current.duration)) {
-      setCurrentPosition(calcPosition());
-      calculateCurrentTime();
-    }
-  }
-
-  const calculateCurrentTime = () => {
-    let currMinutes = Math.floor(trackRef.current.currentTime / 60);
-    let currSeconds = Math.floor(trackRef.current.currentTime - currMinutes * 60);
-    let durMinutes = Math.floor(trackRef.current.duration / 60);
-    let durSeconds = Math.floor(trackRef.current.duration - durMinutes * 60);
-    setCurrentMinutes(currMinutes);
-    setCurrentSeconds(currSeconds);
-    setDurationMinutes(durMinutes);
-    setDurationSeconds(durSeconds);
-  }
-
   useEffect(() => {
     if (restarting && !isPlaying) {
       setIsPlaying(true);
@@ -590,7 +425,6 @@ const App = (props) => {
         setNowPlayingSongName(songsLoaded[trackIndex].artist);
       }
     }
-    progressUpdate();
   }, [isPlaying]);
 
   useEffect(() => {
@@ -624,10 +458,6 @@ const App = (props) => {
   }, [volume])
 
   useEffect(() => {
-    setTimeout(() => progressUpdate(), 1000);
-  }, [currentMinutes, currentSeconds, durationMinutes, durationSeconds, currentPosition]);
-
-  useEffect(() => {
     if (loopStart >= 0 && loopEnd <= trackRef.current.duration) {
         trackRef.current.currentTime = loopStart;
         trackRef.current.play();
@@ -649,7 +479,7 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <audio preload={'false'} src={src} ref={trackRef} onEnded={repeat ? restart : nextSong} onError={(e) => console.error('Audio element error', e.target.error)}/>
+      <audio preload={'false'} src={src} ref={trackRef} onError={(e) => console.error('Audio element error', e.target.error)}/>
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>
