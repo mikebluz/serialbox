@@ -454,7 +454,9 @@ const App = (props) => {
         setIsLoading(false);
         setTrackLoaded(true);
       };
-      // Below is a dirty hack to get duration to display correctly (for some files, it displays as Infinity)
+      // Below is a dirty hack to get duration to display correctly on the first play for some very short files
+      // First play the bar jumps forward then jumps back, but once they've been played once it displays correctly
+      // Without this, the progress bar does not move and the current time and duration values are "Infi:NaN"
       trackRef.current.addEventListener('loadedmetadata', () => {
         if (trackRef.current.duration === Infinity) {
           trackRef.current.currentTime = 1e101
