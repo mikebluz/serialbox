@@ -33,7 +33,7 @@ import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
 import ProgressController from './components/progresscontroller.js';
 import Load from './components/load.js';
-import Recorder from './record/rec.js';
+import AudioRecorder from './components/record.js';
 
 import {
   getAccessToken,
@@ -63,6 +63,7 @@ const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleuserconten
 const App = (props) => {
 
   const trackRef = useRef();
+  const recordRef = useRef();
 
   // Loading
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +84,7 @@ const App = (props) => {
   const [loopInterval, setLoopInterval] = useState(0);
   const [updateTimer, setUpdateTimer] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
+  const [recorder, setRecorder] = useState(undefined);
 
   // Display
   const [nowPlayingSongName, setNowPlayingSongName] = useState('Nothing loaded');
@@ -112,6 +114,7 @@ const App = (props) => {
             playlistName={playlistName}
             setPlaylistName={setPlaylistName}
           />
+          <AudioRecorder recordRef={recordRef}/>
         </ButtonGroup>
       </Box>
     )
@@ -409,9 +412,6 @@ const App = (props) => {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      new Recorder();
-    }, 1000)
     if (restarting && !isPlaying) {
       setIsPlaying(true);
       setRestarting(false);
@@ -478,6 +478,7 @@ const App = (props) => {
       maxWidth="100vw"
     >
       <audio preload={'false'} src={src} ref={trackRef} onError={(e) => console.error('Audio element error', e.target.error)}/>
+      <audio id="recordedAudio" ref={recordRef}></audio>        
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>

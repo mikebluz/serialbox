@@ -23,13 +23,6 @@ new Promise((res, rej) => {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <div>
-    <p>
-      <button type="button" id="record">Record</button>
-      <button type="button" id="stopRecord" disabled>Stop</button>
-    </p>
-    <p>
-      <audio id="recordedAudio"></audio>        
-    </p>
     <ThemeProvider theme={theme}>
       {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
       <CssBaseline />
