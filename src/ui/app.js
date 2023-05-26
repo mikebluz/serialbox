@@ -166,18 +166,15 @@ const App = (props) => {
 
     const toggleIsRepeating = () => {
       setIsRepeating(!isRepeating);
-      console.log(loopStart, loopEnd);
     }
 
     const handleSetLoopStart = () => {
       const start = trackRef.current.currentTime;
-      console.log('setting loop start', start);
       setLoopStart(start);
     }
 
     const handleSetLoopEnd = () => {
       const end = trackRef.current.currentTime;
-      console.log('setting loop end', end);
       setLoopEnd(end);
     }
 
@@ -197,10 +194,6 @@ const App = (props) => {
         trackRef.current.onended = restart;
       }
     }, [isRepeating])
-
-    useEffect(() => {
-      console.log('loop effects', loopStart, loopEnd);
-    }, [loopStart, loopEnd])
 
     return (
       <Box sx={{ width: '100%' }}>
@@ -273,9 +266,9 @@ const App = (props) => {
     return (
       <Box sx={{ color: 'black' }}>
         <Stack spacing={2} direction="row" alignItems="center">
-          <VolumeDown />
+          <VolumeDown onClick={(e) => handleChange(e, 0)}/>
           <Slider aria-label="Volume" value={volume*100} onChange={handleChange} sx={{ color: sliderColor }} />
-          <VolumeUp />
+          <VolumeUp onClick={(e) => handleChange(e, 100)}/>
         </Stack>
       </Box>
     );
@@ -466,7 +459,6 @@ const App = (props) => {
       function getDuration() {
         trackRef.current.currentTime = 0
         trackRef.current.removeEventListener('timeupdate', getDuration)
-        console.log(trackRef.current.duration)
       }
     }
   }, [src])

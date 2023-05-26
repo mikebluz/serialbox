@@ -117,11 +117,11 @@ const Playlists = (props) => {
 							}
 							</Select>
 						</FormControl>
+						<DialogActions>
+							<Button onClick={handleSelect} style={{...buttonStyle, width: '100%'}}>Select</Button>
+						</DialogActions>  
 				    </Box>
 				}
-				<DialogActions>
-					<Button onClick={handleSelect} style={buttonStyle}>Select</Button>
-				</DialogActions>  
 				<DialogContentText>
 					Or generate a new playlist consisting of random songs from your song bank
 				</DialogContentText>

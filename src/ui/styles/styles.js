@@ -1,11 +1,15 @@
+// ToDo: move to MUI Theme
+
+export const neonGreen = '#39ff2b';
+
 export const appStyle = {
 	backgroundColor: 'black',
 	color: 'white',
 }
 
 export const buttonStyle = {
-	backgroundColor: '#bde2ff',
-	color: 'black',
+	backgroundColor: 'black',
+	color: 'white',
 	'&:hover': {
 		cursor: 'arrow',
 	},
@@ -26,7 +30,7 @@ export const componentDisplayStyle = {
 };
 
 export const songStyle = {
-	backgroundColor: '#39ff2b',
+	backgroundColor: neonGreen,
 	border: '3px solid black',
 	padding: '10px',
 	margin: '5px',
@@ -65,4 +69,4 @@ export const gridBlockStyle = {
 	margin: '10px 10px 0px 10px'
 };
 
-export const sliderColor = "#ff7c0a";
+export const sliderColor = 'black';
