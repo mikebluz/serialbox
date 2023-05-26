@@ -55,7 +55,7 @@ const AudioRecorder = (props) => {
 
 	const saveToDrive = async (data, callback) => {
 		getAccessToken(async (token) => {
-			const upload = await uploadFile(data, token);
+			const upload = await uploadFile(data, songName, folderName, token);
 			callback(upload);
 		})
 	}
@@ -70,14 +70,17 @@ const AudioRecorder = (props) => {
 				recordRef.src = URL.createObjectURL(blob);
 				// recordRef.controls = true;
 				// recordRef.autoplay = true;
-				saveToDrive(blob, (res) => {
-					console.log('saved to drive', res)
+				saveToDrive(blob, async (data) => {
+					await axios.post(`${process.env.REACT_APP_SERVER_HOST}/songs`, {
+						name: songName,
+						folderName,
+						artist: artistName,
+						id: data.id,
+						mimeType: data.mimeType
+					});
 					handleClose();
 				})
 		  	}
-		}
-		stream.onremovetrack = (e) => {
-			console.log('onremovetrack', e)
 		}
 	    rec.start();
 	}

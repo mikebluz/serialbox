@@ -114,7 +114,19 @@ app.post('/playlists', async (req, res) => {
   await Song.sync()
   await PlaylistSong.sync();
   res.status(200).send(JSON.stringify(playlist));
-});
+})
+
+app.post('/songs', async (req, res) => {
+  const createdSong = await Song.create({
+    name: req.body.name,
+    artist: req.body.artist ?? 'unknown',
+    folderName: req.body.folderName,
+    gDriveId: req.body.id,
+    mimeType: req.body.mimeType,
+  })
+  console.log(createdSong);
+  res.status(200).send(createdSong);
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

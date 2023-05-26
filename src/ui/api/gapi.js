@@ -118,8 +118,8 @@ export async function fetchDriveFileBlob(metadata, accessToken) {
 	return await fileRes.blob();
 }
 
-export async function uploadFile(data, accessToken) {
-	const [folder] = await fetchDriveFolders("hrkl", accessToken);
+export async function uploadFile(data, songName, folderName, accessToken) {
+	const [folder] = await fetchDriveFolders(folderName, accessToken);
 	const body = data;
 	const post = await axios.post(`${GAPI_HOST}/upload/drive/v3/files?uploadType=media`, body, {
 		headers: {
@@ -128,7 +128,7 @@ export async function uploadFile(data, accessToken) {
 		}
 	});
 	const updated = await axios.patch(`${GAPI_HOST}/drive/v3/files/${post.data.id}?addParents=${folder.id}`, {
-		name: "new name",
+		name: songName,
 		addParents: [folder.id],
 		mimeType: "audio/mpeg",
 	}, {
@@ -138,7 +138,6 @@ export async function uploadFile(data, accessToken) {
 	});
 	return updated.data;
 }
-
 
 /**
  * 
