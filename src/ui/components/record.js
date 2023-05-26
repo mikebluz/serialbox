@@ -51,7 +51,6 @@ const AudioRecorder = (props) => {
 		setIsRecording(false);
 	    setStartButtonEnabled(true);
 	    setStopButtonEnabled(false);
-		rec.stop();
 	}
 
 	const saveToDrive = async (data, callback) => {
@@ -64,7 +63,7 @@ const AudioRecorder = (props) => {
 	const record = (stream) => {
 		const rec = new MediaRecorder(stream);
 		setRec(rec);
-		rec.ondataavailable = e => {
+		rec.ondataavailable = (e) => {
 			audioChunks.push(e.data);
 			if (rec.state == "inactive"){
 				let blob = new Blob(audioChunks,{type:'audio/mp3'});
@@ -77,6 +76,9 @@ const AudioRecorder = (props) => {
 				})
 		  	}
 		}
+		stream.onremovetrack = (e) => {
+			console.log('onremovetrack', e)
+		}
 	    rec.start();
 	}
 
@@ -84,8 +86,8 @@ const AudioRecorder = (props) => {
 		if (isRecording) {
 			navigator.mediaDevices.getUserMedia({ audio:true })
 				.then(stream => { record(stream) });
-		} else {
-
+		} else if (rec) {
+			rec.stop();
 		}
 	}, [isRecording])
 
