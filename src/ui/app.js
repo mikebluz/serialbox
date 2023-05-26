@@ -141,7 +141,7 @@ const App = (props) => {
             color: 'black', 
             color: '#39ff2b', 
             fontFamily: 'courier',
-            padding: '10px',
+            padding: '10px 10px 5px 15px',
             margin: '0px'
           }}
         >
@@ -152,7 +152,7 @@ const App = (props) => {
             color: 'black', 
             color: '#39ff2b', 
             fontFamily: 'courier',
-            padding: '10px',
+            padding: '5px 10px 10px 15px',
             margin: '0px'
           }}
         >

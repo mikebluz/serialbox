@@ -86,7 +86,7 @@ const Playlists = (props) => {
 				onClick={handleClickOpen}
 				style={buttonStyle}
 			>
-				Playlists
+				Load
 			</Button>
 			<Dialog
 				open={open}
@@ -94,7 +94,7 @@ const Playlists = (props) => {
 				aria-labelledby="modal-modal-title"
 				aria-describedby="modal-modal-description"
 			>	 
-		        <DialogTitle>Playlists</DialogTitle>
+		        <DialogTitle>Load Playlist</DialogTitle>
 				<DialogContent>
 				{
 					playlists.length > 0
@@ -103,7 +103,7 @@ const Playlists = (props) => {
 						<DialogContentText>
 							Choose existing
 						</DialogContentText>
-						<FormControl fullWidth>
+						<FormControl fullWidth sx={{ marginTop: '5px' }}>
 							<InputLabel id="demo-simple-select-label">Playlist</InputLabel>
 							<Select
 								labelId="demo-simple-select-label"
@@ -125,8 +125,8 @@ const Playlists = (props) => {
 				<DialogContentText>
 					Or generate a new playlist consisting of random songs from your song bank
 				</DialogContentText>
-				<TextField id="rndm-playlist-size" label="Enter integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%'}}/>
-		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%'}}/>
+				<TextField id="rndm-playlist-size" label="Enter integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
+		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleRandom} style={buttonStyle}>Random</Button>

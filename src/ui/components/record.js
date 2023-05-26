@@ -61,12 +61,14 @@ const AudioRecorder = (props) => {
 	}
 
 	const record = (stream) => {
-		const rec = new MediaRecorder(stream);
+		const rec = new MediaRecorder(stream, {
+			audioBitsPerSecond: '128000',
+		});
 		setRec(rec);
 		rec.ondataavailable = (e) => {
 			audioChunks.push(e.data);
 			if (rec.state == "inactive"){
-				let blob = new Blob(audioChunks,{type:'audio/mp3'});
+				let blob = new Blob(audioChunks,{ type:'audio/mpeg' });
 				recordRef.src = URL.createObjectURL(blob);
 				// recordRef.controls = true;
 				// recordRef.autoplay = true;

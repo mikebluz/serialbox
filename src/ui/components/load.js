@@ -16,6 +16,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined';
 
 
 const Load = (props) => {
@@ -74,7 +75,7 @@ const Load = (props) => {
 				onClick={handleClickOpen}
 				style={buttonStyle}
 			>
-				Load
+				<AddToDriveOutlinedIcon />
 			</Button>
 			<Dialog
 			  open={open}
@@ -82,7 +83,7 @@ const Load = (props) => {
 			  aria-labelledby="modal-modal-title"
 			  aria-describedby="modal-modal-description"
 			>	 
-        <DialogTitle>Create Playlist</DialogTitle>
+        <DialogTitle><AddToDriveOutlinedIcon /> Create Playlist</DialogTitle>
 				<DialogContent>
 				  <DialogContentText>
 						Search your Google Drive folders by name for audio to load.
@@ -93,14 +94,14 @@ const Load = (props) => {
   					{ audioFileMimeTypes.map((mt) => <li key={mt}>{mt}</li>) }
 				  </ul>
 				  <Box sx={{ marginTop: '10px' }}>
-						<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%'}}/>
-						<TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)} sx={{width: '100%'}}/>
-						<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%'}}/>
+						<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+						<TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+						<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
 				  </Box>
 				</DialogContent>
 				<DialogActions>
 				<ButtonGroup>
-				  <Button onClick={handleClick} style={buttonStyle}>Load</Button>
+				  <Button onClick={handleClick} style={buttonStyle}>Create</Button>
 				  <Button onClick={handleClose} style={buttonStyle}>Cancel</Button>
 				</ButtonGroup>
 				</DialogActions>       

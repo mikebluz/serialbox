@@ -30,7 +30,7 @@ const Playlist = (props) => {
 	            color: 'black', 
 	            color: '#39ff2b', 
 	            fontFamily: 'courier',
-	            padding: '10px',
+	            padding: '0px 0px 10px 0px',
 	            margin: '0px',
 	            fontSize: '14pt'
 	          }}
@@ -38,7 +38,7 @@ const Playlist = (props) => {
 				Playlist: {props.playlistName}
 			</p>
 			<Button         
-				style={{...buttonStyle, width: '100%', backgroundColor: neonGreen, color: 'black'}}
+				style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
 				onClick={props.shuffle}
 			>
 				Shuffle
