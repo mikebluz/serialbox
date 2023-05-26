@@ -71,12 +71,18 @@ const AudioRecorder = (props) => {
 				// recordRef.controls = true;
 				// recordRef.autoplay = true;
 				saveToDrive(blob, async (data) => {
-					await axios.post(`${process.env.REACT_APP_SERVER_HOST}/songs`, {
-						name: songName,
-						folderName,
+					await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
+						name: folderName,
+						email: props.user.email,
+						songs: JSON.stringify({
+							[folderName]: [{
+								name: songName,
+								artist: artistName,
+								id: data.id,
+								mimeType: data.mimeType
+							}]
+						}),
 						artist: artistName,
-						id: data.id,
-						mimeType: data.mimeType
 					});
 					handleClose();
 				})
@@ -116,7 +122,7 @@ const AudioRecorder = (props) => {
 				  </DialogContentText>
 				  <Box sx={{ marginTop: '10px' }}>
 						<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%'}}/>
-						<TextField id="playlist-name" label="Enter song name" variant="outlined" onChange={(e) => setSongName(e.target.value)} sx={{width: '100%'}}/>
+						<TextField id="playlist-name" label="Enter song name" variant="outlined" onChange={(e) => setSongName(`${e.target.value}.mp3`)} sx={{width: '100%'}}/>
 						<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%'}}/>
 				  </Box>
 				</DialogContent>

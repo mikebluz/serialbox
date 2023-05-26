@@ -53,6 +53,8 @@ const ProgressController = (props) => {
 	const [durationMinutes, setDurationMinutes] = useState(durMinutesInit);
 	const [durationSeconds, setDurationSeconds] = useState(calculateDurationSeconds(durMinutesInit));
 
+	console.log("trackRef in ProgresController", trackRef.current.duration, trackRef.current.currentTime);
+
 	const handleSeek = (event, newValue) => {
 	  seek(newValue > 0 ? newValue : 0);
 	};

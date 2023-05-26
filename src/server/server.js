@@ -80,6 +80,7 @@ app.post('/playlists/random', async (req, res) => {
 // ToDo: Separate the REST calls into separate endpoints and orchestrate on the front end ?
 // ToDo: Handle "already exists" errors
 app.post('/playlists', async (req, res) => {
+  console.log("req.body.songs", req.body.songs)
   const user = await User.findOne({ where: { email: req.body.email } });
   const songsRaw = JSON.parse(req.body.songs);
   const playlist = await Playlist.create({
@@ -88,6 +89,7 @@ app.post('/playlists', async (req, res) => {
   });
   await Playlist.sync();
   for (const [folderName, songs] of Object.entries(songsRaw)) {
+    console.log('songs', songs)
     songs.forEach(async (song) => {
       try {
         const createdSong = await Song.create({
@@ -110,7 +112,7 @@ app.post('/playlists', async (req, res) => {
         })
       }
     });
-  }
+  };
   await Song.sync()
   await PlaylistSong.sync();
   res.status(200).send(JSON.stringify(playlist));
@@ -123,8 +125,7 @@ app.post('/songs', async (req, res) => {
     folderName: req.body.folderName,
     gDriveId: req.body.id,
     mimeType: req.body.mimeType,
-  })
-  console.log(createdSong);
+  });
   res.status(200).send(createdSong);
 })
 

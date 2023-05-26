@@ -114,7 +114,7 @@ const App = (props) => {
             playlistName={playlistName}
             setPlaylistName={setPlaylistName}
           />
-          <AudioRecorder recordRef={recordRef}/>
+          <AudioRecorder user={props.user} recordRef={recordRef}/>
         </ButtonGroup>
       </Box>
     )
@@ -448,6 +448,20 @@ const App = (props) => {
         setIsLoading(false);
         setTrackLoaded(true);
       };
+      // Below is a dirty hack to get duration to display correctly (for some files, it displays as Infinity)
+      // ToDo: it still shows infinity for both currentTime and duration when switching tracks, look
+      // into fixing if possibe
+      trackRef.current.addEventListener('loadedmetadata', () => {
+        if (trackRef.current.duration === Infinity) {
+          trackRef.current.currentTime = 1e101
+          trackRef.current.addEventListener('timeupdate', getDuration)
+        }
+      })
+      function getDuration() {
+        trackRef.current.currentTime = 0
+        trackRef.current.removeEventListener('timeupdate', getDuration)
+        console.log(trackRef.current.duration)
+      }
     }
   }, [src])
 

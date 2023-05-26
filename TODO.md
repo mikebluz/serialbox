@@ -1,9 +1,8 @@
 ToDos:
 
-- Notifications (someone has shared a playlist with you)
+- Add songs view that allows for manual playlist creation
+- Add ability to edit song name and artist
+- Comments (on songs/playlists)
+- Notifications (e.g., someone has shared a playlist with you, or commented on your song/playlist)
     - Direct/Group messaging
 - Add ability to play multiple tracks at once (mixer mode)
-- Recorder
-    - Add "create folder if not found" case to saveToDrive
-    - Also save recorded files to db (playlist "recorded - no artist")
-    - Add query to get all "recorded - no artist" tracks and assign artist
