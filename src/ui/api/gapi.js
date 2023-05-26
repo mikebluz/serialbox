@@ -78,6 +78,12 @@ export const audioFileMimeTypes = [
 	'audio/x-m4a', 
 	'audio/m4a'
 ];
+export const validExtensions = [
+	'mp3', 
+	'mp4', 
+	'm4a',
+	'mpeg'
+];
 export async function fetchDriveFolders(name, accessToken) {
 	const q = `name contains '${name}'`;
 	const folderRes = await axios.get(`${GAPI_HOST}/drive/v3/files?pageSize=10&fields=files(id,name,mimeType)&q=${q}`, {

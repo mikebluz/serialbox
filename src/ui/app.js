@@ -40,7 +40,8 @@ import {
   fetchDriveFileBlob, 
   initGapi, 
   initGapiTokenClient, 
-  parseJwt 
+  parseJwt,
+  validExtensions
 } from './api/gapi.js';
 
 import {
@@ -165,34 +166,41 @@ const App = (props) => {
 
     const toggleIsRepeating = () => {
       setIsRepeating(!isRepeating);
+      console.log(loopStart, loopEnd);
     }
 
     const handleSetLoopStart = () => {
       const start = trackRef.current.currentTime;
+      console.log('setting loop start', start);
       setLoopStart(start);
     }
 
     const handleSetLoopEnd = () => {
       const end = trackRef.current.currentTime;
+      console.log('setting loop end', end);
       setLoopEnd(end);
     }
 
     const handleClearLoopInterval = () => {
       clearInterval(loopInterval);
-      setLoopStart(0);
-      setLoopEnd(trackRef.current.duration);
+      setLoopStart(-1);
+      setLoopEnd(100_000);
       setIsRepeating(false);
     }
 
     useEffect(() => {
       trackRef.current.loop = isRepeating;
       if (!isRepeating) {
-        clearInterval(loopInterval);
+        handleClearLoopInterval();
         trackRef.current.onended = nextSong;
       } else {
         trackRef.current.onended = restart;
       }
     }, [isRepeating])
+
+    useEffect(() => {
+      console.log('loop effects', loopStart, loopEnd);
+    }, [loopStart, loopEnd])
 
     return (
       <Box sx={{ width: '100%' }}>
@@ -314,10 +322,6 @@ const App = (props) => {
     return allSongs;
   }
 
-  const getMarqueeMessage = () => {
-    return songsLoaded.length > 0 ? `${songsLoaded[trackIndex].name.split('.')[0]} - ${songsLoaded[trackIndex].artist}` : 'Load songs from Google Drive or choose a playlist';
-  }
-
   const nextSong = () => {
     if (!isLoading) {
       let i = trackIndex;
@@ -418,13 +422,16 @@ const App = (props) => {
     } else {
       playPauseAudio();
       if (songsLoaded.length > 0) {
-        // setMarqueeMessage(getMarqueeMessage());
-        setNowPlayingArtist(songsLoaded[trackIndex].name.split('.')[0]);
-        setNowPlayingSongName(songsLoaded[trackIndex].artist);
+        setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
+        setNowPlayingArtist(songsLoaded[trackIndex].artist);
       }
     }
   }, [isPlaying]);
 
+  /**
+   * This effect plays the audio immediately after the track is loaded
+   * Autoplay IS NOT ALLOWED on mobile
+   * */
   useEffect(() => {
     if (trackLoaded) setIsPlaying(true);
   }, [trackLoaded]);
@@ -433,9 +440,8 @@ const App = (props) => {
     if (songsLoaded.length > 0) {
       loadSong(songsLoaded[0], () => {
         setTrackIndex(0);
-        // setMarqueeMessage(getMarqueeMessage());
-        setNowPlayingArtist(songsLoaded[trackIndex].name.split('.')[0]);
-        setNowPlayingSongName(songsLoaded[trackIndex].artist);
+        setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
+        setNowPlayingArtist(songsLoaded[trackIndex].artist);
       });
     }
   }, [songsLoaded])
@@ -449,8 +455,6 @@ const App = (props) => {
         setTrackLoaded(true);
       };
       // Below is a dirty hack to get duration to display correctly (for some files, it displays as Infinity)
-      // ToDo: it still shows infinity for both currentTime and duration when switching tracks, look
-      // into fixing if possibe
       trackRef.current.addEventListener('loadedmetadata', () => {
         if (trackRef.current.duration === Infinity) {
           trackRef.current.currentTime = 1e101

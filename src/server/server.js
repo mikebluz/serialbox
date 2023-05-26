@@ -80,16 +80,17 @@ app.post('/playlists/random', async (req, res) => {
 // ToDo: Separate the REST calls into separate endpoints and orchestrate on the front end ?
 // ToDo: Handle "already exists" errors
 app.post('/playlists', async (req, res) => {
-  console.log("req.body.songs", req.body.songs)
   const user = await User.findOne({ where: { email: req.body.email } });
   const songsRaw = JSON.parse(req.body.songs);
-  const playlist = await Playlist.create({
-    name: req.body.name,
-    userId: user.id,
-  });
+  let playlist = await Playlist.findOne({ where: { name: req.body.name, userId: user.id } });
+  if (!playlist) {
+    playlist = await Playlist.create({
+      name: req.body.name,
+      userId: user.id,
+    });
+  }
   await Playlist.sync();
   for (const [folderName, songs] of Object.entries(songsRaw)) {
-    console.log('songs', songs)
     songs.forEach(async (song) => {
       try {
         const createdSong = await Song.create({

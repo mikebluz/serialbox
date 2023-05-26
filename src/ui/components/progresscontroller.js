@@ -30,19 +30,23 @@ const ProgressController = (props) => {
 	}
 
 	function calculateCurrentMinutes() {
-	  return trackRef.current ? Math.floor(trackRef.current.currentTime / 60) : 0;
+		const min = trackRef.current ? Math.floor(trackRef.current.currentTime / 60) : 0;
+		return min !== Infinity && min !== NaN ? min : 0;
 	}
 
 	function calculateCurrentSeconds(currMinutes) {
-	  return trackRef.current ? Math.floor(trackRef.current.currentTime - currMinutes * 60) : 0;
+		const sec = trackRef.current ? Math.floor(trackRef.current.currentTime - currMinutes * 60) : 0;
+		return sec !== Infinity && sec !== NaN ? sec : 0;
 	}
 
 	function calculateDurationMinutes() {
-	  return trackRef.current ? Math.floor(trackRef.current.duration / 60) : 0;
+		const min = trackRef.current ? Math.floor(trackRef.current.duration / 60) : 0;
+		return min !== Infinity && min !== NaN ? min : 0;
 	}
 
 	function calculateDurationSeconds(durMinutes) {
-	  return trackRef.current ? Math.floor(trackRef.current.duration - durMinutes * 60) : 0;
+		const sec = trackRef.current ? Math.floor(trackRef.current.duration - durMinutes * 60) : 0;
+		return sec !== Infinity && sec !== NaN ? sec : 0;
 	}
 
 	const [currentPosition, setCurrentPosition] = useState(calcPosition());
@@ -52,8 +56,6 @@ const ProgressController = (props) => {
 	const durMinutesInit = calculateDurationMinutes(); 
 	const [durationMinutes, setDurationMinutes] = useState(durMinutesInit);
 	const [durationSeconds, setDurationSeconds] = useState(calculateDurationSeconds(durMinutesInit));
-
-	console.log("trackRef in ProgresController", trackRef.current.duration, trackRef.current.currentTime);
 
 	const handleSeek = (event, newValue) => {
 	  seek(newValue > 0 ? newValue : 0);
