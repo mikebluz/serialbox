@@ -16,7 +16,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import RadioButtonCheckedOutlinedIcon from '@mui/icons-material/RadioButtonCheckedOutlined';
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
+import RadioButtonUncheckedOutlinedIcon from '@mui/icons-material/RadioButtonUncheckedOutlined';
 
 const AudioRecorder = (props) => {
 	const recordRef = props.recordRef;
@@ -69,6 +69,8 @@ const AudioRecorder = (props) => {
 			if (rec.state == "inactive"){
 				let blob = new Blob(audioChunks,{type:'audio/mp3'});
 				recordRef.src = URL.createObjectURL(blob);
+				// recordRef.controls = true;
+				// recordRef.autoplay = true;
 				saveToDrive(blob, (res) => {
 					console.log('saved to drive', res)
 					handleClose();
@@ -115,8 +117,8 @@ const AudioRecorder = (props) => {
 				</DialogContent>
 				<DialogActions>
 				<ButtonGroup>
-					{ startButtonEnabled && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
-					{ stopButtonEnabled && <Button onClick={handleStopRecording} style={{buttonStyle, backgroundColor: 'black', color: 'white'}}><StopCircleOutlinedIcon sx={{ color: 'red' }}/></Button> }
+					{ startButtonEnabled && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonUncheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
+					{ stopButtonEnabled && <Button onClick={handleStopRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
 					<Button onClick={handleClose} style={buttonStyle}>X</Button>
 				</ButtonGroup>
 				</DialogActions>     
