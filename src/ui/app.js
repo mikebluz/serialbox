@@ -299,6 +299,7 @@ const App = (props) => {
   }
 
   const handleLoadedSongs = (songs, pName) => {
+    setIsPlaying(false);
     setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
     setTrackLoaded(false);
     if (pName) setPlaylistName(pName);
