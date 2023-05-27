@@ -156,7 +156,7 @@ const App = (props) => {
             margin: '0px'
           }}
         >
-          { isLoading ? "Loading ..." : `Artist: ${nowPlayingArtist}` }
+          { isLoading ? "" : `Artist: ${nowPlayingArtist}` }
         </p> 
       </Box>
     );

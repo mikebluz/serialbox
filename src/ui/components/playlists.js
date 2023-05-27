@@ -23,6 +23,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+import QueueMusicOutlinedIcon from '@mui/icons-material/QueueMusicOutlined';
+
 const Playlists = (props) => {
 	const [open, setOpen] = useState(false);
 	const [folderName, setFolderName] = useState(''); 
@@ -86,7 +88,7 @@ const Playlists = (props) => {
 				onClick={handleClickOpen}
 				style={buttonStyle}
 			>
-				Load
+				<QueueMusicOutlinedIcon />
 			</Button>
 			<Dialog
 				open={open}
@@ -117,9 +119,6 @@ const Playlists = (props) => {
 							}
 							</Select>
 						</FormControl>
-						<DialogActions>
-							<Button onClick={handleSelect} style={{...buttonStyle, width: '100%'}}>Select</Button>
-						</DialogActions>  
 				    </Box>
 				}
 				<DialogContentText>
@@ -129,6 +128,7 @@ const Playlists = (props) => {
 		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
 				</DialogContent>
 				<DialogActions>
+					<Button onClick={handleSelect} style={buttonStyle}>Select</Button>
 					<Button onClick={handleRandom} style={buttonStyle}>Random</Button>
 					<Button onClick={handleClose} style={buttonStyle}>Cancel</Button>
 				</DialogActions>        
