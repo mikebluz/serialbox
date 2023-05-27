@@ -95,7 +95,8 @@ const AudioRecorder = (props) => {
 
 	useEffect(() => {
 		if (isRecording) {
-			navigator.mediaDevices.getUserMedia({ audio:true })
+			navigator.mediaDevices
+				.getUserMedia({ audio:true })
 				.then(stream => { record(stream) });
 		} else if (rec) {
 			rec.stop();
