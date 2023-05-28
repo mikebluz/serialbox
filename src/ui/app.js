@@ -34,6 +34,7 @@ import Playlists from './components/playlists.js';
 import ProgressController from './components/progresscontroller.js';
 import Load from './components/load.js';
 import AudioRecorder from './components/record.js';
+import TapeMachine from './components/tapemachine.js';
 
 import {
   getAccessToken,
@@ -434,8 +435,8 @@ const App = (props) => {
     if (songsLoaded.length > 0) {
       loadSong(songsLoaded[0], () => {
         setTrackIndex(0);
-        setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
-        setNowPlayingArtist(songsLoaded[trackIndex].artist);
+        setNowPlayingSongName(songsLoaded[0].name.split('.')[0]);
+        setNowPlayingArtist(songsLoaded[0].artist);
       });
     }
   }, [songsLoaded])
@@ -481,6 +482,18 @@ const App = (props) => {
     }
   }, [loopStart, loopEnd])
 
+  const sources = [
+    // playback
+    {
+      src,
+      ref: trackRef
+    },
+    // record
+    {
+      ref: recordRef
+    }
+  ]
+
   return (
     <Box 
       sx={{ backgroundColor: '#dde7f0' }}   
@@ -490,8 +503,7 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <audio preload={'false'} src={src} ref={trackRef} onError={(e) => console.error('Audio element error', e.target.error)}/>
-      <audio id="recordedAudio" ref={recordRef}></audio>        
+      <TapeMachine sources={sources} />
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>
