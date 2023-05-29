@@ -128,7 +128,7 @@ const Playlists = (props) => {
 		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleSelect} style={buttonStyle}>Select</Button>
+					<Button onClick={handleSelect} style={buttonStyle}>Load</Button>
 					<Button onClick={handleRandom} style={buttonStyle}>Random</Button>
 					<Button onClick={handleClose} style={buttonStyle}>Cancel</Button>
 				</DialogActions>        

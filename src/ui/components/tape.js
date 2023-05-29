@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 const Tape = (props) => {
-	console.log("sources", props.sources)
 	return (
 		<div>
 			{ props.sources.map((source) => <audio 
