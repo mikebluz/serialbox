@@ -34,7 +34,7 @@ import Playlists from './components/playlists.js';
 import ProgressController from './components/progresscontroller.js';
 import Load from './components/load.js';
 import AudioRecorder from './components/record.js';
-import TapeMachine from './components/tapemachine.js';
+import Tape from './components/tape.js';
 
 import {
   getAccessToken,
@@ -86,7 +86,18 @@ const App = (props) => {
   const [loopInterval, setLoopInterval] = useState(0);
   const [updateTimer, setUpdateTimer] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
-  const [recorder, setRecorder] = useState(undefined);
+
+  const tape = [
+    // playback
+    {
+      src,
+      ref: trackRef
+    },
+    // record
+    {
+      ref: recordRef
+    }
+  ];
 
   // Display
   const [nowPlayingSongName, setNowPlayingSongName] = useState('Nothing loaded');
@@ -116,7 +127,8 @@ const App = (props) => {
             playlistName={playlistName}
             setPlaylistName={setPlaylistName}
           />
-          <AudioRecorder user={props.user} recordRef={recordRef}/>
+          { /* TODO: allow user to select size (number of track) */ }
+          <AudioRecorder user={props.user} recordRef={recordRef} size={4}/>
         </ButtonGroup>
       </Box>
     )
@@ -482,18 +494,6 @@ const App = (props) => {
     }
   }, [loopStart, loopEnd])
 
-  const sources = [
-    // playback
-    {
-      src,
-      ref: trackRef
-    },
-    // record
-    {
-      ref: recordRef
-    }
-  ]
-
   return (
     <Box 
       sx={{ backgroundColor: '#dde7f0' }}   
@@ -503,7 +503,7 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <TapeMachine sources={sources} />
+      <Tape sources={tape} />
       <Grid container>
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem>

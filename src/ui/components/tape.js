@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-const TapeMachine = (props) => {
+const Tape = (props) => {
+	console.log("sources", props.sources)
 	return (
 		<div>
 			{ props.sources.map((source) => <audio 
@@ -14,4 +15,4 @@ const TapeMachine = (props) => {
 	)
 }
 
-export default TapeMachine;
+export default Tape;
