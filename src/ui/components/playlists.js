@@ -97,7 +97,7 @@ const Playlists = (props) => {
 				aria-describedby="modal-modal-description"
 			>	 
 		        <DialogTitle>Load Playlist</DialogTitle>
-				<DialogContent>
+				<DialogContent sx={{ paddingBottom: '10px' }}>
 				{
 					playlists.length > 0
 					&&

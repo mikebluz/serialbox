@@ -84,13 +84,13 @@ const Load = (props) => {
 			  aria-describedby="modal-modal-description"
 			>	 
         <DialogTitle><AddToDriveOutlinedIcon /> Create Playlist</DialogTitle>
-				<DialogContent>
+				<DialogContent sx={{ paddingBottom: '0px' }}>
 				  <DialogContentText>
 						Search your Google Drive folders by name for audio to load.
 						All compatible files in matching folders will be loaded and saved as a playlist.
 				  </DialogContentText>
-			  	<h3>Compatible mime types:</h3>
-				  <ul>
+			  	<h3 style={{margin: '10px 0 8px 0'}}>Compatible mime types:</h3>
+				  <ul style={{marginTop: '0'}}>
   					{ audioFileMimeTypes.map((mt) => <li key={mt}>{mt}</li>) }
 				  </ul>
 				  <Box sx={{ marginTop: '10px' }}>

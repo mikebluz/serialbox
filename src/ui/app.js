@@ -97,10 +97,6 @@ const App = (props) => {
       src,
       ref: trackRef
     },
-    // record
-    {
-      ref: recordRef
-    }
   ];
 
   // Display
@@ -131,7 +127,7 @@ const App = (props) => {
             playlistName={playlistName}
             setPlaylistName={setPlaylistName}
           />
-          { /* TODO: allow user to select size (number of track) */ }
+          { /* TODO: allow user to select size (number of tracks) */ }
           <AudioRecorder user={props.user} recordRef={recordRef} size={4}/>
         </ButtonGroup>
       </Box>
@@ -338,7 +334,6 @@ const App = (props) => {
         </Button>
         </Container>
         {
-
           songsLoaded.map((song, i) => {
             return (
               <Grid 
