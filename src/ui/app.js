@@ -380,26 +380,29 @@ const App = (props) => {
     const abs = Math.abs(i);
     const p = [...songsLoaded];
     // negative means move backwards, positive means move forward
-    let j;
+    let newIndex;
     if (i < 0) {
       // moving up playlist
       if (abs === 0) {
-        j = p.length - 1;
+        newIndex = p.length - 1;
       } else {
-        j = abs - 1;
+        newIndex = abs - 1;
       }
     } else {
       // moving down playlist
       if (i === p.length - 1) {
-        j = 0;
+        newIndex = 0;
       } else {
-        j = i + 1;
+        newIndex = i + 1;
       }
     }
     const replaceWith = p[Math.abs(i)];
-    const toReplace = p[j];
-    p[Math.abs(i)] = toReplace;
-    p[j] = replaceWith;
+    const toReplace = p[newIndex];
+    p[abs] = toReplace;
+    p[newIndex] = replaceWith;
+    if (trackIndex === abs) {
+      setTrackIndex(newIndex);
+    }
     setSongsLoaded(p);
   }
 
@@ -496,6 +499,7 @@ const App = (props) => {
             const src = URL.createObjectURL(blob);
             setSrc(src);
             if (callback) callback();
+            setVolume(1);
           });
       });
     }
