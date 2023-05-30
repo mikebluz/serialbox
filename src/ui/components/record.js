@@ -183,8 +183,8 @@ const AudioRecorder = (props) => {
 			  aria-labelledby="modal-modal-title"
 			  aria-describedby="modal-modal-description"
 			>	 
-	        <DialogTitle sx={{ paddingBottom: '8px' }}>
-	        	<RadioButtonCheckedOutlinedIcon sx={{ color: isRecording ? 'red' : 'black' }}/>{isRecording && ' REC'}
+	        <DialogTitle sx={{ paddingBottom: '8px', color: isRecording ? 'red' : 'black' }}>
+	        	<RadioButtonCheckedOutlinedIcon /> REC
 	    	</DialogTitle>
 			<DialogContent sx={{ paddingBottom: '0px' }}>
 				<DialogContentText>
