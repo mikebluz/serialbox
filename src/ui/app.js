@@ -27,6 +27,8 @@ import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
 import RepeatOutlinedIcon from '@mui/icons-material/RepeatOutlined';
 import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
+import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
+import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
 
 import GridItem from './components/griditem.js';
 import Playlist from './components/playlist.js';
@@ -51,9 +53,11 @@ import {
   componentDisplayStyle, 
   gridBlockStyle,
   headerFooterStyle,
+  neonGreen,
   playerButtonStyle, 
   progressButtonStyle,
-  sliderColor
+  sliderColor,
+  songStyle
 } from './styles/styles.js';
 
 import {getRandomInt} from './helpers.js';
@@ -298,19 +302,79 @@ const App = (props) => {
             trackRef={trackRef}
             isPlaying={isPlaying}
            />
-          <Playlist 
-            playlist={songsLoaded}
-            playlistName={playlistName}
-            toggleIsPlaying={toggleIsPlaying}
-            handleChangeTrack={handleChangeTrack}
-            isPlaying={isPlaying}
-            shuffle={shuffle}
-            changeSongOrder={changeSongOrder}
-          />
+          <Playlist />
         </Box>
       )
     }
   }
+
+  const Playlist = (props) => {
+
+    const handleSongClick = (i) => {
+      if (isPlaying) toggleIsPlaying();
+      handleChangeTrack(i)
+    }
+    
+    return (
+      <Box>
+        <Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'black' }}>
+            <p 
+              style={{ 
+                color: 'black', 
+                color: '#39ff2b', 
+                fontFamily: 'courier',
+                padding: '0px 0px 10px 0px',
+                margin: '0px',
+                fontSize: '14pt'
+              }}
+            >
+          Playlist: {playlistName}
+        </p>
+        <Button         
+          style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
+          onClick={shuffle}
+        >
+          Shuffle
+        </Button>
+        </Container>
+        {
+
+          songsLoaded.map((song, i) => {
+            return (
+              <Grid 
+                container
+                key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
+                sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
+              >
+                    <Grid item xs={6.5} md={6.5} sx={gridBlockStyle} onClick={() => handleSongClick(i)}>
+                      {song.name.split('.')[0]}
+                    </Grid>
+                    <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, margin: '0 10px 0 0' }}>
+                      <Button 
+                        sx={{ 
+                          buttonStyle, 
+                          backgroundColor: neonGreen, 
+                          color: 'black', 
+                          border: '2px solid black'
+                        }}
+                        onClick={() => console.log('whatever')}
+                      >
+                        Edit
+                      </Button>
+                    </Grid>
+                    <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, marginRight: '0px', marginTop: '8px' }}>
+                  <ArrowDropUpOutlinedIcon onClick={() => changeSongOrder(-i)}/>
+                  <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
+                    </Grid>
+              </Grid>
+            )
+          })
+        }
+      </Box>
+    )
+    
+  };
+
 
   const changeSongOrder = (i) => {
     const abs = Math.abs(i);
@@ -336,7 +400,7 @@ const App = (props) => {
     const toReplace = p[j];
     p[Math.abs(i)] = toReplace;
     p[j] = replaceWith;
-    handleLoadedSongs(p, playlistName);
+    setSongsLoaded(p);
   }
 
   const handleLoadedSongs = (songs, pName) => {
@@ -457,6 +521,7 @@ const App = (props) => {
     } else {
       playPauseAudio();
       if (songsLoaded.length > 0) {
+        console.log(songsLoaded);
         setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
         setNowPlayingArtist(songsLoaded[trackIndex].artist);
       }
@@ -472,7 +537,7 @@ const App = (props) => {
   }, [trackLoaded]);
 
   useEffect(() => {
-    if (songsLoaded.length > 0) {
+    if (songsLoaded.length > 0 && !trackLoaded) {
       loadSong(songsLoaded[0], () => {
         setTrackIndex(0);
         setNowPlayingSongName(songsLoaded[0].name.split('.')[0]);

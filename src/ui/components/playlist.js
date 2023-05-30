@@ -59,10 +59,23 @@ const Playlist = (props) => {
 							sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
 							onClick={() => handleSongClick(i)}
 						>
-					        <Grid item xs={8.75} md={8.75} sx={gridBlockStyle}>
+					        <Grid item xs={6.5} md={6.5} sx={gridBlockStyle}>
 								{song.name.split('.')[0]}
 					        </Grid>
-					        <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, marginRight: '0px' }}>
+					        <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, margin: '0 10px 0 0' }}>
+					        	<Button 
+					        		sx={{ 
+						        		buttonStyle, 
+						        		backgroundColor: neonGreen, 
+						        		color: 'black', 
+						        		border: '2px solid black'
+						        	}}
+						        	onClick={() => console.log('whatever')}
+					        	>
+					        		Edit
+				        		</Button>
+					        </Grid>
+					        <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, marginRight: '0px', marginTop: '8px' }}>
 								<ArrowDropUpOutlinedIcon onClick={() => props.changeSongOrder(-i)}/>
 								<ArrowDropDownOutlinedIcon onClick={() => props.changeSongOrder(i)}/>
 					        </Grid>

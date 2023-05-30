@@ -6,6 +6,5 @@ ToDos:
 - Notifications (e.g., someone has shared a playlist with you, or commented on your song/playlist)
     - Direct/Group messaging
 - Add ability to play multiple tracks at once (mixer mode)
-
-Bugs:
-- After you've loaded a playlist, when you try to load another, clicking "Select" hides the player
+- Add "select audio source" option when recording
+- Add "order" column to playlist_song table

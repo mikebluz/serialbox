@@ -99,7 +99,7 @@ const ProgressController = (props) => {
 
 	const progressUpdate = () => {
 	  // Check if the current track duration is a legible number
-	  if (!isNaN(trackRef.current.duration)) {
+	  if (trackRef.current && !isNaN(trackRef.current.duration)) {
 	    setCurrentPosition(calcPosition());
 	    calculateCurrentTime();
 	  }
