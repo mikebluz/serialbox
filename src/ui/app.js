@@ -521,9 +521,13 @@ const App = (props) => {
     } else {
       playPauseAudio();
       if (songsLoaded.length > 0) {
-        console.log(songsLoaded);
-        setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
-        setNowPlayingArtist(songsLoaded[trackIndex].artist);
+        let i = trackIndex;
+        if (trackIndex > songsLoaded.length - 1) {
+          i = 0;
+        };
+        setTrackIndex(i);
+        setNowPlayingSongName(songsLoaded[i].name.split('.')[0]);
+        setNowPlayingArtist(songsLoaded[i].artist);
       }
     }
   }, [isPlaying]);
