@@ -340,59 +340,58 @@ const App = (props) => {
                 key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
                 sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
               >
-                    <Grid item xs={6.5} md={6.5} sx={{
-                          ...gridBlockStyle, 
-                          fontSize: '10pt',                           
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          marginTop: '0'
-                    }} onClick={() => handleSongClick(i)}>
-                      {song.name.split('.')[0]}
-                    </Grid>
-                    <Grid item xs={2} md={2} sx={{ 
-                          ...gridBlockStyle,
-                          margin: '0 10px 0 0', 
-                          alignContent: 'center', 
-                          justifyContent: 'center',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center'
-                      }}>
-                      <Button 
-                        sx={{ 
-                          buttonStyle, 
-                          backgroundColor: neonGreen, 
-                          color: 'black', 
-                          border: '2px solid black',
-                          height: '40px',
-                          margin: 'auto'
-                        }}
-                        onClick={() => console.log('whatever')}
-                      >
-                        E
-                      </Button>
-                    </Grid>
-                    <Grid item xs={2} md={2} sx={{ 
-                          ...gridBlockStyle, 
-                          marginRight: '0px',                           
-                          alignContent: 'center', 
-                          justifyContent: 'center',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          marginTop: '0'
-                      }}>
-                      <ArrowDropUpOutlinedIcon onClick={() => changeSongOrder(-i)}/>
-                      <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
-                    </Grid>
+                <Grid item xs={6.5} md={6.5} sx={{
+                      ...gridBlockStyle, 
+                      fontSize: '10pt',                           
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      marginTop: '0'
+                }} onClick={() => handleSongClick(i)}>
+                  {song.name.split('.')[0]}
+                </Grid>
+                <Grid item xs={2} md={2} sx={{ 
+                      ...gridBlockStyle,
+                      margin: '0 10px 0 0', 
+                      alignContent: 'center', 
+                      justifyContent: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                  }}>
+                  <Button 
+                    sx={{ 
+                      buttonStyle, 
+                      backgroundColor: neonGreen, 
+                      color: 'black', 
+                      border: '2px solid black',
+                      height: '40px',
+                      margin: 'auto'
+                    }}
+                    onClick={() => console.log('whatever')}
+                  >
+                    E
+                  </Button>
+                </Grid>
+                <Grid item xs={2} md={2} sx={{ 
+                      ...gridBlockStyle, 
+                      marginRight: '0px',                           
+                      alignContent: 'center', 
+                      justifyContent: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      marginTop: '0'
+                  }}>
+                  <ArrowDropUpOutlinedIcon onClick={() => changeSongOrder(-i)}/>
+                  <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
+                </Grid>
               </Grid>
             )
           })
         }
       </Box>
     )
-    
   };
 
 
