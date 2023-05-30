@@ -313,17 +313,18 @@ const App = (props) => {
     return (
       <Box>
         <Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'black' }}>
-            <p 
-              style={{ 
-                color: 'black', 
-                color: '#39ff2b', 
-                fontFamily: 'courier',
-                padding: '0px 0px 10px 0px',
-                margin: '0px',
-                fontSize: '14pt'
-              }}
-            >
-          Playlist: {playlistName}
+        <p 
+          style={{ 
+            color: 'black', 
+            color: '#39ff2b', 
+            fontFamily: 'courier',
+            padding: '0px 0px 10px 0px',
+            margin: '0px',
+            fontSize: '14pt',
+            textAlign: 'center'
+          }}
+        >
+          {playlistName}
         </p>
         <Button         
           style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
