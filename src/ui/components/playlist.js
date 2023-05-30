@@ -4,17 +4,22 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 
+import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
+import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
+
 import GridItem from './griditem.js';
 
 import {
   buttonStyle, 
   componentDisplayStyle, 
+  gridBlockStyle,
   headerFooterStyle,
   neonGreen,
   songStyle,
 } from '../styles/styles.js';
 
 const Playlist = (props) => {
+
 	const trackRef = props.trackRef;
 
 	const handleSongClick = (i) => {
@@ -45,9 +50,23 @@ const Playlist = (props) => {
 			</Button>
 			</Container>
 			{
+
 				props.playlist.map((song, i) => {
 					return (
-						<Box key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} sx={songStyle} onClick={() => handleSongClick(i)}>{song.name.split('.')[0]}</Box>
+						<Grid 
+							container
+							key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
+							sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
+							onClick={() => handleSongClick(i)}
+						>
+					        <Grid item xs={8.75} md={8.75} sx={gridBlockStyle}>
+								{song.name.split('.')[0]}
+					        </Grid>
+					        <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, marginRight: '0px' }}>
+								<ArrowDropUpOutlinedIcon onClick={() => props.changeSongOrder(-i)}/>
+								<ArrowDropDownOutlinedIcon onClick={() => props.changeSongOrder(i)}/>
+					        </Grid>
+						</Grid>
 					)
 				})
 			}
