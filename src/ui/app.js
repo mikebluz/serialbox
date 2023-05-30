@@ -340,7 +340,14 @@ const App = (props) => {
                 key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
                 sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
               >
-                    <Grid item xs={6.5} md={6.5} sx={{...gridBlockStyle, fontSize: '10pt'}} onClick={() => handleSongClick(i)}>
+                    <Grid item xs={6.5} md={6.5} sx={{
+                          ...gridBlockStyle, 
+                          fontSize: '10pt',                           
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          marginTop: '0'
+                    }} onClick={() => handleSongClick(i)}>
                       {song.name.split('.')[0]}
                     </Grid>
                     <Grid item xs={2} md={2} sx={{ 
