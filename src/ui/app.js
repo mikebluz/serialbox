@@ -31,7 +31,6 @@ import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined
 import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
 
 import GridItem from './components/griditem.js';
-import Playlist from './components/playlist.js';
 import Playlists from './components/playlists.js';
 import ProgressController from './components/progresscontroller.js';
 import Load from './components/load.js';
@@ -341,25 +340,44 @@ const App = (props) => {
                 key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
                 sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
               >
-                    <Grid item xs={6.5} md={6.5} sx={gridBlockStyle} onClick={() => handleSongClick(i)}>
+                    <Grid item xs={6.5} md={6.5} sx={{...gridBlockStyle, fontSize: '10pt'}} onClick={() => handleSongClick(i)}>
                       {song.name.split('.')[0]}
                     </Grid>
-                    <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, margin: '0 10px 0 0' }}>
+                    <Grid item xs={2} md={2} sx={{ 
+                          ...gridBlockStyle,
+                          margin: '0 10px 0 0', 
+                          alignContent: 'center', 
+                          justifyContent: 'center',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center'
+                      }}>
                       <Button 
                         sx={{ 
                           buttonStyle, 
                           backgroundColor: neonGreen, 
                           color: 'black', 
-                          border: '2px solid black'
+                          border: '2px solid black',
+                          height: '40px',
+                          margin: 'auto'
                         }}
                         onClick={() => console.log('whatever')}
                       >
-                        Edit
+                        E
                       </Button>
                     </Grid>
-                    <Grid item xs={2} md={2} sx={{ ...gridBlockStyle, marginRight: '0px', marginTop: '8px' }}>
-                  <ArrowDropUpOutlinedIcon onClick={() => changeSongOrder(-i)}/>
-                  <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
+                    <Grid item xs={2} md={2} sx={{ 
+                          ...gridBlockStyle, 
+                          marginRight: '0px',                           
+                          alignContent: 'center', 
+                          justifyContent: 'center',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          marginTop: '0'
+                      }}>
+                      <ArrowDropUpOutlinedIcon onClick={() => changeSongOrder(-i)}/>
+                      <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
                     </Grid>
               </Grid>
             )

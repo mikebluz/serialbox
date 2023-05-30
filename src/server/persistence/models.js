@@ -68,6 +68,7 @@ const PlaylistSong = pg.define('playlist_song', {
       key: 'id'
     }
   },
+  order: DataTypes.INTEGER,
 });
 
 User.hasMany(Playlist);

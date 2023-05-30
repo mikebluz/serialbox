@@ -57,11 +57,12 @@ app.post('/playlists/random', async (req, res) => {
     userId: user.id,
   });
   await Playlist.sync();
-  songs.forEach(async (song) => {
+  songs.forEach(async (song, i) => {
     try {
       await PlaylistSong.create({
         playlistId: playlist.dataValues.id,
         songId: song.id,
+        order: i
       });
     } catch(err) {
       err.errors.forEach((e) => {
@@ -91,7 +92,7 @@ app.post('/playlists', async (req, res) => {
   }
   await Playlist.sync();
   for (const [folderName, songs] of Object.entries(songsRaw)) {
-    songs.forEach(async (song) => {
+    songs.forEach(async (song, i) => {
       try {
         const createdSong = await Song.create({
           name: song.name,
@@ -103,6 +104,7 @@ app.post('/playlists', async (req, res) => {
         await PlaylistSong.create({
           playlistId: playlist.dataValues.id,
           songId: createdSong.dataValues.id,
+          order: i
         });
       } catch(err) {
         err.errors.forEach((e) => {
