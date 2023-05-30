@@ -40,6 +40,7 @@ const AudioRecorder = (props) => {
 	const [blobs, setBlobs] = useState([]);
 	const [tape, setTape] = useState([]);
 	const [trackNumber, setTrackNumber] = useState(0);
+	const [error, setError] = useState('');
 
 	// Buttons
 	const [startButtonEnabled, setStartButtonEnabled] = useState(true);
@@ -52,6 +53,9 @@ const AudioRecorder = (props) => {
 
 	const handleClose = () => {
 		setOpen(false);
+		setBlobs([]);
+		setTrackNumber(0);
+		setError('');
 	};
 
 	const handleStartRecording = () => {
@@ -91,6 +95,11 @@ const AudioRecorder = (props) => {
 	}
 
 	const save = () => {
+		console.log(songName, artistName, folderName)
+		if (songName === '' || artistName === '' || folderName === '') {
+			setError('Must provide a folder name, song name, and artist name to save.');
+			return;
+		}
 		Promise.all(blobs.map(async (blob, i) => {
 			const trackName = `${songName}-track${i+1}`;
 			return new Promise((res, rej) => {
@@ -118,7 +127,6 @@ const AudioRecorder = (props) => {
 		refs
 			.filter((ref) => ref.current !== undefined)
 			.map((ref) => {
-				console.log("Loading and playing")
 				ref.current.load();
 				ref.current.play();
 			});
@@ -155,6 +163,10 @@ const AudioRecorder = (props) => {
 		}
 	}, [isPlaying])
 
+	useEffect(() => {
+		setError('');
+	}, [folderName, songName, artistName])
+
 	return (
 		<div>
 			<Tape sources={tape} />
@@ -178,17 +190,20 @@ const AudioRecorder = (props) => {
 				<DialogContentText>
 					{ props.size - blobs.length } tracks left
 				</DialogContentText>
+				<DialogContentText sx={{ color: 'red' }}>
+					{ error !== '' && error }
+				</DialogContentText>
 				<Box sx={{ marginTop: '10px' }}>
-					<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
-					<TextField id="playlist-name" label="Enter song name" variant="outlined" onChange={(e) => setSongName(`${e.target.value}.mp3`)} sx={{width: '100%', marginBottom: '10px'}}/>
-					<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+					<TextField required id="folder-name" label="Folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+					<TextField required id="playlist-name" label="Song name" variant="outlined" onChange={(e) => setSongName(`${e.target.value}.mp3`)} sx={{width: '100%', marginBottom: '10px'}}/>
+					<TextField required id="artist-name" label="Artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
 				</Box>
 			</DialogContent>
 			<DialogActions>
 			<ButtonGroup>
 				<Button onClick={toggleIsPlaying} style={buttonStyle}>{ isPlaying ? <StopOutlinedIcon /> : <PlayArrowOutlinedIcon /> }</Button>
 				<Button onClick={save} style={buttonStyle}>Save</Button>
-				{ startButtonEnabled && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonUncheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
+				{ (startButtonEnabled && trackNumber < props.size) && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonUncheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
 				{ stopButtonEnabled && <Button onClick={handleStopRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
 				<Button onClick={handleClose} style={buttonStyle}>X</Button>
 			</ButtonGroup>

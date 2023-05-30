@@ -94,9 +94,9 @@ const Load = (props) => {
   					{ audioFileMimeTypes.map((mt) => <li key={mt}>{mt}</li>) }
 				  </ul>
 				  <Box sx={{ marginTop: '10px' }}>
-						<TextField id="folder-name" label="Enter folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
-						<TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
-						<TextField id="artist-name" label="Enter artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+						<TextField id="folder-name" label="Folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+						<TextField id="playlist-name" label="Playlist name" variant="outlined" onChange={(e) => setPlaylistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+						<TextField id="artist-name" label="Artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
 				  </Box>
 				</DialogContent>
 				<DialogActions>

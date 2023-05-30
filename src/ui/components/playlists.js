@@ -124,8 +124,8 @@ const Playlists = (props) => {
 				<DialogContentText>
 					Or generate a new playlist consisting of random songs from your song bank
 				</DialogContentText>
-				<TextField id="rndm-playlist-size" label="Enter integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
-		  	    <TextField id="playlist-name" label="Enter playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
+				<TextField id="rndm-playlist-size" label="Integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
+		  	    <TextField id="playlist-name" label="Playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleSelect} style={buttonStyle}>Load</Button>
