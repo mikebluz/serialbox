@@ -8,6 +8,7 @@ import {buttonStyle} from '../styles/styles.js';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -41,6 +42,7 @@ const AudioRecorder = (props) => {
 	const [tape, setTape] = useState([]);
 	const [trackNumber, setTrackNumber] = useState(0);
 	const [error, setError] = useState('');
+	const [isSaving, setIsSaving] = useState(false);
 
 	// Buttons
 	const [startButtonEnabled, setStartButtonEnabled] = useState(true);
@@ -53,10 +55,17 @@ const AudioRecorder = (props) => {
 
 	const handleClose = () => {
 		setOpen(false);
+		handleClear();
+	};
+
+	const handleClear = () => {
 		setBlobs([]);
 		setTrackNumber(0);
 		setError('');
-	};
+		setFolderName('');
+		setSongName('');
+		setArtistName('');
+	}
 
 	const handleStartRecording = () => {
 		setIsRecording(true);
@@ -95,13 +104,13 @@ const AudioRecorder = (props) => {
 	}
 
 	const save = () => {
-		console.log(songName, artistName, folderName)
 		if (songName === '' || artistName === '' || folderName === '') {
 			setError('Must provide a folder name, song name, and artist name to save.');
 			return;
 		}
+		setIsSaving(true);
 		Promise.all(blobs.map(async (blob, i) => {
-			const trackName = `${songName}-track${i+1}`;
+			const trackName = `${songName}-track${i+1}.mp3`;
 			return new Promise((res, rej) => {
 				saveToDrive(blob, trackName, async (data) => {
 					await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
@@ -120,7 +129,11 @@ const AudioRecorder = (props) => {
 					res();
 				})
 			});
-		})).then(() => handleClose());
+		})).then(() => {
+			setError("Saved!");
+			setIsSaving(false);
+			setTimeout(() => setError(''), 2000);
+		});
 	}
 
 	const rollPlayback = () => {
@@ -185,29 +198,43 @@ const AudioRecorder = (props) => {
 			>	 
 	        <DialogTitle sx={{ paddingBottom: '8px', color: isRecording ? 'red' : 'black' }}>
 	        	<RadioButtonCheckedOutlinedIcon /> REC
+				<Button onClick={handleClear} style={{...buttonStyle, marginLeft: '100px'}}>Reset</Button>
 	    	</DialogTitle>
 			<DialogContent sx={{ paddingBottom: '0px' }}>
-				<DialogContentText>
-					{ props.size - blobs.length } tracks left
-				</DialogContentText>
-				<DialogContentText sx={{ color: 'red' }}>
-					{ error !== '' && error }
-				</DialogContentText>
+				{
+					error
+					?
+					<DialogContentText sx={{ color: 'red' }}>
+						{ error !== '' && error }
+					</DialogContentText>
+					:
+					<DialogContentText>
+						{ props.size - blobs.length } tracks left
+					</DialogContentText>
+				}
 				<Box sx={{ marginTop: '10px' }}>
-					<TextField required id="folder-name" label="Folder name" variant="outlined" onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
-					<TextField required id="playlist-name" label="Song name" variant="outlined" onChange={(e) => setSongName(`${e.target.value}.mp3`)} sx={{width: '100%', marginBottom: '10px'}}/>
-					<TextField required id="artist-name" label="Artist name" variant="outlined" onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+					<TextField required id="folder-name" label="Folder name" variant="outlined" value={folderName} onChange={(e) => setFolderName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+					<TextField required id="playlist-name" label="Song name" variant="outlined" value={songName} onChange={(e) => setSongName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
+					<TextField required id="artist-name" label="Artist name" variant="outlined" value={artistName} onChange={(e) => setArtistName(e.target.value)} sx={{width: '100%', marginBottom: '10px'}}/>
 				</Box>
 			</DialogContent>
-			<DialogActions>
-			<ButtonGroup>
-				<Button onClick={toggleIsPlaying} style={buttonStyle}>{ isPlaying ? <StopOutlinedIcon /> : <PlayArrowOutlinedIcon /> }</Button>
-				<Button onClick={save} style={buttonStyle}>Save</Button>
-				{ (startButtonEnabled && trackNumber < props.size) && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonUncheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
-				{ stopButtonEnabled && <Button onClick={handleStopRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
-				<Button onClick={handleClose} style={buttonStyle}>X</Button>
-			</ButtonGroup>
-			</DialogActions>     
+	    	{
+	    		isSaving
+	    		?
+			    <Box sx={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap'}}>
+				    <CircularProgress sx={{ color: 'black', width: '100%', marginBottom: '18px' }}/>
+			    </Box>
+	    		:
+				<DialogActions>
+				<ButtonGroup>
+					<Button onClick={toggleIsPlaying} style={buttonStyle}>{ isPlaying ? <StopOutlinedIcon /> : <PlayArrowOutlinedIcon /> }</Button>
+					<Button onClick={save} style={buttonStyle}>Save</Button>
+					{ (startButtonEnabled && trackNumber < props.size) && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonUncheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
+					{ stopButtonEnabled && <Button onClick={handleStopRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
+					<Button onClick={handleClose} style={buttonStyle}>X</Button>
+				</ButtonGroup>
+				</DialogActions>	    		
+	    	}    
 			</Dialog>
 		</div>
 	);
