@@ -11,6 +11,8 @@ const port = 3005
 const {User, Playlist, PlaylistSong, Song} = require('./persistence/models.js');
 const cors = require('cors');  
 
+const GAPI_HOST = 'https://www.googleapis.com'
+
 // ToDo: Remove in production
 app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
 
@@ -19,6 +21,11 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.post('/login', async (req, res) => {
+  const { status } = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${req.body.token}`);   
+  if (status !== 200) {
+    res.send(403);
+    return;
+  }
   const user = await User.findOne({ where: { email: req.body.email } });
   if (!user) {
     const user = await User.create({

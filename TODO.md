@@ -9,3 +9,4 @@ ToDos:
 - Add ability to play multiple tracks at once (mixer mode)
 - Add "select audio source" option when recording
 - Add "Loading" spinner screens to modals (create playlist, load playlist, save recorded files to drive)
+- Make playing stop when all tracks have ended (Promise.all and onended)
