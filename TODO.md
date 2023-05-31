@@ -7,3 +7,4 @@ ToDos:
 - Add ability to play multiple tracks at once (mixer mode)
 - Add "select audio source" option when recording
 - When Recording, stop playing when all tracks have ended (Promise.all and onended)
+- Add pagination where it makes sense (all songs, etc.)
