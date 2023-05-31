@@ -1,2 +1,2 @@
 # SerialBox
-A music player front end for audio files stored in the cloud
+An audio player and recorder that utilizes file data saved in Google Drive
