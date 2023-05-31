@@ -394,7 +394,7 @@ const App = (props) => {
                       justifyContent: 'center',
                       marginTop: '0'
                 }} onClick={() => handleSongClick(i)}>
-                  {song.name.split('.')[0]}
+                  {song.name ? song.name.split('.')[0] : 'no song name'}
                 </Grid>
                 <Grid item xs={2} md={2} sx={{ 
                       ...gridBlockStyle, 

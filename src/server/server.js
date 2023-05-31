@@ -128,6 +128,18 @@ app.post('/playlists', async (req, res) => {
   res.status(200).send(JSON.stringify(playlist));
 })
 
+app.get('/songs/:email', async (req, res) => {
+  const user = await User.findOne({ where: { email: req.params.email } });
+  const allPlaylists = await Playlist.findAll({
+    where: {
+      userId: user.id
+    },
+    include: Song
+  });
+  const allSongs = allPlaylists.flatMap((p) => p.songs);
+  res.status(200).send(JSON.stringify(allSongs.map((raw) => raw.dataValues)));
+})
+
 app.post('/songs', async (req, res) => {
   const createdSong = await Song.create({
     name: req.body.name,

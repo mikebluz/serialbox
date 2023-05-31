@@ -84,6 +84,13 @@ const Playlists = (props) => {
 		});
 	}
 
+	const handleAllSongs = () => {
+		getAccessToken(async (token) => {
+			const { data: songs } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/songs/${props.user.email}`);
+			props.handleLoadedSongs(songs, 'all songs');
+		});
+	}
+
 	return (
 		<Box>
 			<Button 
@@ -132,10 +139,14 @@ const Playlists = (props) => {
 						Or generate a new playlist consisting of random songs from your song bank
 					</DialogContentText>
 					<TextField id="rndm-playlist-size" label="Integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
-			  	    <TextField id="playlist-name" label="Playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
+			  	    <TextField id="playlist-name" label="Playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px', marginBottom: '14px'}}/>
+					<DialogContentText>
+						Or load entire song bank
+					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleSelect} style={buttonStyle}>Load</Button>
+					<Button onClick={handleAllSongs} style={buttonStyle}>Bank</Button>
 					<Button onClick={handleRandom} style={buttonStyle}>Random</Button>
 					<Button onClick={handleClose} style={buttonStyle}>Cancel</Button>
 				</DialogActions>        
