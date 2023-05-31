@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import CircularProgress from '@mui/material/CircularProgress';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ReplayOutlinedIcon from '@mui/icons-material/ReplayOutlined';
 import Replay5OutlinedIcon from '@mui/icons-material/Replay5Outlined';
 import Replay10OutlinedIcon from '@mui/icons-material/Replay10Outlined';
@@ -76,6 +77,7 @@ const App = (props) => {
 
   // Playlist/Song data
   const [playlistName, setPlaylistName] = useState('');
+  const [playlistEdited, setPlaylistEdited] = useState(false);
 
   // Player and <audio> component state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -89,6 +91,8 @@ const App = (props) => {
   const [loopInterval, setLoopInterval] = useState(0);
   const [updateTimer, setUpdateTimer] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
+
+  const [error, setError] = useState('');
 
   const tape = [
     // playback
@@ -303,6 +307,12 @@ const App = (props) => {
     }
   }
 
+  const savePlaylist = () => {
+    // ToDo: save updateds order to db
+    console.log('saving');
+    setPlaylistEdited(false);
+  }
+
   const Playlist = (props) => {
 
     const handleSongClick = (i) => {
@@ -312,7 +322,7 @@ const App = (props) => {
     
     return (
       <Box>
-        <Container sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'black' }}>
+        <Box sx={{ width: '100%', border: '3px solid black', padding: '12px', borderRadius: '12px', backgroundColor: 'black' }}>
         <p 
           style={{ 
             color: 'black', 
@@ -326,13 +336,25 @@ const App = (props) => {
         >
           {playlistName}
         </p>
-        <Button         
-          style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
-          onClick={shuffle}
-        >
-          Shuffle
-        </Button>
-        </Container>
+        <ButtonGroup variant="contained" aria-label="outlined button group" size="small" sx={buttonGroupStyle}>
+          <Button         
+            style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
+            onClick={shuffle}
+          >
+            Shuffle
+          </Button>
+          {
+            playlistEdited
+            &&
+            <Button         
+              style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
+              onClick={savePlaylist}
+            >
+              Save
+            </Button>
+          }
+        </ButtonGroup>
+        </Box>
         {
           songsLoaded.map((song, i) => {
             return (
@@ -341,16 +363,6 @@ const App = (props) => {
                 key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
                 sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
               >
-                <Grid item xs={6.5} md={6.5} sx={{
-                      ...gridBlockStyle, 
-                      fontSize: '10pt',                           
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      marginTop: '0'
-                }} onClick={() => handleSongClick(i)}>
-                  {song.name.split('.')[0]}
-                </Grid>
                 <Grid item xs={2} md={2} sx={{ 
                       ...gridBlockStyle,
                       margin: '0 10px 0 0', 
@@ -365,14 +377,24 @@ const App = (props) => {
                       buttonStyle, 
                       backgroundColor: neonGreen, 
                       color: 'black', 
-                      border: '2px solid black',
+                      border: '1px solid black',
                       height: '40px',
                       margin: 'auto'
                     }}
-                    onClick={() => console.log('whatever')}
+                    onClick={() => console.log('edit song')}
                   >
-                    E
+                    <EditOutlinedIcon />
                   </Button>
+                </Grid>
+                <Grid item xs={6.5} md={6.5} sx={{
+                      ...gridBlockStyle, 
+                      fontSize: '10pt',                           
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      marginTop: '0'
+                }} onClick={() => handleSongClick(i)}>
+                  {song.name.split('.')[0]}
                 </Grid>
                 <Grid item xs={2} md={2} sx={{ 
                       ...gridBlockStyle, 
@@ -397,6 +419,7 @@ const App = (props) => {
 
 
   const changeSongOrder = (i) => {
+    setPlaylistEdited(true);
     const abs = Math.abs(i);
     const p = [...songsLoaded];
     // negative means move backwards, positive means move forward
@@ -527,6 +550,7 @@ const App = (props) => {
 
   const shuffle = () => {
     setIsPlaying(false);
+    setPlaylistEdited(true);
     let playlist = [...songsLoaded];
     const newPlaylist = [];
     while (newPlaylist.length < songsLoaded.length) {

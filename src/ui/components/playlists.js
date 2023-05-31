@@ -18,6 +18,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -57,6 +58,7 @@ const Playlists = (props) => {
 
 	const handleSelect = () => {
 		if (selectedPlaylistId !== '') {
+			handleClose();
 			getAccessToken(async (token) => {
 				const { data: songs } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs`);
 				props.handleLoadedSongs(songs, playlistLookup[selectedPlaylistId]);
@@ -71,6 +73,7 @@ const Playlists = (props) => {
 
 	const handleRandom = () => {
 		const name = selectedPlaylistName !== '' ? selectedPlaylistName : defaultPlaylistName();
+		handleClose();
 		getAccessToken(async (token) => {
 			const { data: songs } = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists/random`, {
 				playlistName: name,
@@ -98,34 +101,38 @@ const Playlists = (props) => {
 			>	 
 		        <DialogTitle>Load Playlist</DialogTitle>
 				<DialogContent sx={{ paddingBottom: '10px' }}>
-				{
-					playlists.length > 0
-					&&
-				    <Box sx={{ minWidth: 120 }}>
-						<DialogContentText>
-							Choose existing
-						</DialogContentText>
-						<FormControl fullWidth sx={{ marginTop: '5px' }}>
-							<InputLabel id="demo-simple-select-label">Playlist</InputLabel>
-							<Select
-								labelId="demo-simple-select-label"
-								id="demo-simple-select"
-								value={selectedPlaylistId}
-								label="Playlist"
-								onChange={(e) => handlePlaylistChange(e.target.value, 'test')}
-							>
-							{
-								playlists.map((playlist) => <MenuItem key={playlist.id} value={playlist.id}>{playlist.name}</MenuItem>)
-							}
-							</Select>
-						</FormControl>
-				    </Box>
-				}
-				<DialogContentText>
-					Or generate a new playlist consisting of random songs from your song bank
-				</DialogContentText>
-				<TextField id="rndm-playlist-size" label="Integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
-		  	    <TextField id="playlist-name" label="Playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
+					{
+						playlists.length > 0
+						?
+					    <Box sx={{ width: '100%', marginBottom: '8px'}}>
+							<DialogContentText>
+								Choose existing
+							</DialogContentText>
+							<FormControl fullWidth sx={{ marginTop: '5px' }}>
+								<InputLabel id="demo-simple-select-label">Playlist</InputLabel>
+								<Select
+									labelId="demo-simple-select-label"
+									id="demo-simple-select"
+									value={selectedPlaylistId}
+									label="Playlist"
+									onChange={(e) => handlePlaylistChange(e.target.value, 'test')}
+								>
+								{
+									playlists.map((playlist) => <MenuItem key={playlist.id} value={playlist.id}>{playlist.name}</MenuItem>)
+								}
+								</Select>
+							</FormControl>
+					    </Box>
+					    :
+					    <Box sx={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap'}}>
+						    <CircularProgress sx={{ color: 'black', width: '100%', marginBottom: '18px' }}/>
+					    </Box>
+					}
+					<DialogContentText>
+						Or generate a new playlist consisting of random songs from your song bank
+					</DialogContentText>
+					<TextField id="rndm-playlist-size" label="Integer < 100 (# of songs)" variant="outlined" onChange={(e) => setRandomPlaylistSize(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
+			  	    <TextField id="playlist-name" label="Playlist name" variant="outlined" onChange={(e) => setSelectedPlaylistName(e.target.value)} sx={{width: '100%', marginTop: '10px'}}/>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleSelect} style={buttonStyle}>Load</Button>
