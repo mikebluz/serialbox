@@ -160,7 +160,8 @@ app.put('/playlists', async (req, res) => {
   await Song.sync()
   await PlaylistSong.sync();
   const updated = await Playlist.findOne({ where: { name: req.body.name, userId: user.id }, include: Song });
-  res.status(200).send(JSON.stringify(updated.songs.map((s) => s.dataValues)));
+  const sorted = updated.songs.sort((a, b) => a.playlist_song.order - b.playlist_song.order);
+  res.status(200).send(JSON.stringify(sorted.map((s) => s.dataValues)));
 })
 
 app.get('/songs/:email', async (req, res) => {

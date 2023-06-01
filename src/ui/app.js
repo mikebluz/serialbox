@@ -30,6 +30,7 @@ import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
 import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 
 import GridItem from './components/griditem.js';
 import Inbox from './components/inbox.js';
@@ -325,23 +326,46 @@ const App = (props) => {
             previousSong={previousSong}
             trackRef={trackRef}
             isPlaying={isPlaying}
-           />
+          />
           <Playlist />
         </Box>
       )
     }
   }
 
-  const savePlaylist = () => {
+  const savePlaylist = (songEditsArray) => {
+    setPlaylistEdited(true);
+    const edited = [...songsLoaded]
+    songEditsArray.forEach((edit, i) => {
+      if (edit !== undefined) {
+        edited[i].name = edit.name;
+      }
+    });
+    setSongLoaded(songEditsArray);
     setPlaylistEdited(true);
   }
 
   const Playlist = (props) => {
+    const [songEdits, setSongEdits] = useState([]);
+    const [trackIndexBeingEdited, setTrackIndexBeingEdited] = useState(-1);
 
     const handleSongClick = (i) => {
       if (isPlaying) toggleIsPlaying();
       handleChangeTrack(i)
     }
+
+    const handleTempSongEdit = (songName, i) => {
+      const copy = [...songEdits];
+      if (!copy[i]) {
+        copy[i] = {};
+      }
+      copy[i].name = songName;
+      setSongEdits(copy);
+    }
+
+    useEffect(() => {
+      // setPlaylistChanged(true);
+    }, [songEdits])
     
     return (
       <Box>
@@ -366,16 +390,16 @@ const App = (props) => {
           >
             Shuffle
           </Button>
-          {
-            playlistChanged
-            &&
-            <Button         
-              style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
-              onClick={savePlaylist}
-            >
-              Save
-            </Button>
-          }
+          <Button         
+            style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
+            onClick={() => {
+              if (songEdits.length > 0) {
+                savePlaylist(songEdits)
+              }
+            }}
+          >
+            Save
+          </Button>
         </ButtonGroup>
         </Box>
         {
@@ -404,9 +428,21 @@ const App = (props) => {
                       height: '40px',
                       margin: 'auto'
                     }}
-                    onClick={() => console.log('edit song')}
+                    onClick={() => {
+                      if (trackIndexBeingEdited === i) {
+                        setTrackIndexBeingEdited(-1)
+                      } else {
+                        setTrackIndexBeingEdited(i)
+                      }
+                    }}
                   >
+                  {
+                    trackIndexBeingEdited === i
+                    ?
+                    <DoneOutlinedIcon />
+                    :
                     <EditOutlinedIcon />
+                  }
                   </Button>
                 </Grid>
                 <Grid item xs={6.5} md={6.5} sx={{
@@ -416,8 +452,25 @@ const App = (props) => {
                       flexDirection: 'column',
                       justifyContent: 'center',
                       marginTop: '0'
-                }} onClick={() => handleSongClick(i)}>
-                  {song.name.split('.')[0]}
+                }} onClick={() => {
+                  if (trackIndexBeingEdited !== i) {
+                    handleSongClick(i)
+                  };
+                }}>
+                  {
+                    trackIndexBeingEdited === i
+                    ?
+                    <TextField 
+                      id="edit-song-name" 
+                      label="Song name" 
+                      variant="outlined" 
+                      value={songEdits[i] && songEdits[i].name}
+                      onChange={(e) => handleTempSongEdit(e.target.value, i)}
+                      sx={{width: '100%', marginBottom: '0px'}}
+                    />
+                    :
+                    (songEdits[i] ? songEdits[i].name : song.name.split('.')[0])
+                  }
                 </Grid>
                 <Grid item xs={2} md={2} sx={{ 
                       ...gridBlockStyle, 
@@ -429,8 +482,18 @@ const App = (props) => {
                       justifyContent: 'center',
                       marginTop: '0'
                   }}>
-                  <ArrowDropUpOutlinedIcon onClick={() => changeSongOrder(-i)}/>
-                  <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
+                  <ArrowDropUpOutlinedIcon onClick={() => {
+                    // const copy = [...songEdits];
+                    // copy[i].order = i === 0 ? songsLoaded.length : i - 1;
+                    // setSongEdits(copy);
+                    changeSongOrder(-i)
+                  }}/>
+                  <ArrowDropDownOutlinedIcon onClick={() => {
+                    // const copy = [...songEdits];
+                    // copy[i].order = i < songsLoaded.length - 1 ? i  + 1 : 0;
+                    // setSongEdits(copy);
+                    changeSongOrder(i)
+                  }}/>
                 </Grid>
               </Grid>
             )
@@ -468,7 +531,7 @@ const App = (props) => {
       setTrackIndex(newIndex);
     }
     setSongsLoaded(p);
-    setPlaylistChanged(true);
+    setPlaylistEdited(true);
   }
 
   const handleLoadedSongs = (songs, pName) => {
@@ -570,20 +633,18 @@ const App = (props) => {
       playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
     }
     handleLoadedSongs(newPlaylist, playlistName);
-    setPlaylistChanged(true);
+    // setPlaylistChanged(true);
   }
 
   useEffect(() => {
     if (playlistEdited) {
-      // save playlist to db
-      // ToDo: backend should first find playlist by user + name -- if exists, update, if not, create new
       axios.put(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
         name: playlistName,
         email: props.user.email,
         songs: JSON.stringify(songsLoaded),
       }).then((res) => {
-        console.log("playlist updated", res);
-        setPlaylistChanged(false);
+        setPlaylistEdited(false);
+        setSongsLoaded(res.data);
       });
     }
   }, [playlistEdited])
@@ -611,7 +672,7 @@ const App = (props) => {
    * Autoplay IS NOT ALLOWED on mobile
    * */
   useEffect(() => {
-    if (trackLoaded) setIsPlaying(true);
+    // if (trackLoaded) setIsPlaying(true);
   }, [trackLoaded]);
 
   useEffect(() => {

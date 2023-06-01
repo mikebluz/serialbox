@@ -45,7 +45,6 @@ const Playlists = (props) => {
 		setOpen(true);
 		getAccessToken(async (token) => {
 			const { data: playlists } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/all/users/${props.user.email}`);
-			console.log("playlists", playlists)
 			setPlaylists(playlists);
 			const map = {};
 			playlists.forEach((playlist) => map[playlist.id] = playlist.name);
