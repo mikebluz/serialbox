@@ -394,7 +394,6 @@ const App = (props) => {
         </Box>
         {
           songsLoaded.map((song, i) => {
-            console.log(song, i, songEdits)
             return (
               <Grid 
                 container
@@ -635,8 +634,6 @@ const App = (props) => {
         email: props.user.email,
         songs: JSON.stringify(songsLoaded),
       }).then((res) => {
-        // ToDo: display progress/success on screen
-        console.log("Playlist edited")
         setPlaylistEdited(false);
         setSongsLoaded(res.data);
       });
