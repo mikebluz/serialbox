@@ -98,11 +98,15 @@ const App = (props) => {
   const [error, setError] = useState('');
 
   const tape = [
-    // playback
+    // playlist playback
     {
       src,
       ref: trackRef
     },
+    // mixdown playback
+    {
+      ref: recordRef,
+    }
   ];
 
   // Display

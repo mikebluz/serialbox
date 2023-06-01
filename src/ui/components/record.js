@@ -24,6 +24,7 @@ import RadioButtonUncheckedOutlinedIcon from '@mui/icons-material/RadioButtonUnc
 import StopOutlinedIcon from '@mui/icons-material/StopOutlined';
 
 const AudioRecorder = (props) => {
+
 	const recordRef = props.recordRef;
 
 	const refs = [];
@@ -137,24 +138,103 @@ const AudioRecorder = (props) => {
 	}
 
 	const rollPlayback = () => {
-		refs
-			.filter((ref) => ref.current !== undefined)
-			.map((ref) => {
-				ref.current.load();
-				ref.current.play();
-			});
+		// console.log("rolling playback")
+		// recordRef.current.play();
+		// refs
+		// 	.filter((ref) => ref.current !== undefined)
+		// 	.map((ref) => {
+		// 		ref.current.load();
+		// 		ref.current.play();
+		// 	});
 	}
 
 	const stopPlayback = () => {
-		refs
-			.filter((ref) => ref.current !== undefined)
-			.map((ref) => {
-				ref.current.pause();
-			});
+		// refs
+		// 	.filter((ref) => ref.current !== undefined)
+		// 	.map((ref) => {
+		// 		ref.current.pause();
+		// 	});
+		// recordRef.current.pause();
 	}
 
 	const toggleIsPlaying = () => {
 		setIsPlaying(!isPlaying);
+	}
+
+	// ToDo: convert to Async/Await
+	const mixdownTracks = (sources) => {
+		var description = "mixdown";
+		var context;
+		var recorder;
+		var chunks = [];
+		var audio = new AudioContext();
+		var mixedAudio = audio.createMediaStreamDestination();
+
+		function get(src) {
+			return fetch(src).then((response) => response.arrayBuffer())
+		}
+
+		function stopMix(duration, ...media) {
+			setTimeout((media) => {
+				media.forEach((node) => {
+					console.log('stopping')
+					node.stop()
+				});
+			}, duration, media)
+		}
+
+		Promise.all(sources.map(get)).then((data) => {
+		    var len = Math.max.apply(Math, data.map((buffer) => buffer.byteLength));
+		    // ToDo: investigate how to get the length right here (without the x100 it ends up being much too short)
+	    	context = new OfflineAudioContext(2, len * 100, 44100);
+			return Promise.all(data.map((buffer) => {
+				return audio.decodeAudioData(buffer).then((bufferSource) => {
+					console.log("buffer source", bufferSource)
+					var source = context.createBufferSource();
+					source.buffer = bufferSource;
+					source.connect(context.destination);
+					return source.start()
+				})
+			})).then(() => context.startRendering()).then((renderedBuffer) => {
+				console.log('renderedBuffer', renderedBuffer);
+				return new Promise((resolve) => {
+					var mix = audio.createBufferSource();
+					mix.buffer = renderedBuffer;
+					// mix.connect(audio.destination);
+					mix.connect(mixedAudio);          
+					recorder = new MediaRecorder(mixedAudio.stream);
+					console.log("Starting recorder and mix");
+					recorder.start(0);
+					mix.start(0);
+
+					// stop playback and recorder in 5 seconds
+					stopMix(5000, mix, recorder)
+
+					recorder.ondataavailable = (event) => {
+						chunks.push(event.data);
+					};
+
+					recorder.onstop = (event) => {
+						var blob = new Blob(chunks,  {
+						  "type": "audio/mpeg; codecs=opus"
+						});
+						console.log("recording complete");
+						resolve(blob)
+					};
+				})
+			}).then((blob) => {
+				console.log('blob', blob);
+				var audioDownload = URL.createObjectURL(blob);
+				recordRef.current.oncanplay = () => console.log("CAN PLAY")
+				recordRef.current.onerror = (err) => console.error(err);
+				recordRef.current.onended = () => console.log('DONE PLAYING');
+				recordRef.current.src = audioDownload;
+				recordRef.current.load();
+				recordRef.current.play();
+			})
+		}).catch((e) => {
+			console.log(e)
+		});
 	}
 
 	useEffect(() => {
@@ -169,6 +249,7 @@ const AudioRecorder = (props) => {
 	}, [isRecording])
 
 	useEffect(() => {
+		console.log("isPlaying effect", isPlaying);
 		if (isPlaying) {
 			rollPlayback();
 		} else {
@@ -179,6 +260,13 @@ const AudioRecorder = (props) => {
 	useEffect(() => {
 		setError('');
 	}, [folderName, songName, artistName])
+
+	useEffect(() => {
+		const sources = tape.map((obj) => obj.src);
+		if (sources.length > 0) {
+			mixdownTracks(sources);			
+		}
+	}, [tape])
 
 	return (
 		<div>

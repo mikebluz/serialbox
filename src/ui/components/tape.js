@@ -3,7 +3,8 @@ import { useState } from 'react';
 const Tape = (props) => {
 	return (
 		<div>
-			{ props.sources.map((source) => <audio 
+			{ props.sources.map((source, i) => <audio 
+				key={`tape-${i}`}
 				src={source.src} 
 				type={source.mimeType} 
 				ref={source.ref}
