@@ -327,7 +327,7 @@ const App = (props) => {
             trackRef={trackRef}
             isPlaying={isPlaying}
           />
-          <Playlist />
+          <Playlist savePlaylist={savePlaylist} />
         </Box>
       )
     }
@@ -341,11 +341,11 @@ const App = (props) => {
         edited[i].name = edit.name;
       }
     });
-    setSongLoaded(songEditsArray);
+    setSongsLoaded(edited);
     setPlaylistEdited(true);
   }
 
-  const Playlist = (props) => {
+  const Playlist = () => {
     const [songEdits, setSongEdits] = useState([]);
     const [trackIndexBeingEdited, setTrackIndexBeingEdited] = useState(-1);
 
@@ -390,20 +390,11 @@ const App = (props) => {
           >
             Shuffle
           </Button>
-          <Button         
-            style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
-            onClick={() => {
-              if (songEdits.length > 0) {
-                savePlaylist(songEdits)
-              }
-            }}
-          >
-            Save
-          </Button>
         </ButtonGroup>
         </Box>
         {
           songsLoaded.map((song, i) => {
+            console.log(song, i, songEdits)
             return (
               <Grid 
                 container
@@ -431,6 +422,7 @@ const App = (props) => {
                     onClick={() => {
                       if (trackIndexBeingEdited === i) {
                         setTrackIndexBeingEdited(-1)
+                        savePlaylist(songEdits);
                       } else {
                         setTrackIndexBeingEdited(i)
                       }
@@ -464,12 +456,12 @@ const App = (props) => {
                       id="edit-song-name" 
                       label="Song name" 
                       variant="outlined" 
-                      value={songEdits[i] && songEdits[i].name}
+                      value={(songEdits[i] && songEdits[i].name !== undefined) ? songEdits[i].name : song.name.split('.')[0]}
                       onChange={(e) => handleTempSongEdit(e.target.value, i)}
                       sx={{width: '100%', marginBottom: '0px'}}
                     />
                     :
-                    (songEdits[i] ? songEdits[i].name : song.name.split('.')[0])
+                    ((songEdits[i] && songEdits[i].name !== undefined) ? songEdits[i].name : song.name.split('.')[0])
                   }
                 </Grid>
                 <Grid item xs={2} md={2} sx={{ 
@@ -643,6 +635,8 @@ const App = (props) => {
         email: props.user.email,
         songs: JSON.stringify(songsLoaded),
       }).then((res) => {
+        // ToDo: display progress/success on screen
+        console.log("Playlist edited")
         setPlaylistEdited(false);
         setSongsLoaded(res.data);
       });
