@@ -48,15 +48,14 @@ const Load = (props) => {
 				const files = await fetchDriveFolderContents(folders, token);
 				if (Object.keys(files).length) {
 					const count = Object.values(files).reduce((acc, arr) => acc += arr.length, 0);
-					setMsg(`${count} files loaded across ${Object.keys(files).length} folders`);
-					await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
+					console.log(`${count} files loaded across ${Object.keys(files).length} folders`);
+					const { data:playlist } = await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
 						name: playlistName,
 						email: props.user.email,
 						songs: JSON.stringify(files),
 						artist: artistName,
 					});
-					props.handleLoadedSongs(files, playlistName);
-					handleClose();
+					props.handleLoadedSongs(playlist, playlistName);
 				} else {
 					setMsg(`No tracks found in folders matching '${folderName}'.`);
 				}

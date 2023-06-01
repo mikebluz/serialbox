@@ -7,6 +7,8 @@ import theme from './ui/theme';
 import { getAccessToken, initGapi, initGapiTokenClient } from './ui/api/gapi.js';
 import axios from 'axios';
 
+let errorMessage;
+
 new Promise((res, rej) => {
   window.onload = () => {
     initGapi(res);
@@ -18,11 +20,12 @@ new Promise((res, rej) => {
     try {
       await axios.post(`${process.env.REACT_APP_SERVER_HOST}/login`, {
         email: googleUser.email,
-        token: token
+        token
       });
       authorized = true;
     } catch (err) {
-      console.error("Unauthorized", err);
+      console.error("Error logging in", err);
+      errorMessage = err.message;
     }
     // Render React App
     const root = ReactDOM.createRoot(rootElement);
@@ -43,7 +46,7 @@ new Promise((res, rej) => {
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <h1>Unauthorized</h1>
+            <h1>{errorMessage}</h1>
           </Box>
         </ThemeProvider>
         </div>,

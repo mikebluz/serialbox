@@ -32,6 +32,7 @@ import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined
 import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
 
 import GridItem from './components/griditem.js';
+import Inbox from './components/inbox.js';
 import Playlists from './components/playlists.js';
 import ProgressController from './components/progresscontroller.js';
 import Load from './components/load.js';
@@ -77,6 +78,7 @@ const App = (props) => {
 
   // Playlist/Song data
   const [playlistName, setPlaylistName] = useState('');
+  const [playlistChanged, setPlaylistChanged] = useState(false);
   const [playlistEdited, setPlaylistEdited] = useState(false);
 
   // Player and <audio> component state
@@ -107,10 +109,33 @@ const App = (props) => {
   const [nowPlayingArtist, setNowPlayingArtist] = useState('Nothing loaded');
 
   const Greeting = () => {
+
+    const [showInbox, setShowInbox] = useState(false);
+    const [threads, setThreads] = useState([{name: 'Thread with person X'}, {name: 'Thread with person X'}]);
+
+    const handleOnClick = () => {
+      setShowInbox(!showInbox)
+    }
+
+    useEffect(() => {
+      if (showInbox) {
+        // setThreads([]);
+      }
+    }, [showInbox]);
+
     return (
-      <Typography variant="h4" component="h1" sx={{ color: 'black' }}>
-        Welcome, {props.user.given_name}!
-      </Typography>
+      <Grid item xs={12} md={12} sx={gridBlockStyle}>
+        <GridItem>
+          <Typography variant="h4" component="h1" sx={{ color: 'black' }} onClick={handleOnClick}>
+            Welcome, {props.user.given_name}!
+          </Typography>
+          {
+            showInbox
+            &&
+            <Inbox threads={threads}/>
+          }
+        </GridItem>
+      </Grid>
     )
   }
 
@@ -308,9 +333,7 @@ const App = (props) => {
   }
 
   const savePlaylist = () => {
-    // ToDo: save updateds order to db
-    console.log('saving');
-    setPlaylistEdited(false);
+    setPlaylistEdited(true);
   }
 
   const Playlist = (props) => {
@@ -344,7 +367,7 @@ const App = (props) => {
             Shuffle
           </Button>
           {
-            playlistEdited
+            playlistChanged
             &&
             <Button         
               style={{...buttonStyle, width: '100%', backgroundColor: 'yellow', color: 'black'}}
@@ -394,7 +417,7 @@ const App = (props) => {
                       justifyContent: 'center',
                       marginTop: '0'
                 }} onClick={() => handleSongClick(i)}>
-                  {song.name ? song.name.split('.')[0] : 'no song name'}
+                  {song.name.split('.')[0]}
                 </Grid>
                 <Grid item xs={2} md={2} sx={{ 
                       ...gridBlockStyle, 
@@ -417,9 +440,7 @@ const App = (props) => {
     )
   };
 
-
   const changeSongOrder = (i) => {
-    setPlaylistEdited(true);
     const abs = Math.abs(i);
     const p = [...songsLoaded];
     // negative means move backwards, positive means move forward
@@ -447,26 +468,16 @@ const App = (props) => {
       setTrackIndex(newIndex);
     }
     setSongsLoaded(p);
+    setPlaylistChanged(true);
   }
 
   const handleLoadedSongs = (songs, pName) => {
     setIsPlaying(false);
-    setSongsLoaded(Array.isArray(songs) ? songs : formatSongsLoadedForPlayer(songs));
+    setSongsLoaded(songs);
     setTrackLoaded(false);
     if (pName) setPlaylistName(pName);
   }
-
-  const formatSongsLoadedForPlayer = (songsByFolder) => {
-    const allSongs = [];
-    for (const [folderName, songs] of Object.entries(songsByFolder)) {
-      allSongs.push(...songs.map((song) => {
-        song.folderName = folderName
-        return song;
-      }))
-    }
-    return allSongs;
-  }
-
+  
   const nextSong = () => {
     if (!isLoading) {
       let i = trackIndex;
@@ -550,17 +561,32 @@ const App = (props) => {
 
   const shuffle = () => {
     setIsPlaying(false);
-    setPlaylistEdited(true);
     let playlist = [...songsLoaded];
     const newPlaylist = [];
     while (newPlaylist.length < songsLoaded.length) {
-      let i = getRandomInt(playlist.length - 1);
-      const nextTrack = playlist[i];
+      const i = getRandomInt(playlist.length);
       newPlaylist.push(playlist[i]);
+      // remove element we just pushed into newPlaylist
       playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
     }
     handleLoadedSongs(newPlaylist, playlistName);
+    setPlaylistChanged(true);
   }
+
+  useEffect(() => {
+    if (playlistEdited) {
+      // save playlist to db
+      // ToDo: backend should first find playlist by user + name -- if exists, update, if not, create new
+      axios.put(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
+        name: playlistName,
+        email: props.user.email,
+        songs: JSON.stringify(songsLoaded),
+      }).then((res) => {
+        console.log("playlist updated", res);
+        setPlaylistChanged(false);
+      });
+    }
+  }, [playlistEdited])
 
   useEffect(() => {
     if (restarting && !isPlaying) {
@@ -650,11 +676,7 @@ const App = (props) => {
     >
       <Tape sources={tape} />
       <Grid container>
-        <Grid item xs={12} md={12} sx={gridBlockStyle}>
-          <GridItem>
-            <Greeting />
-          </GridItem>
-        </Grid>
+        <Greeting />
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
           <GridItem sx={{ backgroundColor: 'white' }}x>
             <Options />

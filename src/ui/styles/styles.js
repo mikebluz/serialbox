@@ -1,6 +1,8 @@
 // ToDo: move to MUI Theme
 
 export const neonGreen = '#39ff2b';
+export const bluishGrey = '#dde7f0';
+export const sliderColor = 'black';
 
 export const appStyle = {
 	backgroundColor: 'black',
@@ -13,7 +15,7 @@ export const buttonStyle = {
 	'&:hover': {
 		cursor: 'arrow',
 	},
-	borderColor: '#dde7f0',
+	borderColor: bluishGrey,
 	margin: '2px'
 }
 
@@ -69,4 +71,10 @@ export const gridBlockStyle = {
 	margin: '10px 10px 0px 10px'
 };
 
-export const sliderColor = 'black';
+export const threadStyle = { 
+	backgroundColor: 'black', 
+	color: neonGreen,
+	padding: '10px',
+	border: '2px solid black',
+	margin: '2px'
+};

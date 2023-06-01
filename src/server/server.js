@@ -53,7 +53,8 @@ app.get('/playlists/all/users/:email', async (req, res) => {
 
 app.get('/playlists/:playlistId/songs', async (req, res) => {
   const {songs} = await Playlist.findOne({ where: { id: req.params.playlistId }, include: Song });
-  res.status(200).send(JSON.stringify(songs.map((raw) => raw.dataValues)));
+  const sorted = songs.sort((a, b) => a.playlist_song.order - b.playlist_song.order);
+  res.status(200).send(JSON.stringify(sorted.map((raw) => raw.dataValues)));
 });
 
 app.post('/playlists/random', async (req, res) => {
@@ -90,7 +91,10 @@ app.post('/playlists/random', async (req, res) => {
 app.post('/playlists', async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
   const songsRaw = JSON.parse(req.body.songs);
-  let playlist = await Playlist.findOne({ where: { name: req.body.name, userId: user.id } });
+  let playlist = await Playlist.create({
+    name: req.body.name,
+    userId: user.id,
+  });
   if (!playlist) {
     playlist = await Playlist.create({
       name: req.body.name,
@@ -98,34 +102,65 @@ app.post('/playlists', async (req, res) => {
     });
   }
   await Playlist.sync();
+  // new playlist, create playlist and update songs
   for (const [folderName, songs] of Object.entries(songsRaw)) {
     songs.forEach(async (song, i) => {
+      let songEntity;
       try {
-        const createdSong = await Song.create({
+        songEntity = await Song.create({
           name: song.name,
           artist: req.body.artist ?? 'unknown',
           folderName,
           gDriveId: song.id,
           mimeType: song.mimeType,
         });
-        await PlaylistSong.create({
-          playlistId: playlist.dataValues.id,
-          songId: createdSong.dataValues.id,
-          order: i
-        });
       } catch(err) {
-        err.errors.forEach((e) => {
-          // if there is a non-"must be unique" errors, log it
-          if (!e.message.includes('must be unique')) {
-            console.error("There has been some kind of mistake", e);
-          }
-        })
+        // if there is a non-"SequelizeUniqueConstraintError" error, log it
+        if (!err.name === "SequelizeUniqueConstraintError") {
+          console.error("There has been some kind of mistake", err);
+        }
+        // song already exists, fetch it
+        songEntity = await Song.findOne({ where: { gDriveId: song.id } });
       }
+      await PlaylistSong.create({
+        playlistId: playlist.dataValues.id,
+        songId: songEntity.dataValues.id,
+        order: i
+      });
     });
   };
   await Song.sync()
   await PlaylistSong.sync();
-  res.status(200).send(JSON.stringify(playlist));
+  const {songs} = await Playlist.findOne({ where: { id: playlist.id }, include: Song });
+  res.status(200).send(JSON.stringify(songs.map((raw) => raw.dataValues)));
+})
+
+app.put('/playlists', async (req, res) => {
+  const user = await User.findOne({ where: { email: req.body.email } });
+  const songsRaw = JSON.parse(req.body.songs);
+  const playlist = await Playlist.findOne({ where: { name: req.body.name, userId: user.id }, include: Song });
+  if (!playlist) {
+    console.error("Playlist not found", req.body);
+    res.send(400);
+    return;
+  }
+  songsRaw.forEach(async (song, i) => {
+    await Song.update({
+      name: song.name,
+      artist: song.artist
+    }, { where: { id: song.id } });
+    await PlaylistSong.update({
+      order: i
+    }, { 
+      where: {
+        [Sequelize.Op.and]: [{playlistId: playlist.dataValues.id}, {songId: song.id}]
+      } 
+    });
+  });
+  await Song.sync()
+  await PlaylistSong.sync();
+  const updated = await Playlist.findOne({ where: { name: req.body.name, userId: user.id }, include: Song });
+  res.status(200).send(JSON.stringify(updated.songs.map((s) => s.dataValues)));
 })
 
 app.get('/songs/:email', async (req, res) => {

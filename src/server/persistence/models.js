@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { pg } = require('./db.js');
 
+// Admin
 const User = pg.define('user', {
   id: {
     type: DataTypes.UUID,
@@ -21,6 +22,7 @@ const User = pg.define('user', {
   ]
 });
 
+// Player
 const Song = pg.define('song', {
   id: {
     type: DataTypes.UUID,
@@ -42,7 +44,6 @@ const Song = pg.define('song', {
     }
   ]
 });
-
 const Playlist = pg.define('playlist', {
   id: {
     type: DataTypes.UUID,
@@ -52,7 +53,6 @@ const Playlist = pg.define('playlist', {
   },
   name: DataTypes.STRING,
 });
-
 const PlaylistSong = pg.define('playlist_song', {
   playlistId: {
     type: DataTypes.UUID,
@@ -71,10 +71,23 @@ const PlaylistSong = pg.define('playlist_song', {
   order: DataTypes.INTEGER,
 });
 
+// Messaging
+const Messages = pg.define('message', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    allowNull: false,
+    primaryKey: true
+  },
+  name: DataTypes.STRING,
+});
+
+// Relationships
 User.hasMany(Playlist);
 Playlist.belongsToMany(Song, { through: PlaylistSong });
 Song.belongsToMany(Playlist, { through: PlaylistSong });
 
+// Execute pg code
 pg.sync();
 
 module.exports = {
