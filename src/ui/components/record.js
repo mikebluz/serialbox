@@ -17,6 +17,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import Tape from './tape.js';
+import {getCorrectDuration} from '../helpers.js';
 
 import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
 import RadioButtonCheckedOutlinedIcon from '@mui/icons-material/RadioButtonCheckedOutlined';
@@ -139,7 +140,7 @@ const AudioRecorder = (props) => {
 
 	const rollPlayback = () => {
 		// console.log("rolling playback")
-		// recordRef.current.play();
+		recordRef.current.play();
 		// refs
 		// 	.filter((ref) => ref.current !== undefined)
 		// 	.map((ref) => {
@@ -154,84 +155,92 @@ const AudioRecorder = (props) => {
 		// 	.map((ref) => {
 		// 		ref.current.pause();
 		// 	});
-		// recordRef.current.pause();
+		recordRef.current.pause();
 	}
 
 	const toggleIsPlaying = () => {
 		setIsPlaying(!isPlaying);
 	}
 
-	// ToDo: convert to Async/Await
+	// ToDo: fully convert to Async/Await
 	const mixdownTracks = (sources) => {
+
+		// ToDo: show loading spinner
+
+		let start;
 		var description = "mixdown";
-		var context;
+		var offlineAudioContext;
 		var recorder;
 		var chunks = [];
-		var audio = new AudioContext();
-		var mixedAudio = audio.createMediaStreamDestination();
+		var audioContext = new AudioContext();
+		var mixedAudio = audioContext.createMediaStreamDestination();
 
-		function get(src) {
-			return fetch(src).then((response) => response.arrayBuffer())
+		const handler = (res, t, canLoadReally) => async () => {
+			if (canLoadReally) {
+				const response = await fetch(t.src)
+				const buf = await response.arrayBuffer();
+				res([buf, t.ref.current.duration])
+			}
+		};
+
+		function get(trackObj) {
+			return getCorrectDuration(trackObj.ref.current)
+				.then((canLoadReally) => new Promise((res, rej) => trackObj.ref.current.oncanplay = handler(res, trackObj, canLoadReally)));
 		}
 
-		function stopMix(duration, ...media) {
+		function stopMix(durationInMs, ...media) {
 			setTimeout((media) => {
 				media.forEach((node) => {
-					console.log('stopping')
+					console.log('stopping mixdown', node);
 					node.stop()
 				});
-			}, duration, media)
+			}, durationInMs, media)
 		}
 
-		Promise.all(sources.map(get)).then((data) => {
-		    var len = Math.max.apply(Math, data.map((buffer) => buffer.byteLength));
-		    // ToDo: investigate how to get the length right here (without the x100 it ends up being much too short)
-	    	context = new OfflineAudioContext(2, len * 100, 44100);
-			return Promise.all(data.map((buffer) => {
-				return audio.decodeAudioData(buffer).then((bufferSource) => {
-					console.log("buffer source", bufferSource)
-					var source = context.createBufferSource();
-					source.buffer = bufferSource;
-					source.connect(context.destination);
+		Promise.all(sources.map(get)).then((tracksArray) => {
+		    let durationOfLongestBufferInSeconds = Math.max.apply(Math, tracksArray.map(([buf, dur]) => dur));
+	    	offlineAudioContext = new OfflineAudioContext(2, durationOfLongestBufferInSeconds * 44100, 44100); // length is duration in seconds * sample rate
+			return Promise.all(tracksArray.map(([buffer]) => {
+				return audioContext.decodeAudioData(buffer).then((sourceBuffer) => {
+					var source = offlineAudioContext.createBufferSource();
+					source.buffer = sourceBuffer;
+					source.connect(offlineAudioContext.destination);
 					return source.start()
 				})
-			})).then(() => context.startRendering()).then((renderedBuffer) => {
-				console.log('renderedBuffer', renderedBuffer);
+			})).then(() => offlineAudioContext.startRendering()).then((renderedBuffer) => {
 				return new Promise((resolve) => {
-					var mix = audio.createBufferSource();
+					var mix = audioContext.createBufferSource();
 					mix.buffer = renderedBuffer;
 					// mix.connect(audio.destination);
 					mix.connect(mixedAudio);          
 					recorder = new MediaRecorder(mixedAudio.stream);
-					console.log("Starting recorder and mix");
+					console.log("Starting mixdown");
+					start = new Date();
 					recorder.start(0);
 					mix.start(0);
-
-					// stop playback and recorder in 5 seconds
-					stopMix(5000, mix, recorder)
-
+					stopMix(durationOfLongestBufferInSeconds * 1000, mix, recorder)
 					recorder.ondataavailable = (event) => {
 						chunks.push(event.data);
 					};
-
 					recorder.onstop = (event) => {
 						var blob = new Blob(chunks,  {
 						  "type": "audio/mpeg; codecs=opus"
 						});
-						console.log("recording complete");
+						console.log("mixdown complete ... how long mixdown took", new Date() - start)
 						resolve(blob)
 					};
 				})
 			}).then((blob) => {
-				console.log('blob', blob);
-				var audioDownload = URL.createObjectURL(blob);
-				recordRef.current.oncanplay = () => console.log("CAN PLAY")
+				var mixdownUrl = URL.createObjectURL(blob);
+				recordRef.current.oncanplay = () => {
+					console.log("mixdown loaded")
+				};
 				recordRef.current.onerror = (err) => console.error(err);
-				recordRef.current.onended = () => console.log('DONE PLAYING');
-				recordRef.current.src = audioDownload;
+				recordRef.current.onended = () => console.log('MIXDOWN DONE PLAYING');
+				recordRef.current.src = mixdownUrl;
 				recordRef.current.load();
-				recordRef.current.play();
-			})
+				// recordRef.current.play();
+			}).catch((e) => console.error(e))
 		}).catch((e) => {
 			console.log(e)
 		});
@@ -249,7 +258,6 @@ const AudioRecorder = (props) => {
 	}, [isRecording])
 
 	useEffect(() => {
-		console.log("isPlaying effect", isPlaying);
 		if (isPlaying) {
 			rollPlayback();
 		} else {
@@ -262,9 +270,8 @@ const AudioRecorder = (props) => {
 	}, [folderName, songName, artistName])
 
 	useEffect(() => {
-		const sources = tape.map((obj) => obj.src);
-		if (sources.length > 0) {
-			mixdownTracks(sources);			
+		if (tape.length > 0) {
+			mixdownTracks(tape);			
 		}
 	}, [tape])
 

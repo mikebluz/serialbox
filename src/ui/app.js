@@ -691,16 +691,7 @@ const App = (props) => {
       // Below is a dirty hack to get duration to display correctly on the first play for some very short files
       // First play the bar jumps forward then jumps back, but once they've been played once it displays correctly
       // Without this, the progress bar does not move and the current time and duration values are "Infi:NaN"
-      trackRef.current.addEventListener('loadedmetadata', () => {
-        if (trackRef.current.duration === Infinity) {
-          trackRef.current.currentTime = 1e101
-          trackRef.current.addEventListener('timeupdate', getDuration)
-        }
-      })
-      function getDuration() {
-        trackRef.current.currentTime = 0
-        trackRef.current.removeEventListener('timeupdate', getDuration)
-      }
+      getCorrectDuration(trackRef.current)
     }
   }, [src])
 
