@@ -1,9 +1,13 @@
 export function getCorrectDuration(audio)  {
+	if (!audio.src) return Promise.resolve(true);
 	return new Promise((res) => {
 	   	audio.addEventListener('loadedmetadata', (e) => {
 			if (audio.duration === Infinity) {
 				audio.currentTime = 1e101
 				audio.addEventListener('timeupdate', getDuration)
+			} else {
+				console.log("Audio duration is OK", audio.duration);
+				res(true);
 			}
 		})
 		function getDuration() {

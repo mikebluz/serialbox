@@ -94,20 +94,9 @@ const App = (props) => {
   const [loopInterval, setLoopInterval] = useState(0);
   const [updateTimer, setUpdateTimer] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
+  const [tape, setTape] = useState([{ src, ref: trackRef }]);
 
   const [error, setError] = useState('');
-
-  const tape = [
-    // playlist playback
-    {
-      src,
-      ref: trackRef
-    },
-    // mixdown playback
-    {
-      ref: recordRef,
-    }
-  ];
 
   // Display
   const [nowPlayingSongName, setNowPlayingSongName] = useState('Nothing loaded');
@@ -161,7 +150,7 @@ const App = (props) => {
             setPlaylistName={setPlaylistName}
           />
           { /* TODO: allow user to select size (number of tracks) */ }
-          <AudioRecorder user={props.user} recordRef={recordRef} size={4}/>
+          <AudioRecorder user={props.user} size={4}/>
         </ButtonGroup>
       </Box>
     )

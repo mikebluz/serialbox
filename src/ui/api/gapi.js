@@ -124,19 +124,19 @@ export async function fetchDriveFileBlob(metadata, accessToken) {
 	return await fileRes.blob();
 }
 
-export async function uploadFile(data, songName, folderName, accessToken) {
-	let [folder] = await fetchDriveFolders(folderName, accessToken);
-	if (!folder) {
-		const { data: createdFolder } = await axios.post(`${GAPI_HOST}/drive/v3/files`, {
-			name: folderName,
-			mimeType: 'application/vnd.google-apps.folder'
-		}, {
-			headers: {
-				"Authorization": `Bearer ${accessToken}`,
-			}
-		});
-		folder = createdFolder;
-	}
+export async function createFolder(folderName, accessToken) {
+	const { data: createdFolder } = await axios.post(`${GAPI_HOST}/drive/v3/files`, {
+		name: folderName,
+		mimeType: 'application/vnd.google-apps.folder'
+	}, {
+		headers: {
+			"Authorization": `Bearer ${accessToken}`,
+		}
+	});
+	return createdFolder;
+}
+
+export async function uploadFile(data, songName, folder, accessToken) {
 	const post = await axios.post(`${GAPI_HOST}/upload/drive/v3/files?uploadType=media`, data, {
 		headers: {
 			"Authorization": `Bearer ${accessToken}`,

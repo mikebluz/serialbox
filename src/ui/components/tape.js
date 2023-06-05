@@ -5,7 +5,7 @@ const Tape = (props) => {
 		<div>
 			{ props.sources.map((source, i) => <audio 
 				key={`tape-${i}`}
-				src={source.src} 
+				src={source.src}
 				type={source.mimeType} 
 				ref={source.ref}
 				onError={(e) => console.error('Audio element error', e.target.error)} 

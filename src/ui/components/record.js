@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { 
+	createFolder,
+	fetchDriveFolders,
 	getAccessToken, 
 	uploadFile,
 } from '../api/gapi.js';
@@ -26,7 +28,7 @@ import StopOutlinedIcon from '@mui/icons-material/StopOutlined';
 
 const AudioRecorder = (props) => {
 
-	const recordRef = props.recordRef;
+	const mixdownRef = useRef();
 
 	const refs = [];
 
@@ -41,11 +43,13 @@ const AudioRecorder = (props) => {
 	const [isRecording, setIsRecording] = useState(false);
 	const [rec, setRec] = useState(undefined);
 	const [blobs, setBlobs] = useState([]);
-	const [tape, setTape] = useState([]);
+	const [mixdownBlob, setMixdownBlob] = useState(undefined);
+	const [individualTracks, setIndividualTracks] = useState([]);
 	const [trackNumber, setTrackNumber] = useState(0);
 	const [error, setError] = useState('');
 	const [isSaving, setIsSaving] = useState(false);
-	const [isMixingDown, setIsMixingDown] = useState(false);
+	const [recordingMedia, setRecordingMedia] = useState([]);
+	const [mixdownLoaded, setMixdownLoaded] = useState(false);
 
 	// Buttons
 	const [startButtonEnabled, setStartButtonEnabled] = useState(true);
@@ -82,13 +86,6 @@ const AudioRecorder = (props) => {
 	    setStopButtonEnabled(false);
 	}
 
-	const saveToDrive = async (data, songName, callback) => {
-		getAccessToken(async (token) => {
-			const upload = await uploadFile(data, songName, folderName, token);
-			callback(upload);
-		})
-	}
-
 	const record = (stream) => {
 		const rec = new MediaRecorder(stream, {
 			audioBitsPerSecond: '128000',
@@ -98,12 +95,28 @@ const AudioRecorder = (props) => {
 			if (rec.state == "inactive") {
 				let blob = new Blob([e.data],{ type:'audio/mpeg' });
 				setBlobs([...blobs, blob]);
-				setTape([...tape, { src: URL.createObjectURL(blob), ref: refs[trackNumber] }]);
+				setIndividualTracks([...individualTracks, { src: URL.createObjectURL(blob), ref: refs[trackNumber] }]);
 				setTrackNumber(trackNumber + 1);
 		  	}
 		}
-		rollPlayback();
 		rec.start();
+	}
+
+	const saveToDrive = async (data, trackName, folder, token) => {
+		const upload = await uploadFile(data, trackName, folder, token);
+		return await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
+			name: folderName,
+			email: props.user.email,
+			songs: JSON.stringify({
+				[folderName]: [{
+					name: trackName,
+					artist: artistName,
+					id: data.id,
+					mimeType: data.mimeType
+				}]
+			}),
+			artist: artistName,
+		});
 	}
 
 	const save = () => {
@@ -111,52 +124,38 @@ const AudioRecorder = (props) => {
 			setError('Must provide a folder name, song name, and artist name to save.');
 			return;
 		}
+
 		setIsSaving(true);
-		Promise.all(blobs.map(async (blob, i) => {
-			const trackName = `${songName}-track${i+1}.mp3`;
-			return new Promise((res, rej) => {
-				saveToDrive(blob, trackName, async (data) => {
-					await axios.post(`${process.env.REACT_APP_SERVER_HOST}/playlists`, {
-						name: folderName,
-						email: props.user.email,
-						songs: JSON.stringify({
-							[folderName]: [{
-								name: trackName,
-								artist: artistName,
-								id: data.id,
-								mimeType: data.mimeType
-							}]
-						}),
-						artist: artistName,
-					});
-					res();
+
+		getAccessToken(async (token) => {
+			fetchDriveFolders(folderName, token)
+				.then(async ([folder]) => {
+					if (!folder) {
+						folder = await createFolder(folderName, token);
+					}
+					return folder;
 				})
-			});
-		})).then(() => {
-			setError("Saved!");
-			setIsSaving(false);
-			setTimeout(() => setError(''), 2000);
-		});
+				.then((folder) => {
+					Promise
+						.all(blobs.map((blob, i) => saveToDrive(blob, `${songName}-track${i+1}.mp3`, folder, token)))
+						.then(() => saveToDrive(mixdownBlob, songName, folder, token))
+						.then(() => {
+							setError("Saved!");
+							setIsSaving(false);
+							setTimeout(() => setError(''), 2000);
+						});
+				})
+		})
+
 	}
 
 	const rollPlayback = () => {
-		recordRef.current.play();
-		// refs
-		// 	.filter((ref) => ref.current !== undefined)
-		// 	.map((ref) => {
-		// 		ref.current.load();
-		// 		ref.current.play();
-		// 	});
+		mixdownRef.current.play();
 	}
 
 	const stopPlayback = (resumePosition) => {
-		recordRef.current.pause();
-		recordRef.current.currentTime = resumePosition ?? 0;
-		// refs
-		// 	.filter((ref) => ref.current !== undefined)
-		// 	.map((ref) => {
-		// 		ref.current.pause();
-		// 	});
+		mixdownRef.current.pause();
+		mixdownRef.current.currentTime = resumePosition ?? 0;
 	}
 
 	const toggleIsPlaying = () => {
@@ -164,8 +163,8 @@ const AudioRecorder = (props) => {
 	}
 
 	// ToDo: fully convert to Async/Await
-	const createMixdown = (stream, recordedTracks) => {
-		setIsMixingDown(true);
+	const rollTape = (stream, recordedTracks) => {
+		setMixdownLoaded(false);
 
 		let start;
 		var description = "mixdown";
@@ -185,32 +184,29 @@ const AudioRecorder = (props) => {
 
 		function get(trackObj) {
 			return getCorrectDuration(trackObj.ref.current)
-				.then((canLoadReally) => new Promise((res, rej) => trackObj.ref.current.oncanplay = trackLoadHandler(res, trackObj, canLoadReally)));
+				.then((canLoadReally) => new Promise((res, rej) => {
+					if (trackObj.ref.current.src) {
+						trackObj.ref.current.oncanplay = trackLoadHandler(res, trackObj, canLoadReally)
+					} else {
+						res();
+					}
+				}));
 		}
 
-		function stopMix(durationInMs, ...media) {
-			setTimeout((media) => {
-				media.forEach((node) => {
-					console.log('stopping mixdown', node);
-					node.stop()
-				});
-			}, durationInMs, media)
-		}
-
-		function addMixdownToTape(blob) {
+		function setMixdownSrc(blob) {
+			setMixdownBlob(blob);
 			var mixdownUrl = URL.createObjectURL(blob);
-			recordRef.current.oncanplay = () => {
-				console.log("mixdown created and ready to play")
-			};
-			recordRef.current.onerror = (err) => console.error(err);
-			recordRef.current.onended = () => console.log('MIXDOWN DONE PLAYING');
-			recordRef.current.src = mixdownUrl;
-			recordRef.current.load();
-			setIsMixingDown(false);
+			mixdownRef.current.oncanplay = () => setMixdownLoaded(true);
+			mixdownRef.current.onerror = (err) => console.error(err);
+			mixdownRef.current.src = mixdownUrl;
+			mixdownRef.current.load();
 		}
 
-		function prepRec(tracksArray) {
+		function prepRec(raw) {
+			const tracksArray = raw.filter((a) => a !== undefined);
+
 		    let durationOfLongestBufferInSeconds = Math.max.apply(Math, tracksArray.map(([buf, dur]) => dur));
+		    if (durationOfLongestBufferInSeconds <= 0) durationOfLongestBufferInSeconds = 300; // default to 5 min
 	    	offlineAudioContext = new OfflineAudioContext(2, durationOfLongestBufferInSeconds * 44100, 44100); // length is duration in seconds * sample rate
 
 	    	function wireTrackToOfflineCtx([buffer]) {
@@ -227,32 +223,25 @@ const AudioRecorder = (props) => {
 				return new Promise((resolve) => {
 					var mix = mainAudioCtx.createBufferSource();
 					mix.buffer = backingTrackBuf;
-					// mix.connect(mainAudioCtx.destination);
+					mix.connect(mainAudioCtx.destination);
 					mix.connect(outputMixDestination);
-
-					// ToDo: figure out how to MUX in both the mixdown buffer AND the input stream
-
-					recorder = new MediaRecorder(outputMixDestination.stream);
-					console.log("Starting to record mix");
-					start = new Date();
+					// Add in recording stream with mixdown
+					const combined = new MediaStream([...stream.getAudioTracks(), ...outputMixDestination.stream.getAudioTracks()]);
+					recorder = new MediaRecorder(combined);
 					recorder.start(0);
 					mix.start(0);
-					stopMix(durationOfLongestBufferInSeconds * 1000, mix, recorder)
+					// also record track individually
+					record(stream);
+					setRecordingMedia([mix, recorder])
 					recorder.ondataavailable = (event) => chunks.push(event.data);
-					recorder.onstop = (event) => {
-						var blob = new Blob(chunks,  {
-						  "type": "audio/mpeg; codecs=opus"
-						});
-						console.log("mixdown complete ... how long mixdown took", new Date() - start)
-						resolve(blob)
-					};
+					recorder.onstop = (event) => resolve(new Blob(chunks,  { "type": "audio/mpeg; codecs=opus" }));
 				})
 	    	}
 
 			return Promise.all(tracksArray.map(wireTrackToOfflineCtx))
 					.then(() => offlineAudioContext.startRendering())
 					.then(startRecording)
-					.then(addMixdownToTape)
+					.then(setMixdownSrc)
 					.catch((e) => console.error(e))
 		}
 
@@ -263,10 +252,11 @@ const AudioRecorder = (props) => {
 		if (isRecording) {
 			navigator.mediaDevices
 				.getUserMedia({ audio:true })
-				.then(record)
+				.then((stream) => rollTape(stream, individualTracks))
 		} else if (rec) {
 			rec.stop();
-			stopPlayback();
+			recordingMedia.forEach((node) => node.stop());
+			setRecordingMedia([]);
 		}
 	}, [isRecording])
 
@@ -278,23 +268,9 @@ const AudioRecorder = (props) => {
 		}
 	}, [isPlaying])
 
-	useEffect(() => {
-		setError('');
-	}, [folderName, songName, artistName])
-
-	useEffect(() => {
-		if (tape.length > 0) {
-			createMixdown(undefined, tape);			
-		}
-	}, [tape])
-
-	useEffect(() => {
-		// ToDo: what?
-	}, [isMixingDown])
-
 	return (
 		<div>
-			<Tape sources={tape} />
+			<Tape id={'recorder'} sources={[{ref: mixdownRef}, ...individualTracks]} />
 			<Button 
 				variant="outlined" 
 				onClick={handleClickOpen}
@@ -331,7 +307,7 @@ const AudioRecorder = (props) => {
 				</Box>
 			</DialogContent>
 	    	{
-	    		isSaving || isMixingDown
+	    		isSaving
 	    		?
 			    <Box sx={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap'}}>
 				    <CircularProgress sx={{ color: 'black', width: '100%', marginBottom: '18px' }}/>
