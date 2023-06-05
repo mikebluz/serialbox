@@ -45,6 +45,7 @@ const AudioRecorder = (props) => {
 	const [trackNumber, setTrackNumber] = useState(0);
 	const [error, setError] = useState('');
 	const [isSaving, setIsSaving] = useState(false);
+	const [isMixingDown, setIsMixingDown] = useState(false);
 
 	// Buttons
 	const [startButtonEnabled, setStartButtonEnabled] = useState(true);
@@ -139,7 +140,6 @@ const AudioRecorder = (props) => {
 	}
 
 	const rollPlayback = () => {
-		// console.log("rolling playback")
 		recordRef.current.play();
 		// refs
 		// 	.filter((ref) => ref.current !== undefined)
@@ -149,13 +149,14 @@ const AudioRecorder = (props) => {
 		// 	});
 	}
 
-	const stopPlayback = () => {
+	const stopPlayback = (resumePosition) => {
+		recordRef.current.pause();
+		recordRef.current.currentTime = resumePosition ?? 0;
 		// refs
 		// 	.filter((ref) => ref.current !== undefined)
 		// 	.map((ref) => {
 		// 		ref.current.pause();
 		// 	});
-		recordRef.current.pause();
 	}
 
 	const toggleIsPlaying = () => {
@@ -163,19 +164,18 @@ const AudioRecorder = (props) => {
 	}
 
 	// ToDo: fully convert to Async/Await
-	const mixdownTracks = (sources) => {
-
-		// ToDo: show loading spinner
+	const createMixdown = (stream, recordedTracks) => {
+		setIsMixingDown(true);
 
 		let start;
 		var description = "mixdown";
 		var offlineAudioContext;
 		var recorder;
 		var chunks = [];
-		var audioContext = new AudioContext();
-		var mixedAudio = audioContext.createMediaStreamDestination();
+		var mainAudioCtx = new AudioContext();
+		var outputMixDestination = mainAudioCtx.createMediaStreamDestination();
 
-		const handler = (res, t, canLoadReally) => async () => {
+		const trackLoadHandler = (res, t, canLoadReally) => async () => {
 			if (canLoadReally) {
 				const response = await fetch(t.src)
 				const buf = await response.arrayBuffer();
@@ -185,7 +185,7 @@ const AudioRecorder = (props) => {
 
 		function get(trackObj) {
 			return getCorrectDuration(trackObj.ref.current)
-				.then((canLoadReally) => new Promise((res, rej) => trackObj.ref.current.oncanplay = handler(res, trackObj, canLoadReally)));
+				.then((canLoadReally) => new Promise((res, rej) => trackObj.ref.current.oncanplay = trackLoadHandler(res, trackObj, canLoadReally)));
 		}
 
 		function stopMix(durationInMs, ...media) {
@@ -197,31 +197,48 @@ const AudioRecorder = (props) => {
 			}, durationInMs, media)
 		}
 
-		Promise.all(sources.map(get)).then((tracksArray) => {
+		function addMixdownToTape(blob) {
+			var mixdownUrl = URL.createObjectURL(blob);
+			recordRef.current.oncanplay = () => {
+				console.log("mixdown created and ready to play")
+			};
+			recordRef.current.onerror = (err) => console.error(err);
+			recordRef.current.onended = () => console.log('MIXDOWN DONE PLAYING');
+			recordRef.current.src = mixdownUrl;
+			recordRef.current.load();
+			setIsMixingDown(false);
+		}
+
+		function prepRec(tracksArray) {
 		    let durationOfLongestBufferInSeconds = Math.max.apply(Math, tracksArray.map(([buf, dur]) => dur));
 	    	offlineAudioContext = new OfflineAudioContext(2, durationOfLongestBufferInSeconds * 44100, 44100); // length is duration in seconds * sample rate
-			return Promise.all(tracksArray.map(([buffer]) => {
-				return audioContext.decodeAudioData(buffer).then((sourceBuffer) => {
+
+	    	function wireTrackToOfflineCtx([buffer]) {
+	    		function addAsSourceToOfflineCtx(sourceBuffer) {
 					var source = offlineAudioContext.createBufferSource();
 					source.buffer = sourceBuffer;
 					source.connect(offlineAudioContext.destination);
 					return source.start()
-				})
-			})).then(() => offlineAudioContext.startRendering()).then((renderedBuffer) => {
+				};
+				return mainAudioCtx.decodeAudioData(buffer).then(addAsSourceToOfflineCtx)
+	    	}
+
+	    	function startRecording(backingTrackBuf) {
 				return new Promise((resolve) => {
-					var mix = audioContext.createBufferSource();
-					mix.buffer = renderedBuffer;
-					// mix.connect(audio.destination);
-					mix.connect(mixedAudio);          
-					recorder = new MediaRecorder(mixedAudio.stream);
-					console.log("Starting mixdown");
+					var mix = mainAudioCtx.createBufferSource();
+					mix.buffer = backingTrackBuf;
+					// mix.connect(mainAudioCtx.destination);
+					mix.connect(outputMixDestination);
+
+					// ToDo: figure out how to MUX in both the mixdown buffer AND the input stream
+
+					recorder = new MediaRecorder(outputMixDestination.stream);
+					console.log("Starting to record mix");
 					start = new Date();
 					recorder.start(0);
 					mix.start(0);
 					stopMix(durationOfLongestBufferInSeconds * 1000, mix, recorder)
-					recorder.ondataavailable = (event) => {
-						chunks.push(event.data);
-					};
+					recorder.ondataavailable = (event) => chunks.push(event.data);
 					recorder.onstop = (event) => {
 						var blob = new Blob(chunks,  {
 						  "type": "audio/mpeg; codecs=opus"
@@ -230,27 +247,23 @@ const AudioRecorder = (props) => {
 						resolve(blob)
 					};
 				})
-			}).then((blob) => {
-				var mixdownUrl = URL.createObjectURL(blob);
-				recordRef.current.oncanplay = () => {
-					console.log("mixdown loaded")
-				};
-				recordRef.current.onerror = (err) => console.error(err);
-				recordRef.current.onended = () => console.log('MIXDOWN DONE PLAYING');
-				recordRef.current.src = mixdownUrl;
-				recordRef.current.load();
-				// recordRef.current.play();
-			}).catch((e) => console.error(e))
-		}).catch((e) => {
-			console.log(e)
-		});
+	    	}
+
+			return Promise.all(tracksArray.map(wireTrackToOfflineCtx))
+					.then(() => offlineAudioContext.startRendering())
+					.then(startRecording)
+					.then(addMixdownToTape)
+					.catch((e) => console.error(e))
+		}
+
+		Promise.all(recordedTracks.map(get)).then(prepRec).catch((e) => console.log(e));
 	}
 
 	useEffect(() => {
 		if (isRecording) {
 			navigator.mediaDevices
 				.getUserMedia({ audio:true })
-				.then(stream => { record(stream) });
+				.then(record)
 		} else if (rec) {
 			rec.stop();
 			stopPlayback();
@@ -271,9 +284,13 @@ const AudioRecorder = (props) => {
 
 	useEffect(() => {
 		if (tape.length > 0) {
-			mixdownTracks(tape);			
+			createMixdown(undefined, tape);			
 		}
 	}, [tape])
+
+	useEffect(() => {
+		// ToDo: what?
+	}, [isMixingDown])
 
 	return (
 		<div>
@@ -314,7 +331,7 @@ const AudioRecorder = (props) => {
 				</Box>
 			</DialogContent>
 	    	{
-	    		isSaving
+	    		isSaving || isMixingDown
 	    		?
 			    <Box sx={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap'}}>
 				    <CircularProgress sx={{ color: 'black', width: '100%', marginBottom: '18px' }}/>

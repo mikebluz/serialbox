@@ -62,7 +62,7 @@ import {
   songStyle
 } from './styles/styles.js';
 
-import {getRandomInt} from './helpers.js';
+import {getRandomInt,getCorrectDuration} from './helpers.js';
 
 const CLIENT_ID = `${process.env.REACT_APP_GAPI_CLIENT_ID}.apps.googleusercontent.com`;
 
@@ -667,7 +667,7 @@ const App = (props) => {
    * Autoplay IS NOT ALLOWED on mobile
    * */
   useEffect(() => {
-    // if (trackLoaded) setIsPlaying(true);
+    if (trackLoaded) setIsPlaying(true);
   }, [trackLoaded]);
 
   useEffect(() => {
