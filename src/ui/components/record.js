@@ -61,6 +61,9 @@ const AudioRecorder = (props) => {
 	};
 
 	const handleClose = () => {
+		if (isRecording) {
+			handleStopRecording();
+		};
 		setOpen(false);
 		handleClear();
 	};
@@ -274,7 +277,7 @@ const AudioRecorder = (props) => {
 	}, [isPlaying])
 
 	return (
-		<div>
+		<Box>
 			<Tape id={'recorder'} sources={[{ref: mixdownRef}, ...individualTracks]} />
 			<Button 
 				variant="outlined" 
@@ -289,9 +292,14 @@ const AudioRecorder = (props) => {
 			  aria-labelledby="modal-modal-title"
 			  aria-describedby="modal-modal-description"
 			>	 
-	        <DialogTitle sx={{ paddingBottom: '8px', color: isRecording ? 'red' : 'black' }}>
-	        	<RadioButtonCheckedOutlinedIcon /> REC
-				<Button onClick={handleClear} style={{...buttonStyle, marginLeft: '100px'}}>Reset</Button>
+	        <DialogTitle sx={{ 
+	        	paddingBottom: '8px', 
+	        	color: isRecording ? 'red' : 'black', 
+	        	alignItems: 'center', 
+	        	display: 'flex' 
+	        }}>
+	        	<RadioButtonCheckedOutlinedIcon /><p style={{ paddingLeft: '10px' }}>REC</p>
+	        	{ (!isSaving && !isRecording) && <Button onClick={handleClear} style={{...buttonStyle, marginLeft: '100px'}}>Reset</Button> }
 	    	</DialogTitle>
 			<DialogContent sx={{ paddingBottom: '0px' }}>
 				{
@@ -320,16 +328,21 @@ const AudioRecorder = (props) => {
 	    		:
 				<DialogActions>
 				<ButtonGroup>
-					<Button onClick={toggleIsPlaying} style={buttonStyle}>{ isPlaying ? <StopOutlinedIcon /> : <PlayArrowOutlinedIcon /> }</Button>
-					<Button onClick={save} style={buttonStyle}>Save</Button>
+					{
+						!isRecording
+						&&
+						<div>
+						<Button onClick={toggleIsPlaying} style={buttonStyle}>{ isPlaying ? <StopOutlinedIcon /> : <PlayArrowOutlinedIcon /> }</Button>
+						<Button onClick={save} style={buttonStyle}>Save</Button>
+						</div>
+					}
 					{ (startButtonEnabled && trackNumber < props.size) && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonUncheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
 					{ stopButtonEnabled && <Button onClick={handleStopRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
-					<Button onClick={handleClose} style={buttonStyle}>X</Button>
 				</ButtonGroup>
 				</DialogActions>	    		
 	    	}    
 			</Dialog>
-		</div>
+		</Box>
 	);
 }
 
