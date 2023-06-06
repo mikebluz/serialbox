@@ -459,6 +459,7 @@ const App = (props) => {
                   }
                 </Grid>
                 <Grid item xs={1} md={1} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  {/* TODO: Using the AudioRecorder here is kind of a dirty hack in that you don't need one per song, refactor */}
                   <AudioRecorder 
                     user={props.user} 
                     size={4} 

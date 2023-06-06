@@ -12,5 +12,6 @@ ToDos:
 - Add ability to mix track levels (raise and lower individual track levels)
 - Add user settings table
     - Add ability to set color scheme for app
-- Add "overdub" button to each song in playlist, save mixdown to playlist
 - Add "remove from playlist" operation to each song
+- Testing recording with mic other than macbook internal one (it sucks ass)
+- Fix bug in overdub where pre-loaded backing track does not make it into the mixdown
