@@ -10,3 +10,7 @@ ToDos:
 - Allow playlist of same name for same user? Maybe append a "-{timestamp}" if duplicate?
 - Add digital time display to recorder
 - Add ability to mix track levels (raise and lower individual track levels)
+- Add user settings table
+    - Add ability to set color scheme for app
+- Add "overdub" button to each song in playlist, save mixdown to playlist
+- Add "remove from playlist" operation to each song

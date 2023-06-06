@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { 
 	createFolder,
+	fetchDriveFileBlob, 
 	fetchDriveFolders,
 	getAccessToken, 
 	uploadFile,
@@ -29,6 +30,9 @@ import StopOutlinedIcon from '@mui/icons-material/StopOutlined';
 const AudioRecorder = (props) => {
 
 	const mixdownRef = useRef();
+	const backingTrackRef = useRef();
+
+	const [open, setOpen] = useState(false);
 
 	const refs = [];
 
@@ -36,7 +40,7 @@ const AudioRecorder = (props) => {
 		refs.push(useRef());	
 	}
 
-	const [open, setOpen] = useState(false);
+	const [isActive, setIsActive] = useState(false);
 	const [folderName, setFolderName] = useState('');
 	const [songName, setSongName] = useState('');
 	const [artistName, setArtistName] = useState('');
@@ -44,7 +48,7 @@ const AudioRecorder = (props) => {
 	const [rec, setRec] = useState(undefined);
 	const [blobs, setBlobs] = useState([]);
 	const [mixdownBlob, setMixdownBlob] = useState(undefined);
-	const [individualTracks, setIndividualTracks] = useState([]);
+	const [individualTracks, setIndividualTracks] = useState(props.tape ? props.tape : []);
 	const [trackNumber, setTrackNumber] = useState(0);
 	const [error, setError] = useState('');
 	const [isSaving, setIsSaving] = useState(false);
@@ -56,14 +60,16 @@ const AudioRecorder = (props) => {
 	const [stopButtonEnabled, setStopButtonEnabled] = useState(false);
 	const [isPlaying, setIsPlaying] = useState(false);
 
-	const handleClickOpen = () => {
+	const handleOpen = () => {
+		setIsActive(true);
 		setOpen(true);
-	};
+	}
 
 	const handleClose = () => {
 		if (isRecording) {
 			handleStopRecording();
 		};
+		setIsActive(false);
 		setOpen(false);
 		handleClear();
 	};
@@ -156,6 +162,7 @@ const AudioRecorder = (props) => {
 	}
 
 	const rollPlayback = () => {
+		console.log("rollPlayback", mixdownRef.current);
 		mixdownRef.current.play();
 	}
 
@@ -202,7 +209,10 @@ const AudioRecorder = (props) => {
 		function setMixdownSrc(blob) {
 			setMixdownBlob(blob);
 			var mixdownUrl = URL.createObjectURL(blob);
-			mixdownRef.current.oncanplay = () => setMixdownLoaded(true);
+			mixdownRef.current.oncanplay = () => {
+				console.log("mixdown ready to play", mixdownRef.current);
+				setMixdownLoaded(true);
+			};
 			mixdownRef.current.onerror = (err) => console.error(err);
 			mixdownRef.current.src = mixdownUrl;
 			mixdownRef.current.load();
@@ -276,13 +286,25 @@ const AudioRecorder = (props) => {
 		}
 	}, [isPlaying])
 
+	useEffect(() => {
+		if (isActive && props.song && individualTracks.length === 0) {
+			getAccessToken((token) => {
+				fetchDriveFileBlob(props.song, token).then((blob) => {
+					console.log("Success", blob);
+					const src = URL.createObjectURL(blob);
+					setIndividualTracks([{ref: backingTrackRef, src}]);
+				});
+			});
+		}
+	}, [isActive]);
+
 	return (
 		<Box>
 			<Tape id={'recorder'} sources={[{ref: mixdownRef}, ...individualTracks]} />
 			<Button 
 				variant="outlined" 
-				onClick={handleClickOpen}
-				style={{...buttonStyle, backgroundColor: 'black'}}
+				onClick={handleOpen}
+				style={{...buttonStyle, backgroundColor: 'black', ...props.buttonStyleOverride}}
 			>
 				<RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/>
 			</Button>
@@ -338,6 +360,7 @@ const AudioRecorder = (props) => {
 					}
 					{ (startButtonEnabled && trackNumber < props.size) && <Button onClick={handleStartRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonUncheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
 					{ stopButtonEnabled && <Button onClick={handleStopRecording} style={{...buttonStyle, backgroundColor: 'black', color: 'white'}}><RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/></Button> }
+					<Button onClick={handleClose} style={buttonStyle}>X</Button>
 				</ButtonGroup>
 				</DialogActions>	    		
 	    	}    

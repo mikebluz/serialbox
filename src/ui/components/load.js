@@ -108,6 +108,7 @@ const Load = (props) => {
     				<DialogActions>
 						<ButtonGroup>
 						  <Button onClick={handleClick} style={buttonStyle}>Create</Button>
+						  <Button onClick={handleClose} style={buttonStyle}>X</Button>
 						</ButtonGroup>
 					</DialogActions>  
 				}     

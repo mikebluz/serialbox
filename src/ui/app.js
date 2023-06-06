@@ -25,6 +25,7 @@ import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
 import PauseOutlinedIcon from '@mui/icons-material/PauseOutlined';
 import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
+import RadioButtonCheckedOutlinedIcon from '@mui/icons-material/RadioButtonCheckedOutlined';
 import RepeatOutlinedIcon from '@mui/icons-material/RepeatOutlined';
 import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
 import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
@@ -95,6 +96,7 @@ const App = (props) => {
   const [updateTimer, setUpdateTimer] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
   const [tape, setTape] = useState([{ src, ref: trackRef }]);
+  const [recorderOpen, setRecorderOpen] = useState(false);
 
   const [error, setError] = useState('');
 
@@ -150,7 +152,10 @@ const App = (props) => {
             setPlaylistName={setPlaylistName}
           />
           { /* TODO: allow user to select size (number of tracks) */ }
-          <AudioRecorder user={props.user} size={4}/>
+          <AudioRecorder 
+            user={props.user} 
+            size={4}
+          />
         </ButtonGroup>
       </Box>
     )
@@ -355,10 +360,6 @@ const App = (props) => {
       copy[i].name = songName;
       setSongEdits(copy);
     }
-
-    useEffect(() => {
-      // setPlaylistChanged(true);
-    }, [songEdits])
     
     return (
       <Box>
@@ -404,12 +405,13 @@ const App = (props) => {
                   }}>
                   <Button 
                     sx={{ 
-                      buttonStyle, 
-                      backgroundColor: neonGreen, 
+                      ...buttonStyle, 
+                      backgroundColor: 'white', 
                       color: 'black', 
                       border: '1px solid black',
                       height: '40px',
-                      margin: 'auto'
+                      margin: 'auto',
+                      width: '10px'
                     }}
                     onClick={() => {
                       if (trackIndexBeingEdited === i) {
@@ -429,7 +431,7 @@ const App = (props) => {
                   }
                   </Button>
                 </Grid>
-                <Grid item xs={6.5} md={6.5} sx={{
+                <Grid item xs={6.1} md={6.1} sx={{
                       ...gridBlockStyle, 
                       fontSize: '10pt',                           
                       display: 'flex',
@@ -456,9 +458,18 @@ const App = (props) => {
                     ((songEdits[i] && songEdits[i].name !== undefined) ? songEdits[i].name : song.name.split('.')[0])
                   }
                 </Grid>
-                <Grid item xs={2} md={2} sx={{ 
+                <Grid item xs={1} md={1} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <AudioRecorder 
+                    user={props.user} 
+                    size={4} 
+                    buttonStyleOverride={{ backgroundColor: 'transparent', border: '2px solid black', width: '5px' }}
+                    song={song}
+                  />
+                </Grid>
+                <Grid item xs={1.4} md={1.4} sx={{
                       ...gridBlockStyle, 
-                      marginRight: '0px',                           
+                      marginRight: '0px',
+                      paddingLeft: '18px',                     
                       alignContent: 'center', 
                       justifyContent: 'center',
                       display: 'flex',
@@ -466,18 +477,8 @@ const App = (props) => {
                       justifyContent: 'center',
                       marginTop: '0'
                   }}>
-                  <ArrowDropUpOutlinedIcon onClick={() => {
-                    // const copy = [...songEdits];
-                    // copy[i].order = i === 0 ? songsLoaded.length : i - 1;
-                    // setSongEdits(copy);
-                    changeSongOrder(-i)
-                  }}/>
-                  <ArrowDropDownOutlinedIcon onClick={() => {
-                    // const copy = [...songEdits];
-                    // copy[i].order = i < songsLoaded.length - 1 ? i  + 1 : 0;
-                    // setSongEdits(copy);
-                    changeSongOrder(i)
-                  }}/>
+                  <ArrowDropUpOutlinedIcon onClick={() => changeSongOrder(-i)}/>
+                  <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
                 </Grid>
               </Grid>
             )
@@ -672,6 +673,7 @@ const App = (props) => {
   useEffect(() => {
     if (trackRef.current && (src && src.includes('blob'))) {
       trackRef.current.src = src;
+      setTape([{ src, ref: trackRef }]);
       trackRef.current.volume = 1;
       trackRef.current.load();
       trackRef.current.oncanplay = () => {
