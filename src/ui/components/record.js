@@ -67,6 +67,9 @@ const AudioRecorder = (props) => {
 
 	const handleClear = () => {
 		setBlobs([]);
+		setMixdownLoaded(false);
+		setRecordingMedia([]);
+		setIndividualTracks([]);
 		setTrackNumber(0);
 		setError('');
 		setFolderName('');
@@ -203,6 +206,8 @@ const AudioRecorder = (props) => {
 		}
 
 		function prepRec(raw) {
+
+			// filter out initial undefined default value
 			const tracksArray = raw.filter((a) => a !== undefined);
 
 		    let durationOfLongestBufferInSeconds = Math.max.apply(Math, tracksArray.map(([buf, dur]) => dur));
