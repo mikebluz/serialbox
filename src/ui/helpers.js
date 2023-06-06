@@ -6,7 +6,6 @@ export function getCorrectDuration(audio)  {
 				audio.currentTime = 1e101
 				audio.addEventListener('timeupdate', getDuration)
 			} else {
-				console.log("Audio duration is OK", audio.duration);
 				res(true);
 			}
 		})

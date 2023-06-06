@@ -148,7 +148,6 @@ const Playlists = (props) => {
 					<Button onClick={handleSelect} style={buttonStyle}>Load</Button>
 					<Button onClick={handleAllSongs} style={buttonStyle}>Bank</Button>
 					<Button onClick={handleRandom} style={buttonStyle}>Random</Button>
-					<Button onClick={handleClose} style={buttonStyle}>Cancel</Button>
 				</DialogActions>        
 			</Dialog>
 		</Box>

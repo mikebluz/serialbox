@@ -670,13 +670,15 @@ const App = (props) => {
   }, [songsLoaded])
 
   useEffect(() => {
-    if (trackRef.current.src.includes('blob')) {
+    if (trackRef.current && (src && src.includes('blob'))) {
+      trackRef.current.src = src;
       trackRef.current.volume = 1;
       trackRef.current.load();
       trackRef.current.oncanplay = () => {
         setIsLoading(false);
         setTrackLoaded(true);
       };
+      trackRef.current.onerror = (err) => console.error(err);
       // Below is a dirty hack to get duration to display correctly on the first play for some very short files
       // First play the bar jumps forward then jumps back, but once they've been played once it displays correctly
       // Without this, the progress bar does not move and the current time and duration values are "Infi:NaN"
