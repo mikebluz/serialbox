@@ -1,6 +1,7 @@
 ToDos:
 
-- Fix bug in overdub where pre-loaded backing track does not make it into the mixdown
+- Fix bugs in overdub
+    - Pre-loaded backing track does not make it into the mixdown
 - Move individual song edit/record/play functions to pop-down that opens when you click the song
 - Add "remove from playlist" operation to each song
 - Add digital time display to recorder
@@ -11,7 +12,7 @@ ToDos:
     - Add API calls
     - UI
 - Add "select audio source" option when recording (internal laptop mic is garbage)
-    - Testing recording with mic other than macbook internal one (it sucks ass)
+    - Test recording with mic other than macbook internal one (it sucks ass)
 - Add pagination where it makes sense (all songs, etc.)
 - Change persistence layer to being event-based
 - Allow playlist of same name for same user? Maybe append a "-{timestamp}" if duplicate?

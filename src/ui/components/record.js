@@ -244,13 +244,15 @@ const AudioRecorder = (props) => {
 					mix.connect(mainAudioCtx.destination);
 					mix.connect(outputMixDestination);
 					// Add in recording stream with mixdown
-					const combined = new MediaStream([...stream.getAudioTracks(), ...outputMixDestination.stream.getAudioTracks()]);
-					recorder = new MediaRecorder(combined);
+					const inputSource = mainAudioCtx.createMediaStreamSource(stream);
+					inputSource.connect(outputMixDestination);
+					// const combined = new MediaStream([...stream.getAudioTracks(), ...outputMixDestination.stream.getAudioTracks()]);
+					recorder = new MediaRecorder(outputMixDestination.stream);
 					recorder.start(0);
 					mix.start(0);
 					// also record track individually
 					record(stream);
-					setRecordingMedia([mix, recorder])
+					setRecordingMedia([mix, recorder]);
 					recorder.ondataavailable = (event) => chunks.push(event.data);
 					recorder.onstop = (event) => resolve(new Blob(chunks,  { "type": "audio/mpeg; codecs=opus" }));
 				})
@@ -342,7 +344,7 @@ const AudioRecorder = (props) => {
 				</Box>
 			</DialogContent>
 	    	{
-	    		isSaving
+	    		isSaving || (props.song && individualTracks.length === 0)
 	    		?
 			    <Box sx={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap'}}>
 				    <CircularProgress sx={{ color: 'black', width: '100%', marginBottom: '18px' }}/>
