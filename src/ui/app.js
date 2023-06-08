@@ -530,7 +530,7 @@ const App = (props) => {
                           setTrackIndexBeingEdited(-1);
                         }}
                       >
-                        CANCEL
+                        X
                       </Button>
                       {
                         selectedPlaylistId
