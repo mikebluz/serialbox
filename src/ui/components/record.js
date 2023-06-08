@@ -49,7 +49,7 @@ const AudioRecorder = (props) => {
 	const [rec, setRec] = useState(undefined);
 	const [blobs, setBlobs] = useState([]);
 	const [mixdownBlob, setMixdownBlob] = useState(undefined);
-	const [individualTracks, setIndividualTracks] = useState(props.tape ? props.tape : []);
+	const [individualTracks, setIndividualTracks] = useState(props.song ? [props.song] : []);
 	const [trackNumber, setTrackNumber] = useState(0);
 	const [error, setError] = useState('');
 	const [isSaving, setIsSaving] = useState(false);
@@ -79,7 +79,7 @@ const AudioRecorder = (props) => {
 		setBlobs([]);
 		setMixdownLoaded(false);
 		setRecordingMedia([]);
-		setIndividualTracks([]);
+		setIndividualTracks(props.song ? [props.song] : []);
 		setTrackNumber(0);
 		setError('');
 		setFolderName('');
