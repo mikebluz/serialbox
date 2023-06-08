@@ -164,6 +164,19 @@ app.put('/playlists', async (req, res) => {
   res.status(200).send(JSON.stringify(sorted.map((s) => s.dataValues)));
 })
 
+app.delete('/playlists/:playlistId/songs/:songId', async (req, res) => {
+  const destroyed = await PlaylistSong.destroy({
+    where: {
+      playlistId: req.params.playlistId,
+      songId: req.params.songId
+    }
+  });
+  console.log("Removed?", destroyed);
+  const updated = await Playlist.findOne({ where: { id: req.params.playlistId }, include: Song });
+  const sorted = updated.songs.sort((a, b) => a.playlist_song.order - b.playlist_song.order);
+  res.status(200).send(JSON.stringify(sorted.map((s) => s.dataValues)));
+})
+
 app.get('/songs/:email', async (req, res) => {
   const user = await User.findOne({ where: { email: req.params.email } });
   const allPlaylists = await Playlist.findAll({

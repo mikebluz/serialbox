@@ -35,7 +35,6 @@ export const songStyle = {
 	margin: '5px',
 	borderRadius: '10px',
 	'&:hover': {
-		backgroundColor: 'yellow',
 		cursor: 'pointer'
 	},
 };

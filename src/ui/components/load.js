@@ -55,7 +55,7 @@ const Load = (props) => {
 						songs: JSON.stringify(files),
 						artist: artistName,
 					});
-					props.handleLoadedSongs(playlist, playlistName);
+					props.handleLoadedSongs(playlist, playlistName, playlist.id);
 				} else {
 					setMsg(`No tracks found in folders matching '${folderName}'.`);
 				}

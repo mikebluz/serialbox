@@ -22,6 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Tape from './tape.js';
 import {getCorrectDuration} from '../helpers.js';
 
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
 import RadioButtonCheckedOutlinedIcon from '@mui/icons-material/RadioButtonCheckedOutlined';
 import RadioButtonUncheckedOutlinedIcon from '@mui/icons-material/RadioButtonUncheckedOutlined';
@@ -308,7 +309,7 @@ const AudioRecorder = (props) => {
 				onClick={handleOpen}
 				style={{...buttonStyle, backgroundColor: 'black', ...props.buttonStyleOverride}}
 			>
-				<RadioButtonCheckedOutlinedIcon sx={{ color: 'red' }}/>
+				<KeyboardVoiceIcon sx={{ color: 'red' }}/>
 			</Button>
 			<Dialog
 			  open={open}

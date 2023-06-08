@@ -82,6 +82,7 @@ const App = (props) => {
   const [playlistName, setPlaylistName] = useState('');
   const [playlistChanged, setPlaylistChanged] = useState(false);
   const [playlistEdited, setPlaylistEdited] = useState(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState(undefined);
 
   // Player and <audio> component state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -360,6 +361,14 @@ const App = (props) => {
       copy[i].name = songName;
       setSongEdits(copy);
     }
+
+    const handleRemoveSongFromPlaylist = (i) => {
+      console.log('handleRemoveSongFromPlaylist', selectedPlaylistId)
+      getAccessToken(async (token) => {
+        const { data: playlist } = await axios.delete(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs/${songsLoaded[i].id}`);
+        setSongsLoaded(playlist);
+      });
+    }
     
     return (
       <Box>
@@ -389,10 +398,11 @@ const App = (props) => {
         {
           songsLoaded.map((song, i) => {
             return (
+              <Box>
               <Grid 
                 container
                 key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
-                sx={{...songStyle, padding: '5px', marginLeft: '0'}} 
+                sx={{...songStyle, padding: '5px', marginLeft: '0', backgroundColor: trackIndexBeingEdited === i ? 'yellow' : neonGreen }} 
               >
                 <Grid item xs={2} md={2} sx={{ 
                       ...gridBlockStyle,
@@ -403,35 +413,48 @@ const App = (props) => {
                       flexDirection: 'column',
                       justifyContent: 'center'
                   }}>
-                  <Button 
-                    sx={{ 
-                      ...buttonStyle, 
-                      backgroundColor: 'white', 
-                      color: 'black', 
-                      border: '1px solid black',
-                      height: '40px',
-                      margin: 'auto',
-                      width: '10px'
-                    }}
-                    onClick={() => {
-                      if (trackIndexBeingEdited === i) {
-                        setTrackIndexBeingEdited(-1)
-                        savePlaylist(songEdits);
-                      } else {
-                        setTrackIndexBeingEdited(i)
-                      }
-                    }}
-                  >
                   {
                     trackIndexBeingEdited === i
                     ?
-                    <DoneOutlinedIcon />
+                    <Box>
+                    <Button 
+                      sx={{ 
+                        ...buttonStyle, 
+                        backgroundColor: 'white', 
+                        color: 'black', 
+                        border: '1px solid black',
+                        height: '40px',
+                        margin: 'auto',
+                        width: '10px'
+                      }}
+                      onClick={() => {
+                        setTrackIndexBeingEdited(-1)
+                        savePlaylist(songEdits);
+                      }}
+                    >
+                      <DoneOutlinedIcon />
+                    </Button>
+                    </Box>
                     :
-                    <EditOutlinedIcon />
+                    <Button 
+                      sx={{ 
+                        ...buttonStyle, 
+                        backgroundColor: 'white', 
+                        color: 'black', 
+                        border: '1px solid black',
+                        height: '40px',
+                        margin: 'auto',
+                        width: '10px'
+                      }}
+                      onClick={() => {
+                        setTrackIndexBeingEdited(i)
+                      }}
+                    >
+                      <EditOutlinedIcon />
+                    </Button>
                   }
-                  </Button>
                 </Grid>
-                <Grid item xs={6.1} md={6.1} sx={{
+                <Grid item xs={7} md={7} sx={{
                       ...gridBlockStyle, 
                       fontSize: '10pt',                           
                       display: 'flex',
@@ -458,15 +481,6 @@ const App = (props) => {
                     ((songEdits[i] && songEdits[i].name !== undefined) ? songEdits[i].name : song.name.split('.')[0])
                   }
                 </Grid>
-                <Grid item xs={1} md={1} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                  {/* TODO: Using the AudioRecorder here is kind of a dirty hack in that you don't need one per song, refactor */}
-                  <AudioRecorder 
-                    user={props.user} 
-                    size={4} 
-                    buttonStyleOverride={{ backgroundColor: 'black', border: '2px solid whtie', width: '5px' }}
-                    song={song}
-                  />
-                </Grid>
                 <Grid item xs={1.4} md={1.4} sx={{
                       ...gridBlockStyle, 
                       marginRight: '0px',
@@ -482,6 +496,64 @@ const App = (props) => {
                   <ArrowDropDownOutlinedIcon onClick={() => changeSongOrder(i)}/>
                 </Grid>
               </Grid>
+              {
+                trackIndexBeingEdited === i
+                &&
+                <Grid container sx={{ display: 'flex',  alignItems: 'center' }}>
+                  <Grid item xs={3} md={3}>
+                    <Button 
+                      sx={{ 
+                        ...buttonStyle, 
+                        backgroundColor: 'white', 
+                        color: 'black', 
+                        border: '1px solid black',
+                        height: '40px',
+                        margin: 'auto',
+                        width: '10px'
+                      }}
+                      onClick={() => {
+                        let copy = [...songEdits];
+                        copy[i] = undefined;
+                        setSongEdits(copy);
+                        setTrackIndexBeingEdited(-1);
+                      }}
+                    >
+                      X
+                    </Button>
+                  </Grid>
+                  {
+                    selectedPlaylistId
+                    &&
+                    <Grid item xs={3} md={3}>
+                      <Button 
+                        sx={{ 
+                          ...buttonStyle, 
+                          backgroundColor: 'white', 
+                          color: 'black', 
+                          border: '1px solid black',
+                          height: '40px',
+                          margin: 'auto',
+                          width: '10px',
+                        }}
+                        onClick={() => {
+                          handleRemoveSongFromPlaylist(i)
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </Grid>
+                  }
+                  <Grid item xs={3} md={3}>
+                    <AudioRecorder 
+                      user={props.user} 
+                      size={4} 
+                      buttonStyleOverride={{ backgroundColor: 'black', border: `2px solid ${neonGreen}`, width: '80px', height: '80px', borderRadius: '50px' }}
+                      song={song}
+                    />
+                  </Grid>
+                </Grid>
+              }
+              </Box>
             )
           })
         }
@@ -520,7 +592,9 @@ const App = (props) => {
     setPlaylistEdited(true);
   }
 
-  const handleLoadedSongs = (songs, pName) => {
+  const handleLoadedSongs = (songs, pName, selectedPlaylistId) => {
+    console.log('handleLoadedSongs', selectedPlaylistId)
+    setSelectedPlaylistId(selectedPlaylistId);
     setIsPlaying(false);
     setSongsLoaded(songs);
     setTrackLoaded(false);
@@ -618,7 +692,7 @@ const App = (props) => {
       // remove element we just pushed into newPlaylist
       playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
     }
-    handleLoadedSongs(newPlaylist, playlistName);
+    handleLoadedSongs(newPlaylist, playlistName, selectedPlaylistId);
     // setPlaylistChanged(true);
   }
 

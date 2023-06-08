@@ -1,9 +1,6 @@
 ToDos:
 
-- Fix bugs in overdub
-    - Pre-loaded backing track does not make it into the mixdown
-- Move individual song edit/record/play functions to pop-down that opens when you click the song
-- Add "remove from playlist" operation to each song
+- Add "remove from playlist" operation to each song (selected playlist ID)
 - Add digital time display to recorder
 - Player: add ability to play multiple tracks in a playlist at once (mixer mode)
 - Comments (on songs/playlists) and notifications (e.g., someone has shared a playlist with you, or commented on your song/playlist)
@@ -13,6 +10,7 @@ ToDos:
     - UI
 - Add "select audio source" option when recording (internal laptop mic is garbage)
     - Test recording with mic other than macbook internal one (it sucks ass)
+- Prove out Recording functionality with recordings that are minutes long (what happens when phone screen goes to sleep?)
 - Add pagination where it makes sense (all songs, etc.)
 - Change persistence layer to being event-based
 - Allow playlist of same name for same user? Maybe append a "-{timestamp}" if duplicate?
