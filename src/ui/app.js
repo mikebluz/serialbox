@@ -128,7 +128,7 @@ const App = (props) => {
           {
             showInbox
             &&
-            <Inbox threads={threads}/>
+            <Inbox threads={threads} user={props.user} />
           }
         </GridItem>
       </Grid>
@@ -463,7 +463,7 @@ const App = (props) => {
                   <AudioRecorder 
                     user={props.user} 
                     size={4} 
-                    buttonStyleOverride={{ backgroundColor: 'transparent', border: '2px solid black', width: '5px' }}
+                    buttonStyleOverride={{ backgroundColor: 'black', border: '2px solid whtie', width: '5px' }}
                     song={song}
                   />
                 </Grid>

@@ -12,9 +12,6 @@ export const appStyle = {
 export const buttonStyle = {
 	backgroundColor: 'black',
 	color: 'white',
-	'&:hover': {
-		cursor: 'arrow',
-	},
 	borderColor: bluishGrey,
 	margin: '2px'
 }
