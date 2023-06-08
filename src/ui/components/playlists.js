@@ -60,7 +60,6 @@ const Playlists = (props) => {
 		if (selectedPlaylistId !== '') {
 			handleClose();
 			getAccessToken(async (token) => {
-				console.log("selectedPlaylistId", selectedPlaylistId)
 				const { data: songs } = await axios.get(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs`);
 				props.handleLoadedSongs(songs, playlistLookup[selectedPlaylistId], selectedPlaylistId);
 			});

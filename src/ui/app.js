@@ -415,7 +415,7 @@ const App = (props) => {
         {
           (filteredSongsLoaded.length === 0 ? songsLoaded.filter((song) => song.name.toLowerCase().includes(playlistSearchTerm.toLowerCase())) : filteredSongsLoaded).map((song, i) => {
             return (
-              <Box>
+              <Box key={`song-${i}`}>
               <Grid 
                 container
                 key={(song.gDriveId !== undefined ? song.gDriveId : song.id) + '-item'} 
@@ -737,7 +737,7 @@ const App = (props) => {
    * HOWEVER this is also how playing the next track works
    * */
   useEffect(() => {
-    // if (trackLoaded) setIsPlaying(true);
+    if (trackLoaded) setIsPlaying(true);
   }, [trackLoaded]);
 
   useEffect(() => {
