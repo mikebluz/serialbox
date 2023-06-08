@@ -347,6 +347,7 @@ const App = (props) => {
   const Playlist = () => {
     const [songEdits, setSongEdits] = useState([]);
     const [trackIndexBeingEdited, setTrackIndexBeingEdited] = useState(-1);
+    const [playlistSearchTerm, setPlaylistSearchTerm] = useState('');
 
     const handleSongClick = (i) => {
       if (isPlaying) toggleIsPlaying();
@@ -363,7 +364,6 @@ const App = (props) => {
     }
 
     const handleRemoveSongFromPlaylist = (i) => {
-      console.log('handleRemoveSongFromPlaylist', selectedPlaylistId)
       getAccessToken(async (token) => {
         const { data: playlist } = await axios.delete(`${process.env.REACT_APP_SERVER_HOST}/playlists/${selectedPlaylistId}/songs/${songsLoaded[i].id}`);
         setSongsLoaded(playlist);
@@ -395,8 +395,18 @@ const App = (props) => {
           </Button>
         </ButtonGroup>
         </Box>
+        <Box>
+          <TextField 
+            id="find-song" 
+            label="Search playlist" 
+            variant="outlined" 
+            value={playlistSearchTerm}
+            onChange={(e) => setPlaylistSearchTerm(e.target.value)}
+            sx={{width: '100%', marginBottom: '5px', marginTop: '6px'}}
+          />
+        </Box>
         {
-          songsLoaded.map((song, i) => {
+          songsLoaded.filter((song) => song.name.includes(playlistSearchTerm)).map((song, i) => {
             return (
               <Box>
               <Grid 
@@ -420,7 +430,7 @@ const App = (props) => {
                     <Button 
                       sx={{ 
                         ...buttonStyle, 
-                        backgroundColor: 'white', 
+                        backgroundColor: neonGreen, 
                         color: 'black', 
                         border: '1px solid black',
                         height: '40px',
@@ -439,7 +449,7 @@ const App = (props) => {
                     <Button 
                       sx={{ 
                         ...buttonStyle, 
-                        backgroundColor: 'white', 
+                        backgroundColor: 'yellow', 
                         color: 'black', 
                         border: '1px solid black',
                         height: '40px',
@@ -475,7 +485,7 @@ const App = (props) => {
                       variant="outlined" 
                       value={(songEdits[i] && songEdits[i].name !== undefined) ? songEdits[i].name : song.name.split('.')[0]}
                       onChange={(e) => handleTempSongEdit(e.target.value, i)}
-                      sx={{width: '100%', marginBottom: '0px'}}
+                      sx={{width: '100%', marginBottom: '5px', marginTop: '6px'}}
                     />
                     :
                     ((songEdits[i] && songEdits[i].name !== undefined) ? songEdits[i].name : song.name.split('.')[0])
@@ -500,49 +510,37 @@ const App = (props) => {
                 trackIndexBeingEdited === i
                 &&
                 <Grid container sx={{ display: 'flex',  alignItems: 'center' }}>
-                  <Grid item xs={3} md={3}>
-                    <Button 
-                      sx={{ 
-                        ...buttonStyle, 
-                        backgroundColor: 'white', 
-                        color: 'black', 
-                        border: '1px solid black',
-                        height: '40px',
-                        margin: 'auto',
-                        width: '10px'
-                      }}
-                      onClick={() => {
-                        let copy = [...songEdits];
-                        copy[i] = undefined;
-                        setSongEdits(copy);
-                        setTrackIndexBeingEdited(-1);
-                      }}
-                    >
-                      X
-                    </Button>
-                  </Grid>
-                  {
-                    selectedPlaylistId
-                    &&
-                    <Grid item xs={3} md={3}>
+                  <Grid item xs={9} md={9}>
+                    <ButtonGroup variant="contained" aria-label="outlined button group">
                       <Button 
                         sx={{ 
                           ...buttonStyle, 
-                          backgroundColor: 'white', 
-                          color: 'black', 
-                          border: '1px solid black',
-                          height: '40px',
-                          margin: 'auto',
-                          width: '10px',
                         }}
                         onClick={() => {
-                          handleRemoveSongFromPlaylist(i)
+                          let copy = [...songEdits];
+                          copy[i] = undefined;
+                          setSongEdits(copy);
+                          setTrackIndexBeingEdited(-1);
                         }}
                       >
-                        Remove
+                        CANCEL
                       </Button>
-                    </Grid>
-                  }
+                      {
+                        selectedPlaylistId
+                        &&
+                        <Button 
+                          sx={{ 
+                            ...buttonStyle, 
+                          }}
+                          onClick={() => {
+                            handleRemoveSongFromPlaylist(i)
+                          }}
+                        >
+                          REMOVE
+                        </Button>
+                      }
+                    </ButtonGroup>
+                  </Grid>
                   <Grid item xs={3} md={3}>
                     <AudioRecorder 
                       user={props.user} 
@@ -593,7 +591,6 @@ const App = (props) => {
   }
 
   const handleLoadedSongs = (songs, pName, selectedPlaylistId) => {
-    console.log('handleLoadedSongs', selectedPlaylistId)
     setSelectedPlaylistId(selectedPlaylistId);
     setIsPlaying(false);
     setSongsLoaded(songs);
@@ -693,7 +690,6 @@ const App = (props) => {
       playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
     }
     handleLoadedSongs(newPlaylist, playlistName, selectedPlaylistId);
-    // setPlaylistChanged(true);
   }
 
   useEffect(() => {
@@ -730,9 +726,10 @@ const App = (props) => {
   /**
    * This effect plays the audio immediately after the track is loaded
    * Autoplay IS NOT ALLOWED on mobile
+   * HOWEVER this is also how playing the next track works
    * */
   useEffect(() => {
-    if (trackLoaded) setIsPlaying(true);
+    // if (trackLoaded) setIsPlaying(true);
   }, [trackLoaded]);
 
   useEffect(() => {

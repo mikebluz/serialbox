@@ -1,6 +1,7 @@
 ToDos:
 
-- Add "remove from playlist" operation to each song (selected playlist ID)
+- Add "find song" search bar to search for a song in a playlist
+    - This will involve creating a "filtered" songsLoaded state value, if populated use instead of songsLoaded
 - Add digital time display to recorder
 - Player: add ability to play multiple tracks in a playlist at once (mixer mode)
 - Comments (on songs/playlists) and notifications (e.g., someone has shared a playlist with you, or commented on your song/playlist)
