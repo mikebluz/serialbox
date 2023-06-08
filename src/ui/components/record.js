@@ -163,7 +163,6 @@ const AudioRecorder = (props) => {
 	}
 
 	const rollPlayback = () => {
-		console.log("rollPlayback", mixdownRef.current);
 		mixdownRef.current.play();
 	}
 
@@ -293,9 +292,7 @@ const AudioRecorder = (props) => {
 		if (isActive && props.song && individualTracks.length === 0) {
 			getAccessToken((token) => {
 				fetchDriveFileBlob(props.song, token).then((blob) => {
-					console.log("Success", blob);
-					const src = URL.createObjectURL(blob);
-					setIndividualTracks([{ref: backingTrackRef, src}]);
+					setIndividualTracks([{ref: backingTrackRef, src: URL.createObjectURL(blob)}]);
 				});
 			});
 		}

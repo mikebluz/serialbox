@@ -77,6 +77,7 @@ const App = (props) => {
   // Loading
   const [isLoading, setIsLoading] = useState(false);
   const [songsLoaded, setSongsLoaded] = useState([]);
+  const [filteredSongsLoaded, setFilteredSongsLoaded] = useState([]);
 
   // Playlist/Song data
   const [playlistName, setPlaylistName] = useState('');
@@ -369,6 +370,11 @@ const App = (props) => {
         setSongsLoaded(playlist);
       });
     }
+
+    const handleSetFilteredPlaylist = () => {
+      setPlaylistSearchTerm('');
+      setFilteredSongsLoaded(songsLoaded.filter((song) => song.name.includes(playlistSearchTerm)));
+    }
     
     return (
       <Box>
@@ -395,18 +401,19 @@ const App = (props) => {
           </Button>
         </ButtonGroup>
         </Box>
-        <Box>
+        <Box sx={{display:'flex', alignItems: 'center', justifyContent: 'center'}}>
           <TextField 
             id="find-song" 
             label="Search playlist" 
             variant="outlined" 
             value={playlistSearchTerm}
             onChange={(e) => setPlaylistSearchTerm(e.target.value)}
-            sx={{width: '100%', marginBottom: '5px', marginTop: '6px'}}
+            sx={{width: '100%', marginBottom: '5px', marginTop: '10px'}}
           />
+          { /* <Button sx={buttonStyle} onClick={handleSetFilteredPlaylist}>Set</Button> */ }
         </Box>
         {
-          songsLoaded.filter((song) => song.name.includes(playlistSearchTerm)).map((song, i) => {
+          (filteredSongsLoaded.length === 0 ? songsLoaded.filter((song) => song.name.toLowerCase().includes(playlistSearchTerm.toLowerCase())) : filteredSongsLoaded).map((song, i) => {
             return (
               <Box>
               <Grid 
@@ -594,6 +601,7 @@ const App = (props) => {
     setSelectedPlaylistId(selectedPlaylistId);
     setIsPlaying(false);
     setSongsLoaded(songs);
+    setFilteredSongsLoaded([]);
     setTrackLoaded(false);
     if (pName) setPlaylistName(pName);
   }
