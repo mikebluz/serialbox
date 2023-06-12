@@ -251,7 +251,6 @@ const AudioRecorder = (props) => {
 					// Add in recording stream with mixdown
 					const inputSource = mainAudioCtx.createMediaStreamSource(stream);
 					inputSource.connect(outputMixDestination);
-					// const combined = new MediaStream([...stream.getAudioTracks(), ...outputMixDestination.stream.getAudioTracks()]);
 					recorder = new MediaRecorder(outputMixDestination.stream);
 					recorder.start(0);
 					mix.start(0);
