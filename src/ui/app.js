@@ -128,7 +128,7 @@ const App = (props) => {
             Welcome, {props.user.given_name}!
           </Typography>
           {
-            showInbox
+            showInbox && false
             &&
             <Inbox threads={threads} user={props.user} />
           }
