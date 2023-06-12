@@ -49,7 +49,7 @@ const AudioRecorder = (props) => {
 	const [rec, setRec] = useState(undefined);
 	const [blobs, setBlobs] = useState([]);
 	const [mixdownBlob, setMixdownBlob] = useState(undefined);
-	const [individualTracks, setIndividualTracks] = useState(props.song ? [props.song] : []);
+	const [individualTracks, setIndividualTracks] = useState([]);
 	const [trackNumber, setTrackNumber] = useState(0);
 	const [error, setError] = useState('');
 	const [isSaving, setIsSaving] = useState(false);
@@ -79,12 +79,18 @@ const AudioRecorder = (props) => {
 		setBlobs([]);
 		setMixdownLoaded(false);
 		setRecordingMedia([]);
-		setIndividualTracks(props.song ? [props.song] : []);
 		setTrackNumber(0);
 		setError('');
 		setFolderName('');
 		setSongName('');
 		setArtistName('');
+		if (props.song) {
+			getAccessToken((token) => {
+				fetchDriveFileBlob(props.song, token).then((blob) => {
+					setIndividualTracks([{ref: backingTrackRef, src: URL.createObjectURL(blob)}]);
+				});
+			});
+		}
 	}
 
 	const handleStartRecording = () => {
@@ -163,6 +169,7 @@ const AudioRecorder = (props) => {
 	}
 
 	const rollPlayback = () => {
+		mixdownRef.current.onended = () => setIsPlaying(false);
 		mixdownRef.current.play();
 	}
 
@@ -196,6 +203,7 @@ const AudioRecorder = (props) => {
 		};
 
 		function get(trackObj) {
+			if (!trackObj.ref) return;
 			return getCorrectDuration(trackObj.ref.current)
 				.then((canLoadReally) => new Promise((res, rej) => {
 					if (trackObj.ref.current.src) {
@@ -209,10 +217,7 @@ const AudioRecorder = (props) => {
 		function setMixdownSrc(blob) {
 			setMixdownBlob(blob);
 			var mixdownUrl = URL.createObjectURL(blob);
-			mixdownRef.current.oncanplay = () => {
-				console.log("mixdown ready to play", mixdownRef.current);
-				setMixdownLoaded(true);
-			};
+			mixdownRef.current.oncanplay = () => setMixdownLoaded(true);
 			mixdownRef.current.onerror = (err) => console.error(err);
 			mixdownRef.current.src = mixdownUrl;
 			mixdownRef.current.load();
