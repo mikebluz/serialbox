@@ -20,7 +20,10 @@ app.use(express.json());
 
 app.use(express.static('public'));
 
-app.get('/ping', async (req, res) => res.send(200));
+app.get('/ping', async (req, res) => {
+  console.log("PING");
+  res.send(200);
+});
 
 app.post('/login', async (req, res) => {
   const { status } = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${req.body.token}`);   
