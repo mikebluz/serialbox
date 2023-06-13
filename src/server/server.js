@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.get('/ping', async (req, res) => {
-  console.log("PING");
+  console.log("PING PING PING");
   res.send(200);
 });
 
