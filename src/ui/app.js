@@ -115,11 +115,11 @@ const App = (props) => {
       setShowInbox(!showInbox)
     }
 
-    useEffect(() => {
-      if (showInbox) {
-        // setThreads([]);
-      }
-    }, [showInbox]);
+    // useEffect(() => {
+    //   if (showInbox) {
+    //     // setThreads([]);
+    //   }
+    // }, [showInbox]);
 
     return (
       <Grid item xs={12} md={12} sx={gridBlockStyle}>
