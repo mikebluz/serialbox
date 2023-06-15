@@ -6,6 +6,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const helmet = require('helmet');
 const Sequelize = require('sequelize');
 const app = express()
 const port = 3005
@@ -29,6 +30,8 @@ if (!process.env.PROD) {
 }
 
 app.use(express.json());
+
+app.use(helmet());
 
 app.use(express.static('public'));
 
