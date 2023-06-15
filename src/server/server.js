@@ -2,6 +2,7 @@
 // since this is the entry point, they will be available to everything in /server
 require('dotenv').config();
 
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
@@ -10,11 +11,22 @@ const app = express()
 const port = 3005
 const {User, Playlist, PlaylistSong, Song} = require('./persistence/models.js');
 const cors = require('cors');  
+let httpOpts;
+
+if (process.env.PROD) {
+  httpsOpts = {
+    ca: fs.readFileSync("/etc/pki/tls/certs/ca_bundle.crt"),
+    key: fs.readFileSync("/etc/pki/tls/certs/serialboxmusic-server.com.key"),
+    cert: fs.readFileSync("/etc/pki/tls/certs/serialboxmusic-server.com.crt")
+  };
+}
 
 const GAPI_HOST = 'https://www.googleapis.com'
 
-// ToDo: Remove in production
-app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
+if (!process.env.PROD) {
+  // ToDo: Remove in production
+  app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
+}
 
 app.use(express.json());
 
@@ -208,3 +220,7 @@ app.post('/songs', async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+if (process.env.PROD) {
+  https.createServer(httpsOpts, app).listen(8080);
+}
