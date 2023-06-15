@@ -225,5 +225,5 @@ app.listen(port, () => {
 })
 
 if (process.env.PROD) {
-  https.createServer(httpsOpts, app).listen(8080);
+  https.createServer(httpsOpts, app).listen(8080, () => console.log("https server listening on port 8080"));
 }
