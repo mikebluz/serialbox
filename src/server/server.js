@@ -17,8 +17,8 @@ let httpOpts;
 if (process.env.PROD) {
   httpsOpts = {
     ca: fs.readFileSync("../../../../../etc/pki/tls/certs/ca-bundle.crt"),
-    key: fs.readFileSync("../../../../../etc/pki/tls/certs/serialboxmusic-server.com.key"),
-    cert: fs.readFileSync("../../../../../etc/pki/tls/certs/serialboxmusic-server.com.crt")
+    key: fs.readFileSync("../../../../../etc/pki/tls/certs/serialboxmusic.com.key"),
+    cert: fs.readFileSync("../../../../../etc/pki/tls/certs/serialboxmusic.com.crt")
   };
 }
 
