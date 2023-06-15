@@ -15,9 +15,9 @@ let httpOpts;
 
 if (process.env.PROD) {
   httpsOpts = {
-    ca: fs.readFileSync("/etc/pki/tls/certs/ca_bundle.crt"),
-    key: fs.readFileSync("/etc/pki/tls/certs/serialboxmusic-server.com.key"),
-    cert: fs.readFileSync("/etc/pki/tls/certs/serialboxmusic-server.com.crt")
+    ca: fs.readFileSync("../../etc/pki/tls/certs/ca_bundle.crt"),
+    key: fs.readFileSync("../../etc/pki/tls/certs/serialboxmusic-server.com.key"),
+    cert: fs.readFileSync("../../etc/pki/tls/certs/serialboxmusic-server.com.crt")
   };
 }
 
@@ -38,7 +38,7 @@ app.get('/ping', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-  const { status } = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${req.body.token}`);   
+  const { status } = await fetch(`${GAPI_HOST}/oauth2/v1/tokeninfo?access_token=${req.body.token}`);  
   if (status !== 200) {
     res.send(403);
     return;
