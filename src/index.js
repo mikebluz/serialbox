@@ -51,4 +51,16 @@ new Promise((res, rej) => {
       );
     }
   })
+}).catch(err => {
+  const rootElement = document.getElementById('root');
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <div>
+    <ThemeProvider theme={theme}>
+      {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+      <CssBaseline />
+      <p>{err}</p>
+    </ThemeProvider>
+    </div>,
+  );
 });
