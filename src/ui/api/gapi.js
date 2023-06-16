@@ -7,11 +7,10 @@ const GAPI_CONTENT_HOST = 'https://content.googleapis.com'
 export async function initGapi(resolve) {
 	window.google.accounts.id.initialize({
 		client_id: CLIENT_ID,
+		ux_mode: 'redirect',
 		callback: (res) => resolve(parseJwt(res.credential)) // We get the googleUser from the JWT
 	});
-	window.google.accounts.id.prompt((n) => {
-		console.log(JSON.stringify(n));
-	});
+	window.google.accounts.id.prompt();
 }
 
 /**
@@ -21,7 +20,7 @@ export async function initGapi(resolve) {
  * */
 // ToDo: use Refresh Tokens instead of Access Tokens
 async function saveToken(token) {
-	localStorage.setItem('access_token', token);
+	// localStorage.setItem('access_token', token);
 	return;
 }
 
@@ -64,6 +63,7 @@ export async function getAccessToken(callback) {
 		});
 		client.requestAccessToken({prompt: 'consent'});
 	} else {
+		console.log("already have a token");
 		callback(getToken());
 	}
 }

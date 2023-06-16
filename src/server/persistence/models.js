@@ -71,16 +71,16 @@ const PlaylistSong = pg.define('playlist_song', {
   order: DataTypes.INTEGER,
 });
 
-// Messaging
-const Messages = pg.define('message', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    allowNull: false,
-    primaryKey: true
-  },
-  name: DataTypes.STRING,
-});
+// // Messaging
+// const Messages = pg.define('message', {
+//   id: {
+//     type: DataTypes.UUID,
+//     defaultValue: DataTypes.UUIDV4,
+//     allowNull: false,
+//     primaryKey: true
+//   },
+//   name: DataTypes.STRING,
+// });
 
 // Relationships
 User.hasMany(Playlist);
