@@ -18,7 +18,7 @@ const GAPI_HOST = 'https://www.googleapis.com'
 if (!process.env.PROD) {
   app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
 } else {
-  app.use(cors({credentials: true, origin: 'http://serialboxmusic.com:3001'}));
+  app.use(cors({credentials: true, origin: 'http://www.serialboxmusic.com'}));
 }
 
 app.use(express.json());
