@@ -61,7 +61,7 @@ export async function getAccessToken(callback) {
 				}
 			},
 		});
-		client.requestAccessToken({prompt: 'consent'});
+		client.requestAccessToken({prompt: ''});
 	} else {
 		console.log("already have a token");
 		callback(getToken());
