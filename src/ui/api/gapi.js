@@ -9,7 +9,9 @@ export async function initGapi(resolve) {
 		client_id: CLIENT_ID,
 		callback: (res) => resolve(parseJwt(res.credential)) // We get the googleUser from the JWT
 	});
-	window.google.accounts.id.prompt();
+	window.google.accounts.id.prompt((n) => {
+		console.log(n);
+	});
 }
 
 /**
