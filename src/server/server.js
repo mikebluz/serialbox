@@ -12,21 +12,13 @@ const app = express()
 const port = 3005
 const {User, Playlist, PlaylistSong, Song} = require('./persistence/models.js');
 const cors = require('cors');  
-let httpOpts;
-
-if (process.env.PROD) {
-  httpsOpts = {
-    ca: fs.readFileSync("../../../../../etc/pki/tls/certs/ca-bundle.crt"),
-    key: fs.readFileSync("../../../../../etc/letsencrypt/live/api.serialboxmusic.com/privkey.pem"),
-    cert: fs.readFileSync("../../../../../etc/letsencrypt/live/api.serialboxmusic.com/fullchain.pem")
-  };
-}
 
 const GAPI_HOST = 'https://www.googleapis.com'
 
 if (!process.env.PROD) {
-  // ToDo: Remove in production
   app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
+} else {
+  app.use(cors({credentials: true, origin: 'http://serialboxmusic.com:3001'}));
 }
 
 app.use(express.json());
@@ -223,7 +215,3 @@ app.post('/songs', async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
-
-if (process.env.PROD) {
-  https.createServer(httpsOpts, app).listen(8080, () => console.log("https server listening on port 8080"));
-}
