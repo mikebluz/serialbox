@@ -10,7 +10,13 @@ import axios from 'axios';
 let errorMessage;
 
 new Promise((res, rej) => {
-  window.onload = () => initGapi(res);
+  window.onload = () => {
+    try {
+      initGapi(res)
+    } catch (err) {
+      rej(err);
+    }
+  };
 }).then(async (googleUser) => {
   const rootElement = document.getElementById('root');
   getAccessToken(async (token) => {
