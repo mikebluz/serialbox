@@ -9,6 +9,9 @@ import axios from 'axios';
 
 let errorMessage;
 
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
+
 new Promise((res, rej) => {
   window.onload = () => {
     try {
@@ -18,7 +21,6 @@ new Promise((res, rej) => {
     }
   };
 }).then(async (googleUser) => {
-  const rootElement = document.getElementById('root');
   getAccessToken(async (token) => {
     let authorized = false;
     try {
@@ -31,13 +33,10 @@ new Promise((res, rej) => {
       console.error("Error logging in", err);
       errorMessage = err.message;
     }
-    // Render React App
-    const root = ReactDOM.createRoot(rootElement);
     if (authorized) {
       root.render(
         <div>
         <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <App user={googleUser}/>
         </ThemeProvider>
@@ -47,7 +46,6 @@ new Promise((res, rej) => {
       root.render(
         <div>
         <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <h1>{errorMessage}</h1>
@@ -58,12 +56,9 @@ new Promise((res, rej) => {
     }
   })
 }).catch(err => {
-  const rootElement = document.getElementById('root');
-  const root = ReactDOM.createRoot(rootElement);
   root.render(
     <div>
     <ThemeProvider theme={theme}>
-      {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
       <CssBaseline />
       <p>{err}</p>
     </ThemeProvider>

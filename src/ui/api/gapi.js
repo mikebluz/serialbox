@@ -7,7 +7,7 @@ const GAPI_CONTENT_HOST = 'https://content.googleapis.com'
 export async function initGapi(resolve) {
 	window.google.accounts.id.initialize({
 		client_id: CLIENT_ID,
-		ux_mode: 'redirect',
+		ux_mode: "redirect",
 		callback: (res) => resolve(parseJwt(res.credential)) // We get the googleUser from the JWT
 	});
 	window.google.accounts.id.prompt();
