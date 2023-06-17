@@ -653,9 +653,13 @@ const App = (props) => {
   }
 
   const handlePlayPauseClick = () => {
-    if ((!trackRef.current.src.includes('blob') && songsLoaded.length) || !trackLoaded) {
+    if ((!trackRef.current.src.includes('blob') && songsLoaded.length)) {
       loadSong(songsLoaded[trackIndex]);
     } else if (trackLoaded) {
+      toggleIsPlaying();
+    } else if (!trackLoaded) {
+      console.log("loading trackRef...");
+      trackRef.current.load();
       toggleIsPlaying();
     }
   }
@@ -760,8 +764,6 @@ const App = (props) => {
       trackRef.current.src = src;
       setTape([{ src, ref: trackRef }]);
       trackRef.current.volume = 1;
-      console.log("loading trackRef...")
-      trackRef.current.load();
       trackRef.current.oncanplay = () => {
         console.log("track can play!")
         setIsLoading(false);
