@@ -810,7 +810,13 @@ const App = (props) => {
       minHeight="100vh"
       maxWidth="100vw"
     >
-      <Tape sources={tape} />
+      <audio 
+        key={`tape`}
+        src={src}
+        ref={trackRef}
+        onError={(e) => console.error('Audio element error', e.target.error)} 
+        preload={'false'}
+      ></audio>
       <Grid container>
         <Greeting />
         <Grid item xs={12} md={12} sx={gridBlockStyle}>
