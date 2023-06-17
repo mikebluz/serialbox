@@ -103,7 +103,7 @@ const App = (props) => {
   const [error, setError] = useState('');
 
   // Display
-  const [nowPlayingSongName, setNowPlayingSongName] = useState('Click play!');
+  const [nowPlayingSongName, setNowPlayingSongName] = useState('Click me to load first track!');
   const [nowPlayingArtist, setNowPlayingArtist] = useState('-------------');
 
   const Greeting = () => {
@@ -177,7 +177,7 @@ const App = (props) => {
 
   const NowPlaying = () => {
     return (
-      <Box style={{ backgroundColor: 'black', borderRadius: '10px' }}>
+      <Box style={{ backgroundColor: 'black', borderRadius: '10px' }} onClick={handleNowPlayingClick}>
         <p 
           style={{ 
             color: 'black', 
@@ -716,6 +716,16 @@ const App = (props) => {
       playlist = [...playlist.slice(0, i), ...playlist.slice(i + 1, playlist.length)];
     }
     handleLoadedSongs(newPlaylist, playlistName, selectedPlaylistId);
+  }
+
+  const handleNowPlayingClick = () => {
+    if (!trackLoaded && !isLoading) {
+      loadSong(songsLoaded[trackIndex], () => {
+        setTrackIndex(trackIndex);
+        setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
+        setNowPlayingArtist(songsLoaded[trackIndex].artist);
+      });
+    }
   }
 
   useEffect(() => {
