@@ -656,7 +656,8 @@ const App = (props) => {
     }
   }
 
-  const handlePlayPauseClick = () => {
+  const handlePlayPauseClick = (e) => {
+    console.log("play pause event", e)
     if ((!trackRef.current.src.includes('blob') && songsLoaded.length)) {
       loadSong(songsLoaded[trackIndex]);
     } else if (trackLoaded) {
@@ -664,7 +665,7 @@ const App = (props) => {
     } else if (!trackLoaded) {
       console.log("loading trackRef...");
       trackRef.current.load();
-      trackRef.current.onended = nextSong;
+      trackRef.current.onended = nextSong.bind(e);
     }
   }
 
