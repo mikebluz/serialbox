@@ -769,6 +769,7 @@ const App = (props) => {
       trackRef.current.src = src;
       setTape([{ src, ref: trackRef }]);
       trackRef.current.volume = 1;
+      trackRef.current.load();
       trackRef.current.oncanplay = () => {
         console.log("track can play!")
         setIsLoading(false);
