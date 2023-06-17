@@ -661,9 +661,12 @@ const App = (props) => {
   }
 
   const playPauseAudio = async () => {
+    console.log("isLoading?", isLoading);
     if (!isLoading) {
+      console.log("Any thing to play?", trackRef.current)
       if (trackRef.current && trackRef.current.src.includes('blob')) {
         if (isPlaying) {
+          console.log("attempting to play track");
           trackRef.current.play();
         } else {
           trackRef.current.pause();
@@ -714,6 +717,7 @@ const App = (props) => {
   }, [playlistEdited])
 
   useEffect(() => {
+    console.log("isPlaying effect", isPlaying);
     if (restarting && !isPlaying) {
       setIsPlaying(true);
       setRestarting(false);
