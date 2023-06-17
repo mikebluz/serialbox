@@ -598,6 +598,7 @@ const App = (props) => {
   }
 
   const handleLoadedSongs = (songs, pName, selectedPlaylistId) => {
+    console.log("handleLoadedSongs")
     setSelectedPlaylistId(selectedPlaylistId);
     setIsPlaying(false);
     setSongsLoaded(songs);
@@ -607,6 +608,7 @@ const App = (props) => {
   }
   
   const nextSong = () => {
+    console.log("nextSong")
     if (!isLoading) {
       let i = trackIndex;
       i++;
@@ -631,6 +633,7 @@ const App = (props) => {
   }
 
   const restart = () => {
+    console.log("restart");
     trackRef.current.currentTime = 0;
     setIsPlaying(false);
     setRestarting(true);
@@ -648,6 +651,7 @@ const App = (props) => {
     if (!isPlaying) {
       setIsPlaying(true);
     } else {
+      console.log("toggleIsPlaying")
       setIsPlaying(false);
     }
   }
@@ -660,7 +664,7 @@ const App = (props) => {
     } else if (!trackLoaded) {
       console.log("loading trackRef...");
       trackRef.current.load();
-      toggleIsPlaying();
+      trackRef.current.onended = nextSong;
     }
   }
 
@@ -695,6 +699,7 @@ const App = (props) => {
   }
 
   const shuffle = () => {
+    console.log("shuffle")
     setIsPlaying(false);
     let playlist = [...songsLoaded];
     const newPlaylist = [];
