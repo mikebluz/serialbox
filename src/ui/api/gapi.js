@@ -20,7 +20,7 @@ export async function initGapi(resolve) {
  * */
 // ToDo: use Refresh Tokens instead of Access Tokens
 async function saveToken(token) {
-	// localStorage.setItem('access_token', token);
+	localStorage.setItem('access_token', token);
 	return;
 }
 
@@ -64,7 +64,7 @@ export async function getAccessToken(callback, rej) {
 				console.error("Error attempting to fetch access token", res);
 			}
 		});
-		client.requestAccessToken({prompt: 'consent'});
+		client.requestAccessToken({prompt: ''});
 	} else {
 		console.log("already have a token");
 		callback(getToken());
