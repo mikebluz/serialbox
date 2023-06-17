@@ -103,8 +103,8 @@ const App = (props) => {
   const [error, setError] = useState('');
 
   // Display
-  const [nowPlayingSongName, setNowPlayingSongName] = useState('Nothing loaded');
-  const [nowPlayingArtist, setNowPlayingArtist] = useState('Nothing loaded');
+  const [nowPlayingSongName, setNowPlayingSongName] = useState('Click play!');
+  const [nowPlayingArtist, setNowPlayingArtist] = useState('-------------');
 
   const Greeting = () => {
 
@@ -659,7 +659,12 @@ const App = (props) => {
   const handlePlayPauseClick = (e) => {
     console.log("play pause event", e)
     if ((!trackRef.current.src.includes('blob') && songsLoaded.length)) {
-      loadSong(songsLoaded[trackIndex]);
+      // loadSong(songsLoaded[trackIndex]);
+      loadSong(songsLoaded[trackIndex], () => {
+        setTrackIndex(trackIndex);
+        setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
+        setNowPlayingArtist(songsLoaded[trackIndex].artist);
+      });
     } else if (trackLoaded) {
       toggleIsPlaying();
     } else if (!trackLoaded) {
@@ -755,15 +760,15 @@ const App = (props) => {
     if (trackLoaded) setIsPlaying(true);
   }, [trackLoaded]);
 
-  useEffect(() => {
-    if (songsLoaded.length > 0 && !trackLoaded) {
-      loadSong(songsLoaded[0], () => {
-        setTrackIndex(0);
-        setNowPlayingSongName(songsLoaded[0].name.split('.')[0]);
-        setNowPlayingArtist(songsLoaded[0].artist);
-      });
-    }
-  }, [songsLoaded])
+  // useEffect(() => {
+  //   if (songsLoaded.length > 0 && !trackLoaded) {
+  //     loadSong(songsLoaded[0], () => {
+  //       setTrackIndex(0);
+  //       setNowPlayingSongName(songsLoaded[0].name.split('.')[0]);
+  //       setNowPlayingArtist(songsLoaded[0].artist);
+  //     });
+  //   }
+  // }, [songsLoaded])
 
   useEffect(() => {
     if (trackRef.current && (src && src.includes('blob'))) {
