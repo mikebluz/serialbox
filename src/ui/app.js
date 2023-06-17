@@ -653,7 +653,7 @@ const App = (props) => {
   }
 
   const handlePlayPauseClick = () => {
-    if (!trackRef.current.src.includes('blob') && songsLoaded.length) {
+    if ((!trackRef.current.src.includes('blob') && songsLoaded.length) || !trackLoaded) {
       loadSong(songsLoaded[trackIndex]);
     } else if (trackLoaded) {
       toggleIsPlaying();
