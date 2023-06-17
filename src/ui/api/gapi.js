@@ -64,7 +64,7 @@ export async function getAccessToken(callback, rej) {
 				console.error("Error attempting to fetch access token", res);
 			}
 		});
-		client.requestAccessToken({prompt: ''});
+		client.requestAccessToken({prompt: 'consent'});
 	} else {
 		console.log("already have a token");
 		callback(getToken());
