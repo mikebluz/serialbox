@@ -44,7 +44,7 @@ async function tokenIsValid() {
 	}
 }
 
-export async function getAccessToken(callback) {
+export async function getAccessToken(callback, rej) {
 	const valid = await tokenIsValid();
 	if (!getToken() || !valid) {
 		const client = window.google.accounts.oauth2.initTokenClient({
@@ -60,6 +60,9 @@ export async function getAccessToken(callback) {
 					console.error(`Error encountered attempting to fetch access token: ${res.error}`);
 				}
 			},
+			error_callback: (res) => {
+				console.error("Error attempting to fetch access token", res);
+			}
 		});
 		client.requestAccessToken({prompt: ''});
 	} else {
