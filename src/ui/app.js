@@ -88,7 +88,7 @@ const App = (props) => {
   // Player and <audio> component state
   const [isPlaying, setIsPlaying] = useState(false);
   const [src, setSrc] = useState(undefined);
-  const [trackLoaded, setTrackLoaded] = useState(false);
+  const [trackCanPlay, setTrackCanPlay] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
   const [volume, setVolume] = useState(1);
   const [restarting, setRestarting] = useState(false);
@@ -99,6 +99,7 @@ const App = (props) => {
   const [isRepeating, setIsRepeating] = useState(false);
   const [tape, setTape] = useState([{ src, ref: trackRef }]);
   const [recorderOpen, setRecorderOpen] = useState(false);
+  const [userHasClicked, setUserHasClicked] = useState(false);
 
   const [error, setError] = useState('');
 
@@ -603,7 +604,7 @@ const App = (props) => {
     setIsPlaying(false);
     setSongsLoaded(songs);
     setFilteredSongsLoaded([]);
-    setTrackLoaded(false);
+    setTrackCanPlay(false);
     if (pName) setPlaylistName(pName);
   }
   
@@ -640,7 +641,7 @@ const App = (props) => {
   }
 
   const handleChangeTrack = (trackIndex) => {
-    setTrackLoaded(false);
+    setTrackCanPlay(false);
     trackRef.current.pause();
     loadSong(songsLoaded[trackIndex], () => {
       setTrackIndex(trackIndex)
@@ -658,16 +659,16 @@ const App = (props) => {
 
   const handlePlayPauseClick = (e) => {
     console.log("play pause event", e)
+    setUserHasClicked(true);
     if ((!trackRef.current.src.includes('blob') && songsLoaded.length)) {
-      // loadSong(songsLoaded[trackIndex]);
       loadSong(songsLoaded[trackIndex], () => {
         setTrackIndex(trackIndex);
         setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
         setNowPlayingArtist(songsLoaded[trackIndex].artist);
       });
-    } else if (trackLoaded) {
+    } else if (trackCanPlay) {
       toggleIsPlaying();
-    } else if (!trackLoaded) {
+    } else if (!trackCanPlay) {
       console.log("loading trackRef...");
       trackRef.current.load();
       trackRef.current.onended = nextSong.bind(e);
@@ -719,7 +720,7 @@ const App = (props) => {
   }
 
   const handleNowPlayingClick = () => {
-    if (!trackLoaded && !isLoading) {
+    if (!trackCanPlay && !isLoading) {
       loadSong(songsLoaded[trackIndex], () => {
         setTrackIndex(trackIndex);
         setNowPlayingSongName(songsLoaded[trackIndex].name.split('.')[0]);
@@ -766,12 +767,12 @@ const App = (props) => {
    * HOWEVER this is also how playing the next track works
    * */
   useEffect(() => {
-    console.log("trackLoaded effect", trackLoaded);
-    if (trackLoaded) setIsPlaying(true);
-  }, [trackLoaded]);
+    console.log("trackCanPlay effect", trackCanPlay);
+    if (trackCanPlay && userHasClicked) setIsPlaying(true);
+  }, [trackCanPlay]);
 
   // useEffect(() => {
-  //   if (songsLoaded.length > 0 && !trackLoaded) {
+  //   if (songsLoaded.length > 0 && !trackCanPlay) {
   //     loadSong(songsLoaded[0], () => {
   //       setTrackIndex(0);
   //       setNowPlayingSongName(songsLoaded[0].name.split('.')[0]);
@@ -789,7 +790,7 @@ const App = (props) => {
       trackRef.current.oncanplay = () => {
         console.log("track can play!")
         setIsLoading(false);
-        setTrackLoaded(true);
+        setTrackCanPlay(true);
       };
       trackRef.current.onerror = (err) => console.error(err);
       // Below is a dirty hack to get duration to display correctly on the first play for some very short files
