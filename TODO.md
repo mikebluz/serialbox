@@ -2,13 +2,13 @@ ToDos
 
 Record
 - Figure out why recording truncates the record length (playback starts later and stops earlier than it should) on Overdub only
-- Figure out why layering of recorded input sounds terrible
 - Add digital time display to recorder
-- Add "select audio source" option when recording (internal laptop mic is garbage)
+- Add "select audio source" option when recording if possible (internal laptop mic is garbage)
 - Prove out Recording functionality with recordings that are minutes long (what happens when phone screen goes to sleep?)
 - Add ability to mix track levels during record (raise and lower individual track levels)
 
 Playlist player
+- Add ability to delete playlists/songs
 - Add ability to play multiple tracks in a playlist at once (mixer mode)
 - Current app allows multiple playlists of same name for same user -- append a "-{timestamp}" if duplicate or disallow?
 - Add playlist "type", e.g., format, Tape (60min/90min), Vinyl (2 sides, N min each side), cd (45min/79min)
